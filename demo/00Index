@@ -1,0 +1,11 @@
+All                               Run all the demos listed below
+Medfly                            Demographic analysis of the Medfly population model (de Roos, 2008. Ecol. Letters 11(1): 1-15)
+Medfly_periodic                   Demographic analysis of the Medfly population model with juveniles experiencing periodically exponentially decaying pulses of high mortality (de Roos, 2008. Ecol. Letters 11(1): 1-15)
+KlanjscekDEB                      Demographic analysis of several variants of the structured population model analysed in Klanjscek et al. (Ecol. Modell., 196, 407-420, 2006)
+MartinsDEB                        Equilibrium analysis of the PSPM based on a dynamic energy budget model analyzed in Martings et al., 2013, The American Naturalist, http://www.jstor.org/stable/10.1086/669904
+deRoosPersson                     Bifurcation analysis of the tri-trophic size-structured model analyzed in de Roos & Persson (PNAS 99(20), 12907-12912, 2002)
+deRoosPersson5                    Bifurcation analysis of the model from de Roos & Persson (PNAS 99(20), 12907-12912, 2002) with individuals born with one of 5 different states at birth
+deRoosPerssonDynamics             Simulation of the ecological dynamics of the tri-trophic size-structured model analyzed in de Roos & Persson (PNAS 99(20), 12907-12912, 2002) from 3 different initial states
+Indet_growth                      Evolutionary analysis of a size-structured consumer-resource model with indeterminate growth in body size
+Indet_growth5                     Evolutionary analysis of a size-structured consumer-resource model with indeterminate growth in body size with individuals born with one of 5 different states at birth
+StageStructuredBiomass            Equilibrium analysis of the size-structured consumer-resource model on which the stage-structured biomass model is based (this model is implemented in R)
