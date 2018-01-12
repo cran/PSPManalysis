@@ -6,7 +6,7 @@
      Train software of a physiologically structured population model that is specificied in the type of
      header file used for the PSPManalysis package.
 
-  Last modification: AMdR - Dec 15, 2017
+  Last modification: AMdR - Jan 12, 2018
 */
 
 #define PSPMECODYN                1                                                 // File identification
@@ -1803,36 +1803,43 @@ SEXP PSPMecodyn(SEXP moduleName, SEXP initState, SEXP timePars, SEXP bifPars, SE
 
   //============================== Process the parameters argument ===================================================================
 
+  strcpy(parstring, "NULL");
   parsdefined = 0;
   ncols       = length(parVals);
-  if (isReal(parVals) && (ncols == PARAMETER_NR))
+  if (isReal(parVals))
     {
       dblpnt = REAL(parVals);
-      memcpy(parameter, dblpnt, ncols*sizeof(double));
-      parsdefined = 1;
-    }
-  else if (ncols)
-    warning("\nParameter argument ignored as it is not a row vector of length PARAMETER_NR\n\n");
-
-  if (ncols)
-    {
-      strcpy(parstring, "c(");
-      for (ii = 0; ii < ncols; ii++)
+      if (ncols == PARAMETER_NR)
         {
-          if (ii) strcat(parstring, ", ");
-          sprintf(tmpstr, "%.6G", dblpnt[ii]);
-          strcat(parstring, tmpstr);
+          memcpy(parameter, dblpnt, ncols*sizeof(double));
+          parsdefined = 1;
         }
-      strcat(parstring, ")");
+
+      if (ncols)
+        {
+          strcpy(parstring, "c(");
+          for (ii = 0; ii < ncols; ii++)
+            {
+              if (ii) strcat(parstring, ", ");
+              sprintf(tmpstr, "%.6G", dblpnt[ii]);
+              strcat(parstring, tmpstr);
+            }
+          strcat(parstring, ")");
+        }
     }
-  else
-    strcpy(parstring, "NULL");
+
+  if (ncols && (!parsdefined))
+    warning("\nParameter argument ignored as it is not a real-valued vector of length PARAMETER_NR\n\n");
 
   //============================== Process the bifurcation parameter argument ========================================================
 
+  strcpy(bifstring, "NULL");
   BifurcationRun = 0;
   ncols  = length(bifPars);
-  if (isReal(bifPars) && (ncols == 6))
+
+  if (ncols && ((!isReal(bifPars)) || (ncols != 6)))
+    error("\nBifurcation settings argument is not a real-valued vector of length 6\n\n");
+  else if (ncols)
     {
       dblpnt = REAL(bifPars);
       BifParIndex             = lrint(dblpnt[0]);
@@ -1862,12 +1869,7 @@ SEXP PSPMecodyn(SEXP moduleName, SEXP initState, SEXP timePars, SEXP bifPars, SE
       BifStateOutput = min(BifStateOutput, max_time);
 
       BifurcationRun = 1;
-    }
-  else if (ncols)
-    error("\nBifurcation settings argument must be a vector of length 6\n\n");
 
-  if (ncols)
-    {
       strcpy(bifstring, "c(");
       for (ii = 0; ii < ncols; ii++)
         {
@@ -1877,44 +1879,36 @@ SEXP PSPMecodyn(SEXP moduleName, SEXP initState, SEXP timePars, SEXP bifPars, SE
         }
       strcat(bifstring, ")");
     }
-  else
-    strcpy(bifstring, "NULL");
 
   //============================== Process the time parameter argument ===============================================================
 
+  strcpy(timestring, "NULL");
   ncols  = length(timePars);
-  if (isReal(timePars) && (ncols == 4))
-    {
-      dblpnt        = REAL(timePars);
-      cohort_limit  = dblpnt[0];
-      delt_out      = dblpnt[1];
-      state_out     = dblpnt[2];
-      max_time      = dblpnt[3];
-      if (cohort_limit <= 0.0)
-        error("\nCohort cylce time should be positive!\n\n");
-      if (delt_out < cohort_limit)
-        error("\nInterval for data output to .out file should be larger than or equal to cohort cylce time!\n\n");
-      if ((state_out != 0) && (state_out < cohort_limit))
-        error("\nInterval for complete state output to .csb file should either be 0 or larger than or equal to cohort cylce time!\n\n");
-      if (max_time < cohort_limit)
-        error("\nMaximum integration time should be larger than cohort or equal to cylce time!\n\n");
-    }
-  else if (ncols)
-    error("\nTime settings argument must be a vector of length 4\n\n");
 
-  if (ncols)
+  if ((!isReal(timePars)) || (ncols != 4))
+    error("\nTime settings argument is not a real-valued vector of length 4\n\n");
+
+  dblpnt = REAL(timePars);
+  cohort_limit  = dblpnt[0];
+  delt_out      = dblpnt[1];
+  state_out     = dblpnt[2];
+  max_time      = dblpnt[3];
+  if (cohort_limit <= 0.0)
+    error("\nCohort cylce time should be positive!\n\n");
+  if (delt_out < cohort_limit)
+    error("\nInterval for data output to .out file should be larger than or equal to cohort cylce time!\n\n");
+  if ((state_out != 0) && (state_out < cohort_limit))
+    error("\nInterval for complete state output to .csb file should either be 0 or larger than or equal to cohort cylce time!\n\n");
+  if (max_time < cohort_limit)
+    error("\nMaximum integration time should be larger than cohort or equal to cylce time!\n\n");
+  strcpy(timestring, "c(");
+  for (ii = 0; ii < ncols; ii++)
     {
-      strcpy(timestring, "c(");
-      for (ii = 0; ii < ncols; ii++)
-        {
-          if (ii) strcat(timestring, ", ");
-          sprintf(tmpstr, "%.6G", dblpnt[ii]);
-          strcat(timestring, tmpstr);
-        }
-      strcat(timestring, ")");
+      if (ii) strcat(timestring, ", ");
+      sprintf(tmpstr, "%.6G", dblpnt[ii]);
+      strcat(timestring, tmpstr);
     }
-  else
-    strcpy(timestring, "NULL");
+  strcat(timestring, ")");
 
   //============================== Process the initial state argument ================================================================
 

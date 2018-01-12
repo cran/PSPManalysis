@@ -1,4 +1,4 @@
-7b25fed845f7cbb69d4374fb1aaaf1c5 *DESCRIPTION
+9fb12f6ac3b00513b091a9a054524628 *DESCRIPTION
 79afb300e0c1a70442808e1c76966955 *NAMESPACE
 433d249664cd58053de79ec8358470cd *R/PSPMclean.R
 4570a327e08371bd159c1cca76595ec1 *R/PSPMdemo.R
@@ -15,7 +15,7 @@ be1d1d6ab85a3a0565c5657463309a56 *R/PSPMhelp.R
 f293f01a07b1d7649db1cb2571cdd589 *demo/00Index
 e52f7ae801b38ae67e5b48ea86c31b17 *demo/All.R
 80a6726942cead9118adf75596443352 *demo/Indet_growth.R
-28b2f37de4435dee46d7147c4233b6c5 *demo/Indet_growth5.R
+a45824a79dda4d8cb9ad8d13a5d4cb0c *demo/Indet_growth5.R
 504705df89a0404739b85d451a85e186 *demo/KlanjscekDEB.R
 1f42b3da030cee94a969f115eba71c77 *demo/MartinsDEB.R
 57b140eab6ee1ee1c4e33867386b31f3 *demo/Medfly.R
@@ -26,11 +26,11 @@ ce5ed77127253af013d8ba7b0d1c6e5b *demo/StageStructuredBiomass.R
 42c69a29ecd9097cfd671a6db66c493f *demo/deRoosPerssonDynamics.R
 56de10692ecb0881f156da6ce1061eac *inst/C/PSPMRinterface.h
 eae80988cfadbee566be393ad8230591 *inst/C/PSPMdemo.c
-6ecc86318a429c5116803b53904c7191 *inst/C/PSPMecodyn.c
+12c9001af6253bafb86dfa2ab6b06812 *inst/C/PSPMecodyn.c
 0eabf174fa69eda1d5ffe37ee2cb838d *inst/C/PSPMequi.c
 407035ae42a7a8dde5f50c044af921b2 *inst/C/PSPMevodyn.c
 0d2f22d9a01c5974a4f6aa6cd282bbf2 *inst/C/PSPMind.c
-a0de285cbf7cd34f6a7bf48009478c53 *inst/C/biftest.c
+1ff349cea59bdaa6adfb0c9bc68ab21e *inst/C/biftest.c
 3dce488e433d563faa93ec958089ada8 *inst/C/curve.c
 5c1d49aea59613f65bb80a0defb5705f *inst/C/defaults.h
 8abf581d8471d31e27cb12ba18d6620b *inst/C/dopri5.h
@@ -85,13 +85,12 @@ a379bd03b9af7d227c69e09479c25e80 *man/PSPMind.Rd
 acb6074e6a38219fed4495f9c2f45230 *src/csb2rlist.c
 a81ef8ef847d2671df7783f2d3c253b2 *tests/testthat.R
 1de52246f4320658b570cc31c64c38c9 *tests/testthat/Indet_growth.h
-12db81f3a28dd1834bd4798ecc704fbd *tests/testthat/Initstate.csb
 fdc58d2f93a292e26994039d218a32b6 *tests/testthat/Medfly.h
 fd2868e07e57e88f66957fcb4fb150c8 *tests/testthat/PNAS2002.h
 1d3bdc259c970a47eebae1ca0d96c83c *tests/testthat/PNAS2002_5bs.h
 673d67b2e54755ff4ff2586f44e11e01 *tests/testthat/test.01-Medfly.R
-f482ed2bfbede687623e9219d79491c5 *tests/testthat/test.02-PNAS2002.R
-529a36a29f61839cff05843f4b819cda *tests/testthat/test.03-Indet_growth.R
+40fa26303cd469d5bcbed743a99edd4c *tests/testthat/test.02-PNAS2002.R
+25f7102cd50b09c189974ef033be0553 *tests/testthat/test.03-Indet_growth.R
 677aa1f8810037bacd55db1b4690d890 *tests/testthat/test.04-PNAS2002_5bsind.R
 de9a233838d2f680824bbce169e81404 *vignettes/LOGO-ERC.jpg
 bda759b484eb871a76d10a30f8b08fdb *vignettes/PDEtoIntegralDiagram_Slide2.png

@@ -22,7 +22,7 @@
     You should have received a copy of the GNU General Public License
     along with this software. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Jul 09, 2017
+    Last modification: AMdR - Jan 12, 2018
 ***/
 #ifndef BIFTEST
 #define BIFTEST
@@ -672,8 +672,12 @@ int ESSclassify(const int pntdim, double *pnt, int (*fnc)(double *, double *), d
 
   // Compute the Jacobian for general use in FindPoint() in the loop below
   Jacobian(pntdim, y, pntdim - 1, Jac, fnc, FORWARD);
+
+  // FindPoint() below only needs Jacobian of system without evolutionary parameters
+  // Move appropriate elements of Jacobian into right place, overwriting derivatives w.r.t. evolutionary parameters
+  // memmove() used instead of memcpy() because src and dest overlap (undefined behavior in memcpy)
   for (i = 1; i < (pntdim - evoParsDim); i++)
-    memcpy(Jac + i*(pntdim - evoParsDim - 1), Jac + i*(pntdim - 1), (pntdim - evoParsDim - 1)*sizeof(double));
+    memmove(Jac + i*(pntdim - evoParsDim - 1), Jac + i*(pntdim - 1), (pntdim - evoParsDim - 1)*sizeof(double));
 
   // Function call to set all parameters to their appropriate values, preserve these values in rhs0
   if ((*fnc)(y, rhs0) == FAILURE)

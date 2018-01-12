@@ -25,8 +25,8 @@ cmd = paste0('output6 <- PSPMequi("', modelname, '", "LP", c(output3$bifpoints[1
 eval(parse(text=cmd))
 
 # Do the numerical integration using the EBT
-init <- csbread("Initstate", 1)
-PSPMecodyn(modelname, init, c(1, 1, 10, 500), force = TRUE)
+initstate <- list(Environment = c(1.561276e-04, 1.270327e-04, 4.008016e-06), Pop00 = matrix(c(0.001, 0, 7.0, 1.0E-5, 300, 111), ncol = 3, byrow = TRUE))
+PSPMecodyn(modelname, initstate, c(1, 1, 10, 500), options = c("report", "50"), force = TRUE)
 
 # Stop the clock
 tt <- proc.time() - ptm

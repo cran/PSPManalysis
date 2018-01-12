@@ -6,7 +6,7 @@ eval(parse(text=cmd))
 
 cat('', '> output1$bifpoints', sep='\n'); print(output1$bifpoints); cat('', '> output1$biftypes', sep='\n'); print(output1$biftypes)
 
-cat("\n\n\nContinuation of the ESS value of the ingestion exponentof the structured population as a function of the first bifurcation parameter (maintenance exponent)\n\n")
+cat("\n\n\nContinuation of the ESS value of the ingestion exponent of the structured population as a function of the first bifurcation parameter (maintenance exponent)\n\n")
 cmd = c(paste0('output2a <- PSPMequi("', modelname, '", "ESS", c(1.0, output1$bifpoints[c(2, 3, 1)]), -0.1, c(9, 0.5, 2.0, 6, 0.5, 2.0), options=c("popEVO", "0"))'), paste0('output2b <- PSPMequi("', modelname, '", "ESS", c(1.0, output1$bifpoints[c(2, 3, 1)]), 0.1, c(9, 0.5, 2.0, 6, 0.5, 2.0), options=c("popEVO", "0"))')) 
 eval(parse(text=cmd))
 

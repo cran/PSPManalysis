@@ -32,7 +32,7 @@ mtext("Consumer biomass", side=4, line=3.5, cex=1.3)
 points(output1$bifpoints[,1], output1$bifpoints[,5]+output1$bifpoints[,6], col="red", pch=8, lwd=2)
 text(output1$bifpoints[,1], output1$bifpoints[,5]+output1$bifpoints[,6], output1$biftype, pos=1, offset=0.35)
 
-cat("\n\n\nContinuation of the ESS value of the ingestion exponentof the structured population as a function of the first bifurcation parameter (maintenance exponent)\n\n")
+cat("\n\n\nContinuation of the ESS value of the ingestion exponent of the structured population as a function of the first bifurcation parameter (maintenance exponent)\n\n")
 cmd = c(paste0('output2a <- PSPMequi("', modelname, '", "ESS", c(1.0, output1$bifpoints[c(2, 3, 1)]), -0.1, c(9, 0.5, 2.0, 6, 0.5, 2.0), options=c("popEVO", "0"))'), paste0('output2b <- PSPMequi("', modelname, '", "ESS", c(1.0, output1$bifpoints[c(2, 3, 1)]), 0.1, c(9, 0.5, 2.0, 6, 0.5, 2.0), options=c("popEVO", "0"))'))
 
 str = readline(paste0("\n> ", cmd, "\n\nPress any key to continue....\n"))
