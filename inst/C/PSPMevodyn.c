@@ -26,7 +26,7 @@
     You should have received a copy of the GNU General Public License
     along with PSPManalysis. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Oct 25, 2017
+    Last modification: AMdR - May 05, 2018
 ***/
 
 #define PSPMEVODYN                1
@@ -134,7 +134,9 @@ static double                     CohortMin[POPULATION_NR], CohortMax[POPULATION
 static int                        TestRun       = 0;
 static int                        DoStateOutput = 0;
 static int                        SortIndex     = 0;
+static int                        ReportLevel   = 1;
 static int                        evoParsIndex[PARAMETER_NR];
+static int                        evoPopIndex[PARAMETER_NR];
 
 // Global variables for other purposes
 
@@ -396,7 +398,7 @@ int Equation(double *argument, double *result)
               STDOUT("\nPop. #%2d - Bstate %2d - (Final):", p, b);
               for (i = 0; i < IStateDim; i++) STDOUT("%15.6G", FinalIstate(b, p, i));
               STDOUT("%15.6G", exp(FinalIstate(b, p, IStateDim)));
-              STDOUT("%15.6G", ASUM(BirthStateNr[p], FinalIstatePnt(b, p, CohortDim), 1));
+              STDOUT("%15.6G", SUM(BirthStateNr[p], FinalIstatePnt(b, p, CohortDim), 1));
               for (i = 0; i < InteractDim; i++) STDOUT("%18.6G", Beq[p]*FinalIstate(b, p, CohortDim + BirthStateNr[p] + i));
             }
           if (BirthStateNr[p] > 1)
@@ -414,12 +416,12 @@ int Equation(double *argument, double *result)
                       STDOUT("%15.6G", NextGenMatrix[b*BirthStateNr[p] + j]);
                     }
                   STDOUT(" |");
-                  STDOUT("%15.6G", ASUM(BirthStateNr[p], NextGenMatrix + b*BirthStateNr[p], 1));
+                  STDOUT("%15.6G", SUM(BirthStateNr[p], NextGenMatrix + b*BirthStateNr[p], 1));
                   STDOUT("\n");
                 }
               for (j = 0; j < BirthStateNr[p]; j++) STDOUT("  -------------");
               STDOUT("\n");
-              for (j = 0; j < BirthStateNr[p]; j++) STDOUT("%15.6G", ASUM(BirthStateNr[p], NextGenMatrix + j, BirthStateNr[p]));
+              for (j = 0; j < BirthStateNr[p]; j++) STDOUT("%15.6G", SUM(BirthStateNr[p], NextGenMatrix + j, BirthStateNr[p]));
 
               STDOUT("\n\n\nEig(M) : %12.6E", R0[p]);
 
@@ -521,7 +523,7 @@ void ComputeCurve(const int argc, char **argv)
   double        oldpars[ParameterNr], evoparvec[ParameterNr], selectdiff[ParameterNr];
   double        oldpoint[MaxPntDim], evopntvec[MaxPntDim];
   double        Jac[MaxPntDim*MaxPntDim], JacCopy[MaxPntDim*MaxPntDim], dFdp[ParameterNr*MaxPntDim];
-  double        y[MaxPntDim], rhs[MaxPntDim], pardif, BeqPopEvo, oldcurvestep;
+  double        y[MaxPntDim], rhs[MaxPntDim], pardif, oldcurvestep;
   char          csbname[MAX_STR_LEN], errname[MAX_STR_LEN], outname[MAX_STR_LEN];
   char          tmpstr[MAX_STR_LEN];
   struct stat   buffer;
@@ -637,31 +639,55 @@ void ComputeCurve(const int argc, char **argv)
           fprintf(outfile, "  %-13G", parameter[i]);
         }
       fprintf(outfile, "\n#\n");
-      fprintf(outfile, "# Index of structured population for evolutionary dynamics   : %d\n", PopEVOIndex);
+      
       for (i = 0; i < evoParsDim; i++)
-        fprintf(outfile, "# Index and name of evolution parameter #%d                   : %2d (%s)\n", i + 1, evoParsIndex[i],
-                parameternames[evoParsIndex[i]]);
+        {
+          fprintf(outfile, "# Index and name of evolution parameter #%d                       : %d (%s)\n", i + 1, evoParsIndex[i],
+                  parameternames[evoParsIndex[i]]);
+          fprintf(outfile, "# Index of structured population for which parameter #%d evolves  : %d\n", i + 1, evoPopIndex[i]);
+        }
       fprintf(outfile, "#\n");
 #if !defined(MATLAB_MEX_FILE) && !defined(OCTAVE_MEX_FILE) && !defined(R_PACKAGE)   // In command-line model follow C convention of 0 start index
       colnr = 0;
 #else
       colnr = 1;
 #endif
-      fprintf(outfile, "# %2d:Evol.time", colnr++);
-      for (i = 0; i < EnvironDim; i++) fprintf(outfile, "        %2d:E[%2d]", colnr++, i);
-      for (i = 0; i < PopulationNr; i++) fprintf(outfile, "        %2d:b[%2d]", colnr++, i);
-      for (i = 0; i < evoParsDim; i++)
+      sprintf(tmpstr, "%d:Evol.time", colnr++);
+      fprintf(outfile, "#%13s", tmpstr);
+      for (i = 0; i < EnvironDim; i++)
         {
-          sprintf(tmpstr, "%2d:%s", colnr++, parameternames[evoParsIndex[i]]);
-          fprintf(outfile, " %15s", tmpstr);
+          sprintf(tmpstr, "%d:E[%d]", colnr++, i);
+          fprintf(outfile, "%16s", tmpstr);
         }
       for (i = 0; i < PopulationNr; i++)
-        for (j = 0; j < InteractDim; j++) fprintf(outfile, "    %2d:I[%2d][%2d]", colnr++, i, j);
+        {
+          sprintf(tmpstr, "%d:b[%d]", colnr++, i);
+          fprintf(outfile, "%16s", tmpstr);
+        }
+      for (i = 0; i < evoParsDim; i++)
+        {
+          sprintf(tmpstr, "%d:%s", colnr++, parameternames[evoParsIndex[i]]);
+          fprintf(outfile, "%16s", tmpstr);
+        }
+      for (i = 0; i < PopulationNr; i++)
+        for (j = 0; j < InteractDim; j++)
+          {
+            sprintf(tmpstr, "%d:I[%d][%d]", colnr++, i, j);
+            fprintf(outfile, "%16s", tmpstr);
+          }
       for (i = 0; i < EnvironDim; i++)
-        if (EnvironmentType[i] == PERCAPITARATE) fprintf(outfile, "     %2d:pcgE[%2d]", colnr++, i);
-      for (i = 0; i < CurPopulationNr; i++) fprintf(outfile, "       %2d:R0[%2d]", colnr++, i);
-      fprintf(outfile, "     %2d:RHS norm\n", colnr++);
-      fprintf(outfile, "#\n");
+        if (EnvironmentType[i] == PERCAPITARATE)
+          {
+            sprintf(tmpstr, "%d:pcgE[%d]", colnr++, i);
+            fprintf(outfile, "%16s", tmpstr);
+          }
+      for (i = 0; i < CurPopulationNr; i++)
+        {
+          sprintf(tmpstr, "%d:R0[%d]", colnr++, i);
+          fprintf(outfile, "%16s", tmpstr);
+        }
+      sprintf(tmpstr, "%d:RHS norm\n", colnr++);
+      fprintf(outfile, "%17s", tmpstr);
       fflush(outfile);
     }
 
@@ -677,7 +703,7 @@ void ComputeCurve(const int argc, char **argv)
 
           if (retval == SUCCES) break;
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE) || defined(R_PACKAGE)
-          if (checkInterrupt()) return;
+          if (checkInterrupt()) break;
 #endif
 
           NumProcError(__FILE__, __LINE__, retval);
@@ -752,20 +778,23 @@ void ComputeCurve(const int argc, char **argv)
           for (i = 0; i < evoParsDim; i++) ReportMsg("%16.8E  ", parameter[evoParsIndex[i]]);
           ReportMsg("\n");
 
+          if (((pntnr + 1) % ReportLevel) == 0)
+            {
 #if (defined(R_PACKAGE))
-          STDOUT("%9f", evoTime);
-          for (i = 0; i < pntdim; i++) STDOUT(",%15.8E", point[i]*pnt_scale[i]);
-          for (i = 0; i < evoParsDim; i++) STDOUT(",%15.8E", parameter[evoParsIndex[i]]);
+              STDOUT("%9f", evoTime);
+              for (i = 0; i < pntdim; i++) STDOUT(",%15.8E", point[i]*pnt_scale[i]);
+              for (i = 0; i < evoParsDim; i++) STDOUT(",%15.8E", parameter[evoParsIndex[i]]);
 #else
-          STDOUT("%9f  ", evoTime);
-          for (i = 0; i < pntdim; i++) STDOUT("%16.8E", point[i]*pnt_scale[i]);
-          for (i = 0; i < evoParsDim; i++) STDOUT("%16.8E", parameter[evoParsIndex[i]]);
+              STDOUT("%9f  ", evoTime);
+              for (i = 0; i < pntdim; i++) STDOUT("%16.8E", point[i]*pnt_scale[i]);
+              for (i = 0; i < evoParsDim; i++) STDOUT("%16.8E", parameter[evoParsIndex[i]]);
 #endif
-          STDOUT("\n");
+              STDOUT("\n");
 #if (defined(R_PACKAGE))
-          R_FlushConsole();
-          R_ProcessEvents();
+              R_FlushConsole();
+              R_ProcessEvents();
 #endif
+            }
 
           // Compute the new direction of the evolutionary step
           COPY(pntdim, point, 1, y, 1);
@@ -773,7 +802,6 @@ void ComputeCurve(const int argc, char **argv)
           memset((void *)evoparvec, 0, ParameterNr*sizeof(double));
           memset((void *)selectdiff, 0, ParameterNr*sizeof(double));
           memset((void *)evopntvec, 0, MaxPntDim*sizeof(double));
-          BeqPopEvo = Beq[PopEVOIndex];
           Jacobian(pntdim, y, pntdim, Jac, Equation, CENTRAL);
           for (i = 0, TotalAtBoundary = 0; i < evoParsDim; i++)
             {
@@ -802,7 +830,7 @@ void ComputeCurve(const int argc, char **argv)
                     }
                 }
 
-              selectdiff[i] =*(dFdp + i*pntdim + R0ResIndex[PopEVOIndex]);
+              selectdiff[i] =*(dFdp + i*pntdim + R0ResIndex[evoPopIndex[i]]);
 
               // Solve the linear system dFdp + dFdE*dEdp = 0
               COPY(pntdim*pntdim, Jac, 1, JacCopy, 1);
@@ -830,7 +858,7 @@ void ComputeCurve(const int argc, char **argv)
                   // in all evolutionary parameters, where the weighing factors are given the corresponding row in the
                   // variance/covariance matrix
                   for (j = 0; j < evoParsDim; j++) evoparvec[evoParsIndex[i]] += Covariances[i*evoParsDim + j]*selectdiff[j];
-                  evoparvec[evoParsIndex[i]] *= BeqPopEvo;
+                  evoparvec[evoParsIndex[i]] *= Beq[evoPopIndex[i]];
 
                   // The final estimate of the next solution point is a linear combination of all tangent vectors
                   // for the different evolutionary parameters
@@ -842,7 +870,7 @@ void ComputeCurve(const int argc, char **argv)
           Equation(y, rhs);
 
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE) || defined(R_PACKAGE)
-          if (checkInterrupt()) return;
+          if (checkInterrupt()) break;
 #endif
 
           // Signal curve stop if one of the components has become negative or all of the evolutionary parameters are out of bounds
@@ -865,7 +893,7 @@ void ComputeCurve(const int argc, char **argv)
           if (CurveEnd || Converged) break;
 
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE) || defined(R_PACKAGE)
-          if (checkInterrupt()) return;
+          if (checkInterrupt()) break;
 #endif
 
           // Store info on current solution point
@@ -929,6 +957,10 @@ void InitialiseVars(void)
   Stepreduce = 1;
   strcpy(runname, "");
 
+#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE) || defined(R_PACKAGE)
+  CtrlCPressed = 0;
+#endif
+
   // Get the machine precisions
   epsMach = dlamch("Epsilon");
 
@@ -941,10 +973,14 @@ void InitialiseVars(void)
 
   PopBPIndex        = 0;
   EnvBPIndex        = 0;
-  PopEVOIndex       = -1;
   Bifparone         = -1;
   Bifpartwo         = -1;
 
+  TestRun       = 0;
+  DoStateOutput = 0;
+  SortIndex     = 0;
+  ReportLevel   = 1;
+  
   CurveType         = EVODYN;
   
   eVarPntr          = Evar;
@@ -960,8 +996,9 @@ void InitialiseVars(void)
 #else
   for (i = 0; i < MaxPntDim; i++) pntmin[i] = 0.0;
 #endif
-  for (i = 0; i < ParameterNr; i++) evoParMin[i] = -SAFETY*DBL_MAX;
-  for (i = 0; i < ParameterNr; i++) evoParMax[i] = SAFETY*DBL_MAX;
+  for (i = 0; i < ParameterNr; i++) evoParMin[i]    = -SAFETY*DBL_MAX;
+  for (i = 0; i < ParameterNr; i++) evoParMax[i]    = SAFETY*DBL_MAX;
+  for (i = 0; i < ParameterNr; i++) evoPopIndex[i]  = -1;
 
   // The following variables can be modified by the user with optional #define statements 
   LogMinSurvival      = log(MIN_SURVIVAL);
@@ -979,6 +1016,8 @@ void InitialiseVars(void)
   Odesolve_Abs_Err    = ODESOLVE_ABS_ERR;
   Odesolve_Rel_Err    = ODESOLVE_REL_ERR;
   Odesolve_Func_Tol   = ODESOLVE_FUNC_TOL;
+
+  Time                = 0;
 
   return;
 }
@@ -1017,21 +1056,20 @@ static void Usage(char *progname)
   strcat(varstr, " Par.1 ... Par.n");
 
   fprintf(stderr, "Usage:\t%s [<options>]%s %s %s", progname, varstr, "<max. evol. time step> <max. evol. time>",
-          "<index par.1> <min. par.1> <max. par.1> .... <index par.n> <min. par.n> <max. par.n>");
+          "<pop. nr.1> <index par.1> <min. par.1> <max. par.1> .... <pop. nr.n> <index par.n> <min. par.n> <max. par.n>");
   fprintf(stderr, "\n\n%s\n\n", desc);
   fprintf(stderr, "Evolutionary time step and maximum evolutionary time have to be positive, all indices of evolutionary ");
   fprintf(stderr, "parameters have to be in the appropriate range\n");
   fprintf(stderr, "Add further quadruple values for each parameter that should evolve\n\n");
   fprintf(stderr, "Possible options are:\n\n");
-  fprintf(stderr, "\t-popEVO  <index>  : Index of structured population for which to simulate evolutionary dynamics\n");
   fprintf(stderr, "\t-envZE   <index>  : Index of environment variable in trivial equilibrium (can be used multiple times)\n");
   fprintf(stderr, "\t-popZE   <index>  : Index of structured population in trivial equilibrium (can be used multiple times)\n");
   fprintf(stderr, "\t-evoPars <number> : Number of life history parameters of structured population that evolve\n");
   fprintf(stderr, "\t-isort   <index>  : Index of i-state variable to use as ruling variable for sorting the structured populations\n");
+  fprintf(stderr, "\t-report  <value>  : Interval of reporting computed output to console. Minimum value of 1 implies output of every point.\n");
   fprintf(stderr, "\t-test             : Perform only a single integration over the life history, reporting dynamics of survival, R0,\n");
   fprintf(stderr, "\t                    i-state and interaction variables\n");
   fprintf(stderr, "\nThe value for -evoPars has to be set on the command-line\n");
-  fprintf(stderr, "The value for -popEVO defaults to 0 unless set on the command-line\n");
   fprintf(stderr, "The values for -envZE and -popZE are undefined unless set on the command-line\n");
   fprintf(stderr, "\n");
 
@@ -1084,24 +1122,6 @@ int main(int argc, char **argv)
       if (!strcmp(*argpnt1, "-?") || !strcmp(*argpnt1, "--help"))
         {
           Usage(argv[0]);
-        }
-      else if (!strcmp(*argpnt1, "-popEVO"))
-        {
-          argpnt1++;
-          if (!*argpnt1)
-            {
-              fprintf(stderr, "\nIndex of structured population for evolutionary dynamics simulation not specified!\n");
-              Usage(argv[0]);
-            }
-          tmpint = atoi(*argpnt1);
-          if ((tmpint < 0) || (tmpint >= PopulationNr))
-            {
-              fprintf(stderr,
-                      "\nIndex of structured population for evolutionary dynamics simulation (%d) not in the appropriate range (0 <= i < %d)!\n",
-                      tmpint, PopulationNr);
-              Usage(argv[0]);
-            }
-          PopEVOIndex = tmpint;
         }
       else if (!strcmp(*argpnt1, "-evoPars"))
         {
@@ -1176,6 +1196,17 @@ int main(int argc, char **argv)
             }
           SortIndex = tmpint;
         }
+      else if (!strcmp(*argpnt1, "-report"))
+        {
+          argpnt1++;
+          if (!*argpnt1)
+            {
+              fprintf(stderr, "\nNo index of i-state variable specified for argument -report!\n");
+              Usage(argv[0]);
+            }
+          tmpint = atoi(*argpnt1);
+          ReportLevel = max(tmpint, 1);
+        }
       else if (!strcmp(*argpnt1, "-cvf"))
         {
           argpnt1++;
@@ -1216,11 +1247,6 @@ int main(int argc, char **argv)
       argpnt1++;
     }
 
-  if (PopEVOIndex == -1)
-    {
-      fprintf(stderr, "\nIndex of the evolving structured population not set with the 'popEVO' option!\nDefaulting to popEVO = 0\n\n");
-      PopEVOIndex = 0;
-    }
   if (evoParsDim <= 0)
     {
       fprintf(stderr, "\nNumber of evolving life history parameters should be larger than 0! Define with option '-evoPars'.\n");
@@ -1250,10 +1276,10 @@ int main(int argc, char **argv)
         R0ResIndex[i] = rind++;
     }
 
-  if ((my_argc - pntdim - evoParsDim - 3) %
-      3)                                       // pntdim variables, evoParsDim parameter values, 2 evolutionary time settings, n*3 evolutionary parameter settings
+  // Program name, pntdim variables, evoParsDim parameter values, 2 evolutionary time settings, n*4 evolutionary parameter settings
+  if ((my_argc - pntdim - evoParsDim - 3) % 4)
     {
-      fprintf(stderr, "\nEvolutionary parameter settings are not triplets!\n\n");
+      fprintf(stderr, "\nEvolutionary parameter settings are not quadruplets!\n\n");
       Usage(argv[0]);
     }
 
@@ -1278,6 +1304,16 @@ int main(int argc, char **argv)
   epd = 0;
   while (j < my_argc)
     {
+      tmpint = atoi(my_argv[j++]);
+      if ((tmpint < 0) || (tmpint >= PopulationNr))
+        {
+          fprintf(stderr,
+                  "\nIndex of structured population for evolutionary dynamics simulation (%d) not in the appropriate range (0 <= i < %d)!\n",
+                  tmpint, PopulationNr);
+          Usage(argv[0]);
+        }
+      evoPopIndex[epd] = tmpint;
+
       tmpint = atoi(my_argv[j++]);
       if ((tmpint < 0) || (tmpint >= ParameterNr))
         {
@@ -1386,7 +1422,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         "<evolution settings>", "Index, minimum and maximum of parameters to evolve (N*3 values with N the number of evolving parameters)",
         "<covariance settings>", "Variance-covariance matrix of mutations in vector format. (NxN values with N the number of evolving parameters)",
         "<parameters>", "Array of parameter values to use (empty array or of same length as parameter array)", "<options>",
-        "Possible options: popEVO, envZE, popZE, test or isort");
+        "Possible options: envZE, popZE, test or isort");
 
   // check for proper number of output variables
   if (nlhs != 1) mexErrMsgIdAndTxt("MATLAB:PSPMevodyn:nlhs", "\nA single output argument is required!");
@@ -1407,8 +1443,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       cell_element_ptr = mxGetCell(prhs[irhs], i);
       buflen           = mxGetN(cell_element_ptr)*sizeof(mxChar) + 1;
       status           = mxGetString(cell_element_ptr, optname, buflen);
-      if (!((!strcmp(optname, "popEVO")) || (!strcmp(optname, "envZE")) || (!strcmp(optname, "popZE")) || (!strcmp(optname, "test")) ||
-            (!strcmp(optname, "isort"))))
+      if (!((!strcmp(optname, "envZE")) || (!strcmp(optname, "popZE")) || (!strcmp(optname, "test")) ||
+            (!strcmp(optname, "isort")) || (!strcmp(optname, "report"))))
         mexErrMsgIdAndTxt("MATLAB:PSPMevodyn:options", "\nIllegal option %s!", optname);
 
       if (!strcmp(optname, "test"))
@@ -1442,16 +1478,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       strcat(optstring, optval);
       strcat(optstring, "'");
 
-      if (!strcmp(optname, "popEVO"))
-        {
-          tmpint = atoi(optval);
-          if ((tmpint < 0) || (tmpint >= PopulationNr))
-            mexErrMsgIdAndTxt("MATLAB:PSPMevodyn:options",
-                              "\nIndex of structured population for evolutionary dynamics (%d) not in the appropriate range (0 <= i < %d)!", tmpint,
-                              PopulationNr);
-          PopEVOIndex = tmpint;
-        }
-      else if (!strcmp(optname, "envZE"))
+      if (!strcmp(optname, "envZE"))
         {
           tmpint = atoi(optval);
           if ((tmpint < 0) || (tmpint >= EnvironDim))
@@ -1482,16 +1509,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                               tmpint, IStateDim);
           SortIndex = tmpint;
         }
+      else if (!strcmp(optname, "report"))
+        {
+          tmpint = atoi(optval);
+          ReportLevel = max(tmpint, 1);
+        }
     }
   strcat(optstring, "}");
-
-  if (PopEVOIndex == -1)
-    {
-      mexWarnMsgIdAndTxt("MATLAB:PSPMequi:options",
-                         "\nIndex of the evolving structured population not set with the 'popEVO' option!\nDefaulting to popEVO = 0\n\n",
-                         PopulationNr);
-      PopEVOIndex = 0;
-    }
 
   // Determine the index of the R0 values of the structured populations in the result vector and the dimension of the point vector
   for (i = 0, rind = 0; i < EnvironDim; i++)
@@ -1543,16 +1567,22 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   nrows = mxGetM(prhs[irhs]);
   ncols = mxGetN(prhs[irhs]);
 
-  if (!ncols || (ncols % 3) || (nrows != 1))
+  if (!ncols || (ncols % 4) || (nrows != 1))
     mexErrMsgIdAndTxt("MATLAB:PSPMevodyn:evopars",
-                      "\nEvolutionary parameter settings needs to be multiple of 3: index, minimum and maximum of the parameter!");
+                      "\nEvolutionary parameter settings needs to be multiple of 4: population number, index, minimum and maximum of the parameter!");
 
   inputVals = mxGetPr(prhs[irhs]);
 
   evoParsDim = 0;
-  for (i = 0; i < ncols; i += 3)
+  for (i = 0; i < ncols; i += 4)
     {
       tmpint = (int)floor(inputVals[i] + MICRO);
+      if ((tmpint < 0) || (tmpint >= PopulationNr))
+        mexErrMsgIdAndTxt("MATLAB:PSPMevodyn:evopars", "\nIndex of structured population for evolutionary simulations (%d) not in the appropriate range (0 <= i < %d)!\n\n",
+                          tmpint, PopulationNr);
+      evoPopIndex[evoParsDim] = tmpint;
+      
+      tmpint = (int)floor(inputVals[i + 1] + MICRO);
       if ((tmpint < 0) || (tmpint >= ParameterNr))
         mexErrMsgIdAndTxt("MATLAB:PSPMevodyn:evopars", "\nIndex of evolutionary parameter #%d (%d) not in the appropriate range (0 <= i < %d)!", i,
                           tmpint, ParameterNr);
@@ -1562,8 +1592,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           mexErrMsgIdAndTxt("MATLAB:PSPMevodyn:evopars", "\nMultiple specifications for the same evolutionary parameter (%d) not allowed!", tmpint);
 
       evoParsIndex[evoParsDim] = tmpint;
-      evoParMin[evoParsDim]    = inputVals[i + 1];
-      evoParMax[evoParsDim]    = inputVals[i + 2];
+      evoParMin[evoParsDim]    = inputVals[i + 2];
+      evoParMax[evoParsDim]    = inputVals[i + 3];
       if (evoParMin[evoParsDim] >= evoParMax[evoParsDim])
         mexErrMsgIdAndTxt("MATLAB:PSPMevodyn:evopars", "\nMinimum parameter bound (%G not smaller than maximum (%G)!\n\n", evoParMin[evoParsDim],
                           evoParMax[evoParsDim]);
@@ -1747,8 +1777,8 @@ SEXP PSPMevodyn(SEXP moduleName, SEXP initVals, SEXP evotimeVals, SEXP evoparsVa
   for (i = 0; i < ncols; i++)
     {
       strcpy(optname, CHAR(STRING_ELT(optVals, i)));
-      if (!((!strcmp(optname, "popEVO")) || (!strcmp(optname, "envZE")) || (!strcmp(optname, "popZE")) || (!strcmp(optname, "test")) ||
-            (!strcmp(optname, "isort"))))
+      if (!((!strcmp(optname, "envZE")) || (!strcmp(optname, "popZE")) || (!strcmp(optname, "test")) ||
+            (!strcmp(optname, "isort")) || (!strcmp(optname, "report"))))
         error("\nIllegal option %s!\n\n", optname);
 
       if (!strcmp(optname, "test"))
@@ -1777,15 +1807,7 @@ SEXP PSPMevodyn(SEXP moduleName, SEXP initVals, SEXP evotimeVals, SEXP evoparsVa
       strcat(optstring, optval);
       strcat(optstring, "\"");
 
-      if (!strcmp(optname, "popEVO"))
-        {
-          tmpint = atoi(optval);
-          if ((tmpint < 0) || (tmpint >= PopulationNr))
-            error("\nIndex of structured population for evolutionary simulations (%d) not in the appropriate range (0 <= i < %d)!\n\n", tmpint,
-                  PopulationNr);
-          PopEVOIndex = tmpint;
-        }
-      else if (!strcmp(optname, "envZE"))
+      if (!strcmp(optname, "envZE"))
         {
           tmpint = atoi(optval);
           if ((tmpint < 0) || (tmpint >= EnvironDim))
@@ -1812,18 +1834,17 @@ SEXP PSPMevodyn(SEXP moduleName, SEXP initVals, SEXP evotimeVals, SEXP evoparsVa
                   IStateDim);
           SortIndex = tmpint;
         }
+      else if (!strcmp(optname, "report"))
+        {
+          tmpint = atoi(optval);
+          ReportLevel = max(tmpint, 1);
+        }
     }
 
   if (strlen(optstring))
     strcat(optstring, ")");
   else
     strcpy(optstring, "NULL");
-
-  if (PopEVOIndex == -1)
-    {
-      warning("\nIndex of the evolving structured population not set with the 'popEVO' option!\nDefaulting to popEVO = 0\n\n", PopulationNr);
-      PopEVOIndex = 0;
-    }
 
   // Determine the index of the R0 values of the structured populations in the result vector and the dimension of the point vector
   for (i = 0, rind = 0; i < EnvironDim; i++)
@@ -1873,13 +1894,19 @@ SEXP PSPMevodyn(SEXP moduleName, SEXP initVals, SEXP evotimeVals, SEXP evoparsVa
   //============================== Process the evolutionary parameters argument ======================================================
 
   ncols = length(evoparsVals);
-  if (!isReal(evoparsVals) || !ncols || (ncols % 3)) 
-    error("\nEvolutionary parameter settings needs to be multiple of 3: index, minimum and maximum of the parameter!\n\n");
+  if (!isReal(evoparsVals) || !ncols || (ncols % 4)) 
+    error("\nEvolutionary parameter settings needs to be multiple of 4: population number, index, minimum and maximum of the parameter!\n\n");
 
   evoParsDim = 0;
-  for (i = 0; i < ncols; i += 3)
+  for (i = 0; i < ncols; i += 4)
     {
       tmpint = (int)floor(REAL(evoparsVals)[i] + MICRO);
+      if ((tmpint < 0) || (tmpint >= PopulationNr))
+        error("\nIndex of structured population for evolutionary simulations (%d) not in the appropriate range (0 <= i < %d)!\n\n", tmpint,
+              PopulationNr);
+      evoPopIndex[evoParsDim] = tmpint;
+      
+      tmpint = (int)floor(REAL(evoparsVals)[i + 1] + MICRO);
       if ((tmpint < 0) || (tmpint >= ParameterNr))
         error("\nIndex of evolutionary parameter #%d (%d) not in the appropriate range (0 <= i < %d)!\n\n", i, tmpint, ParameterNr);
 
@@ -1887,8 +1914,8 @@ SEXP PSPMevodyn(SEXP moduleName, SEXP initVals, SEXP evotimeVals, SEXP evoparsVa
         if (tmpint == evoParsIndex[j]) error("\nMultiple specifications for the same evolutionary parameter (%d) not allowed!\n\n", tmpint);
 
       evoParsIndex[evoParsDim] = tmpint;
-      evoParMin[evoParsDim]    = REAL(evoparsVals)[i + 1];
-      evoParMax[evoParsDim]    = REAL(evoparsVals)[i + 2];
+      evoParMin[evoParsDim]    = REAL(evoparsVals)[i + 2];
+      evoParMax[evoParsDim]    = REAL(evoparsVals)[i + 3];
       if (evoParMin[evoParsDim] >= evoParMax[evoParsDim])
         error("\nMinimum parameter bound (%G not smaller than maximum (%G)!\n\n", evoParMin[evoParsDim], evoParMax[evoParsDim]);
       evoParsDim++;

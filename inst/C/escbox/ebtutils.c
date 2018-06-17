@@ -5,7 +5,7 @@
      This file contains all routines that are part of the original Escalator Boxcar
      Train software package.
 
-  Last modification: AMdR - Dec 15, 2017
+  Last modification: AMdR - Feb 06, 2018
 */
 #define EBTUTILS_C
 #define EBTLIB
@@ -853,18 +853,18 @@ static void chkIntFn(void *dummy) { R_CheckUserInterrupt(); }
 int checkInterrupt()
 {
   Rboolean R_ToplevelExec(void (*fun)(void *), void *data);
-  int pressed;
 
-  pressed = (R_ToplevelExec(chkIntFn, NULL) == FALSE);
-  if (pressed)
+  if (CtrlCPressed) return CtrlCPressed;
+
+#if (defined(OPENMP))
+  if (omp_get_thread_num() == 0)
+#endif
     {
-      REprintf("\n\nCtrl-C detected. Stopping computation\n\n");
-      CtrlCPressed = TRUE;
-      R_FlushConsole();
-      R_ProcessEvents();
+      CtrlCPressed = (R_ToplevelExec(chkIntFn, NULL) == FALSE);
+      if (CtrlCPressed) REprintf("\n\nUser interrupt detected. Stopping computation\n\n");
     }
 
-  return (pressed || CtrlCPressed);
+  return (CtrlCPressed);
 }
 
 #endif

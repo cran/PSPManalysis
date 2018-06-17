@@ -24,7 +24,7 @@
     You should have received a copy of the GNU General Public License
     along with this software. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Dec 12, 2017
+    Last modification: AMdR - May 02, 2018
 ***/
 /*
  *====================================================================================================================================
@@ -186,10 +186,10 @@ int SwitchLifeStage(const int *birthStateNr, const int curBirthState, int popula
               STDOUT("\nPop. #%2d - Bstate %2d - Stage %2d   (End):", p, curBirthState, lifeStage[p]);
               for (i = 0; i < IStateDim; i++) STDOUT("%15.6G", iStatePnt[p][i]);
               STDOUT("%15.6G", exp(iStatePnt[p][IStateDim]));
-              STDOUT("%15.6G", ASUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1));
+              STDOUT("%15.6G", SUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1));
 #if (PSPMDEMO == 1)
-              if (ASUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1) > 0)
-                STDOUT("%15.6G", iStatePnt[p][(IStateDim + 1) + birthStateNr[p]]/ASUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1));
+              if (fabs(SUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1)) > 0)
+                STDOUT("%15.6G", iStatePnt[p][(IStateDim + 1) + birthStateNr[p]]/SUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1));
               else
                 STDOUT("%15s", "Undefined");
 #else
@@ -222,10 +222,10 @@ int SwitchLifeStage(const int *birthStateNr, const int curBirthState, int popula
               for (i = 0; i < IStateDim; i++) STDOUT("%15.6G", newiStates[p][i]);
               STDOUT("%15.6G", exp(newiStates[p][IStateDim]));
               // Unchanged values
-              STDOUT("%15.6G", ASUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1));
+              STDOUT("%15.6G", SUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1));
 #if (PSPMDEMO == 1)
-              if (ASUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1) > 0)
-                STDOUT("%15.6G", iStatePnt[p][(IStateDim + 1) + birthStateNr[p]]/ASUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1));
+              if (fabs(SUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1)) > 0)
+                STDOUT("%15.6G", iStatePnt[p][(IStateDim + 1) + birthStateNr[p]]/SUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1));
               else
                 STDOUT("%15s", "Undefined");
 #else
@@ -253,10 +253,10 @@ int SwitchLifeStage(const int *birthStateNr, const int curBirthState, int popula
                   for (i = 0; i < IStateDim; i++) STDOUT("%15.6G", newiStates[p][i]);
                   STDOUT("%15.6G", exp(newiStates[p][IStateDim]));
                   // Unchanged values
-                  STDOUT("%15.6G", ASUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1));
+                  STDOUT("%15.6G", SUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1));
 #if (PSPMDEMO == 1)
-                  if (ASUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1) > 0)
-                    STDOUT("%15.6G", iStatePnt[p][(IStateDim + 1) + birthStateNr[p]]/ASUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1));
+                  if (fabs(SUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1)) > 0)
+                    STDOUT("%15.6G", iStatePnt[p][(IStateDim + 1) + birthStateNr[p]]/SUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1));
                   else
                     STDOUT("%15s", "Undefined");
 #else
@@ -304,10 +304,10 @@ int SwitchLifeStage(const int *birthStateNr, const int curBirthState, int popula
                   STDOUT("\nPop. #%2d - Bstate %2d - Stage %2d   (End):", j, curBirthState, lifeStage[j]);
                   for (i = 0; i < IStateDim; i++) STDOUT("%15.6G", iStatePnt[j][i]);
                   STDOUT("%15.6G", exp(iStatePnt[j][IStateDim]));
-                  STDOUT("%15.6G", ASUM(birthStateNr[j], iStatePnt[j] + (IStateDim + 1), 1));
+                  STDOUT("%15.6G", SUM(birthStateNr[j], iStatePnt[j] + (IStateDim + 1), 1));
 #if (PSPMDEMO == 1)
-                  if (ASUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1) > 0)
-                    STDOUT("%15.6G", iStatePnt[p][(IStateDim + 1) + birthStateNr[p]]/ASUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1));
+                  if (fabs(SUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1)) > 0)
+                    STDOUT("%15.6G", iStatePnt[p][(IStateDim + 1) + birthStateNr[p]]/SUM(birthStateNr[p], iStatePnt[p] + (IStateDim + 1), 1));
                   else
                     STDOUT("%15s", "Undefined");
 #else

@@ -79,7 +79,7 @@ can be succesfully executed by the various \texttt{R} functions in the package. 
 
 2. Type the following command string:
     
-    \texttt{xcode-select --install}
+    \texttt{xcode-select -{}-install}
 
 Windows users will have to install the [Windows toolset](https://cran.r-project.org/doc/manuals/R-admin.html#The-Windows-toolset) from [cran.r-project.org](https://cran.r-project.org/bin/windows/Rtools). Getting modules compiled by other compilers to communicate with R is much more
 complicated and therefore not recommended. More details can be found
@@ -629,14 +629,14 @@ Building executable  /Users/andre/programs/PSPM analysis/Tests/Medflydemo.so ...
 #
 # Executing : PSPMdemo("Medfly", NULL, NULL, NULL)
 #
-# Parameter values  :
+# Parameter values  : 
 #
-# 	Beta0     :  47           	Beta1     :  0.04         	AJ        :  11
-# 	Mu0       :  0.00095      	Mu1       :  0.0581
+# 	Beta0     :  47           	Beta1     :  0.04         	AJ        :  11           
+# 	Mu0       :  0.00095      	Mu1       :  0.0581       
 #
-#   1:PGR[ 0]     2:Tc[ 0]  3:S[ 0][ 0]  4:S[ 0][ 1]  5:S[ 0][ 2]  6:S[ 0][ 3]  7:S[ 0][ 4]
+#       1:PGR[0]       2:Tc[0]    3:S[0][0]     4:S[0][1]     5:S[0][2]     6:S[0][3]     7:S[0][4]
 #
-   0.41905662  13.16725955   0.00161586  -0.16459366  -0.03198198  -1.52635957  -0.01132532
+      0.41905662   13.16725978   0.00161586   -0.16459366   -0.03198198   -1.52635956   -0.01132532
 
 ```
 
@@ -664,56 +664,42 @@ The following \texttt{R} code illustrates this use of the \texttt{PSPMdemo} func
 
 ```
 > output <- PSPMdemo("Medfly.h", c(2, 11, 0.1, 11, 20), c(47, 0.04, 11, 0.00095, 0.0581), c("isort", "0"),
-+ clean=TRUE, force=TRUE, debug=FALSE)
+                     clean=TRUE, force=TRUE, debug=FALSE, silent=FALSE)
 
 Building executable  /Users/andre/programs/PSPM analysis/Tests/Medflydemo.so ...
 
 <...compilation output suppressed in this box...>
 
-  1.10000000E+01  4.19056620E-01
-  1.11000000E+01  4.15884247E-01
-  1.12000000E+01  4.12762685E-01
+  1.10000000E+01, 4.19056620E-01
+  1.11000000E+01, 4.15884247E-01
+  1.12000000E+01, 4.12762685E-01
 <...output lines suppressed in this box...>
-  1.98000000E+01  2.53879994E-01
-  1.99000000E+01  2.52772251E-01
-  2.00000000E+01  2.51674454E-01
+  1.98000000E+01, 2.53879994E-01
+  1.99000000E+01, 2.52772251E-01
+  2.00000000E+01, 2.51674454E-01
 
-#
-# Executing : PSPMdemo("Medfly", c(2, 11, 0.1, 11, 20), c(47, 0.04, 11, 0.00095, 0.0581), c("isort", "0"))
-#
-# Parameter values  :
-#
-# 	Beta0     :  47           	Beta1     :  0.04         	AJ        :  11
-# 	Mu0       :  0.00095      	Mu1       :  0.0581
-#
-# Index of bifurcation parameter #1                            : 2
-#
-#        1:AJ    2:PGR[ 0]     3:Tc[ 0]  4:S[ 0][ 0]  5:S[ 0][ 1]  6:S[ 0][ 2]  7:S[ 0][ 3]  8:S[ 0][ 4]
-#
-> output
-$curvedesc
- [1] "#"
- [2] "# Executing : PSPMdemo("Medfly", c(2, 11, 0.1, 11, 20), c(47, 0.04, 11, 0.00095, 0.0581), c("isort", "0"))"
- [3] "#"
- [4] "# Parameter values  : "
- [5] "#"
- [6] "# \tBeta0     :  47           \tBeta1     :  0.04         \tAJ        :  11           "
- [7] "# \tMu0       :  0.00095      \tMu1       :  0.0581       "
- [8] "#"
- [9] "# Index of bifurcation parameter #1                            : 2"
-[10] "#"
-[11] "#        1:AJ    2:PGR[ 0]     3:Tc[ 0]  4:S[ 0][ 0]  5:S[ 0][ 1]  6:S[ 0][ 2]  7:S[ 0][ 3]  8:S[ 0][ 4]"
-[12] "#"
+> cat(output$curvedesc)
+ #
+ # Executing : PSPMdemo("Medfly", c(2, 11, 0.1, 11, 20), c(47, 0.04, 11, 0.00095, 0.0581), c("isort", "0"))
+ #
+ # Parameter values  : 
+ #
+ # 	Beta0     :  47           	Beta1     :  0.04         	AJ        :  11           
+ # 	Mu0       :  0.00095      	Mu1       :  0.0581       
+ #
+ # Index and name of bifurcation parameter #1                   :  2 (AJ)
+ #
+ #        1:AJ     2:PGR[0]      3:Tc[0]    4:S[0][0]    5:S[0][1]    6:S[0][2]    7:S[0][3]    8:S[0][4]
 
-$curvepoints
-        V1        V2       V3           V4         V5          V6        V7          V8
+> output$curvepoints
+        AJ    PGR[0]    Tc[0]      S[0][0]    S[0][1]     S[0][2]   S[0][3]     S[0][4]
  [1,] 11.0 0.4190566 13.16726 0.0016158600 -0.1645937 -0.03198198 -1.526360 -0.01132532
  [2,] 11.1 0.4158843 13.28218 0.0016018800 -0.1642926 -0.03146749 -1.532324 -0.01148047
  [3,] 11.2 0.4127627 13.39705 0.0015881500 -0.1639943 -0.03096572 -1.538315 -0.01163686
 <...output lines suppressed in this box...>
-[89,] 19.8 0.2538800 23.15013 0.0009190646 -0.1447124 -0.11127611 -2.172537 -0.03082490
-[90,] 19.9 0.2527722 23.26222 0.0009146362 -0.1445347 -0.11027447 -2.181510 -0.03112948
-[91,] 20.0 0.2516744 23.37427 0.0009102513 -0.1443576 -0.10928690 -2.190525 -0.03143628
+[89,] 19.8 0.2538800 23.15013 0.0009190646 -0.1447124 -0.01112761 -2.172537 -0.03082490
+[90,] 19.9 0.2527722 23.26222 0.0009146362 -0.1445347 -0.01102745 -2.181510 -0.03112948
+[91,] 20.0 0.2516744 23.37427 0.0009102513 -0.1443576 -0.01092869 -2.190525 -0.03143628
 ```
 
 Some of the intermediate lines of output generated by \texttt{R} in this case are suppressed for brevity. When the \texttt{PSPMdemo} function is invoked in this way to compute parameter dependence, it generates a single list as output (assigned to the variable \texttt{output} in the command box above), which contains two elements, called \texttt{curvedesc} and \texttt{curvepoints}. The variable \verb|output$curvedesc| contains the description of the executed calculation, which is the textual information that is also printed to the \texttt{R} console at the end of calculations. In fact, the \texttt{PSPMdemo} function prints its report on the calculations by execution of the statement `cat(output$curvedesc, sep='
@@ -787,7 +773,7 @@ The optional third argument of the \texttt{PSPMdemo} function is a 1-dimensional
 
 The optional fourth argument of the \texttt{PSPMdemo} function is a vector containing possible options that modify the behavior of the computational module. A useful option is the \texttt{"test"} option, which can be passed to the computational module by using the argument \texttt{c("test")} as fourth argument to the \texttt{PSPMdemo} function. This invokes the computational module in testing mode, which implies that only a single integration of the individual life history is carried out and no iteration to locate the population growth rate is performed. In testing mode the computational module reports on the dynamics of the individual state variables, the survival and the expected number of offspring produced by an individual during its different life stage as well as over its entire life. Testing mode is very useful to discover whether or not the model implementation gives sensible results or not.
 
-The other possible element of the option vector that modifies the behavior of the computational module is the \texttt{"isort"} option, which can be passed to the computational module by using for example \texttt{c("isort", "1")} as fourth argument to the \texttt{PSPMdemo} function (as shown in command box [3.4.1.B](#command-box-3.4.1.b)). This option modifies the population state output that is stored in the output file, which when using the package in \texttt{R} is a binary file with a name of the form \texttt{<Modelname>-PGR-<NNNN>.csb} (see above). By default the computational module reports the information about the stable population state distribution and the reproductive value for 100 equidistant values of the first individual state variable. More specifically, the range of the first individual state variable that is covered during the entire life of an individual until the moment that it is considered dead (i.e. the maximum age or the minimum survival threshold has been reached) is subdivided into 100 equidistant intervals and the population density function, individual state variables and reproductive value are computed at each of these 100 nodal values of the first state variable. By using the option \texttt{"isort"} the default choice to use the first individual state variable for this subdivision can be changed to the second, third, and so on. Notice though, that the obligatory index value that has to be passed together with the use of the \texttt{"isort"} option follows the \texttt{C}-convention of ordering arrays starting at 0 (as opposed to \texttt{R} where array indices start at 1). Therefore, passing \texttt{c("isort", "0")} as option array to the \texttt{PSPMdemo} function is the same as the default behavior: the first individual state variable is used for the subdivision and ordering of the population state distribution, while passing \texttt{c("isort", "1")} would use the second individual state variable for this purpose. Also notice that the default number of subdivisions of the individual state variable and hence the number of nodal values for which the population state distribution is reported can be changed by including a statement of the form
+Another possible element of the option vector that modifies the behavior of the computational module is the \texttt{"isort"} option, which can be passed to the computational module by using for example \texttt{c("isort", "1")} as fourth argument to the \texttt{PSPMdemo} function (as shown in command box [3.4.1.B](#command-box-3.4.1.b)). This option modifies the population state output that is stored in the output file, which when using the package in \texttt{R} is a binary file with a name of the form \texttt{<Modelname>-PGR-<NNNN>.csb} (see above). By default the computational module reports the information about the stable population state distribution and the reproductive value for 100 equidistant values of the first individual state variable. More specifically, the range of the first individual state variable that is covered during the entire life of an individual until the moment that it is considered dead (i.e. the maximum age or the minimum survival threshold has been reached) is subdivided into 100 equidistant intervals and the population density function, individual state variables and reproductive value are computed at each of these 100 nodal values of the first state variable. By using the option \texttt{"isort"} the default choice to use the first individual state variable for this subdivision can be changed to the second, third, and so on. Notice though, that the obligatory index value that has to be passed together with the use of the \texttt{"isort"} option follows the \texttt{C}-convention of ordering arrays starting at 0 (as opposed to \texttt{R} where array indices start at 1). Therefore, passing \texttt{c("isort", "0")} as option array to the \texttt{PSPMdemo} function is the same as the default behavior: the first individual state variable is used for the subdivision and ordering of the population state distribution, while passing \texttt{c("isort", "1")} would use the second individual state variable for this purpose. Also notice that the default number of subdivisions of the individual state variable and hence the number of nodal values for which the population state distribution is reported can be changed by including a statement of the form
 
 ```
 #define COHORT_NR                200
@@ -803,19 +789,21 @@ NumericalOptions <- c(...
 
 if the model is implemented in \texttt{R} (see section [3.3.1.2](#optional-numerical-settings) and section [9.3](#optional-numerical-settings-2)).
 
-If necessary the options \texttt{"test"} and \texttt{"isort"} can be combined, for example, as
+The last possible element of the option vector that modifies the behavior of the computational module is the \texttt{"report"} option, which can be passed to the computational module by using for example \texttt{c("report", "10")} as fourth argument to the \texttt{PSPMdemo} function. This option determines how much output the computational module reports to the console. The default value of \texttt{"report"} equals 1, which implies that the software writes the values of every new solution point that it has computed to the \texttt{R} console. A value of 2 for the \texttt{"report"} option means that every other computed solution point is written to the \texttt{R} console, whereas the specification of \texttt{c("report", "10")} as fourth argument to the \texttt{PSPMdemo} function implies that every 10th solution point that is computed is written to the \texttt{R} console.
+
+If necessary the options \texttt{"test"}, \texttt{"isort"} and \texttt{"report"} can be combined in arbitrary order, for example, as
 
 ```
-c("isort", "1","test")
+c("test", "isort", "1", "report", "10")
 ```
 
 Or equivalently,
 
 ```
-c("isort", "1","test")
+c("isort", "1", "report", "10", "test")
 ```
 
-Three other optional arguments can be passed to the \texttt{PSPMdemo} function: \texttt{clean}, \texttt{force} and \texttt{debug}. These are all boolean arguments that hence have to be passed to the \texttt{PSPMdemo} function as $<$*option name*$>$\texttt{=TRUE} or $<$*option name*$>$\texttt{=FALSE}, the latter being the default value of all options (Specifying these options as argument is hence only useful when setting them equal to \texttt{TRUE}). Unlike the previous arguments, which all modify the computations to be performed, these options modify the behavior of the \texttt{PSPMdemo} function itself, in particular the compilation of the model specific file into a dynamic library module that can be executed from \texttt{R}. Also unlike all the previous arguments that can be passed, these arguments can be passed in any order and at any position, the \texttt{PSPMdemo} function will filter these 3 optional arguments from the argument list before passing the filtered argument list to the computational routine.
+Four other optional arguments can be passed to the \texttt{PSPMdemo} function: \texttt{clean}, \texttt{force}, \texttt{debug} and \texttt{silent}. These are all boolean arguments that hence have to be passed to the \texttt{PSPMdemo} function as $<$*option name*$>$\texttt{=TRUE} or $<$*option name*$>$\texttt{=FALSE}, the latter being the default value of all options (Specifying these options as argument is hence only useful when setting them equal to \texttt{TRUE}). Unlike the previous arguments, which all modify the computations to be performed, these options modify the behavior of the \texttt{PSPMdemo} function itself, in particular the compilation of the model specific file into a dynamic library module that can be executed from \texttt{R}. Also unlike all the previous arguments that can be passed, these arguments can be passed in any order and at any position, the \texttt{PSPMdemo} function will filter these 3 optional arguments from the argument list before passing the filtered argument list to the computational routine.
 
 
 	
@@ -824,6 +812,8 @@ Three other optional arguments can be passed to the \texttt{PSPMdemo} function: 
 * Option \texttt{force}: When \texttt{force=TRUE} is passed as argument, it instructs the \texttt{PSPMdemo} function to force re-compilation of the model specific file into a dynamic library module that can be executed by \texttt{R}. This option will usually not be needed by normal users, as the \texttt{PSPMdemo} function automatically recompiles the computational module when the model specific file with an \texttt{'.h'} or \texttt{'.R'} extension is more recently changed than the compiled dynamic library file. However, if for some unclear reason this automatic recompilation fails, the \texttt{force} option can be used to initiate re-compilation.
 	
 * Option \texttt{debug}: When \texttt{debug=TRUE} is passed as argument, it instructs the \texttt{PSPMdemo} function to turn on debugging flags while compiling the model specific file into a dynamic library module. This option can be useful to detect programming mistakes in the model-specific file that are otherwise hard to track down. The downside is that depending on the version of \texttt{R} that is used, turning on debugging flags during compilation may generate a lot of output, including warnings about standard files of the operating system that are perfectly correct. It is hence not so easy to spot among all these messages the warnings that relate to the model-specific code that has been implemented.
+
+* Option \texttt{silent}: When \texttt{silent=TRUE} is passed as argument, it instructs the \texttt{PSPMdemo} function to suppress all messages from the compilation of the model specific file into a dynamic library module. This option is useful to prevent cluttering the console with superfluous messages once a model specific file has been tested sufficiently and functions without problems.
 
 ----
 
@@ -871,7 +861,7 @@ The steps needed for the implementation of a particular nonlinear PSPM will be d
 	&\dfrac{dR}{dt}\;=\;\rho\,(R_{max}\,-\,R)\:-\:\int_{\ell_b}^{\ell_m} I(\ell,R)\,c(t,\ell)\,d\ell\\[0.5ex]
 	&\dfrac{\partial c(t, \ell)}{\partial t}\:+\:\dfrac{\partial g(\ell,R)\,c(t, \ell)}{\partial \ell}\;=\;-\mu(\ell,P)\,c(t, \ell)\\[0.5ex]
 	&g(\ell,R)\,c(t, \ell_b)\;=\;\int_{\ell_j}^{\ell_m} \beta(\ell,R)\,c(t,\ell)\,d\ell\\[0.25ex]
-	&\dfrac{dP}{dt}\;=\;\left(\epsilon\dfrac{aB}{1+T_hB}\:-\:\delta\right)\,P\\[2ex]
+	&\dfrac{dP}{dt}\;=\;\left(\epsilon\dfrac{aB}{1+aT_hB}\:-\:\delta\right)\,P\\[2ex]
 	&B\,=\,\int_{\ell_b}^{\ell_v} \omega\ell^3\,c(t,\ell)\,d\ell
 \end{align*}
 
@@ -892,7 +882,7 @@ Consumers experience a mortality rate $\mu(\ell,P)$ dependent on their own lengt
 
 $$\mu(\ell,P)=
 	\begin{cases}
-		\mu_b\,+\,\dfrac{aP}{1+T_hB}\qquad&\textrm{if $\ell<\ell_v$}\\
+		\mu_b\,+\,\dfrac{aP}{1+aT_hB}\qquad&\textrm{if $\ell<\ell_v$}\\
 		\mu_b&\textrm{otherwise}
 	\end{cases}$$
 
@@ -1001,7 +991,7 @@ The last variable to be defined is the vector \texttt{DefaultParameters}, which 
 
 ##### Code block 4.3.1.4 {-}
 ```
-DefaultParameters <- c(Rho = 0.1, Rmax = 3.0E-4, Lb = 7.0, Lv = 27.0, Lj = 110.0, Lm = 300.0, Beta = 9.0E-6, Imax = 1.0E-4, Rh = 1.5E-5, Gamma = 0.006, Rm = 0.003, Mub = 0.01, A = 5000.0, Th = 0.1, Epsilon = 0.5, Delta = 0.01)
+DefaultParameters <- c(Rho = 0.1, Rmax = 3.0E-4, Lb = 7.0, Lv = 27.0, Lj = 110.0, Lm = 300.0, Omega = 9.0E-6, Imax = 1.0E-4, Rh = 1.5E-5, Gamma = 0.006, Rm = 0.003, Mub = 0.01, A = 5000.0, Th = 0.1, Epsilon = 0.5, Delta = 0.01)
 ```
 
 The names of the vector elements (parameters) can be used in the programming of the life history functions of the model and are furthermore used to make the output files produced by the program more readable. These output files contain a small header text indicating among other details which parameter values were used for the computation of the results contained in the output file. In this report the parameter names are listed together with their value. 
@@ -1094,9 +1084,9 @@ LifeHistoryRates <- function(lifestage, istate, birthstate, BirthStateNr, E, par
       development = c(1.0, Gamma*(Lm*R/(R + Rh) - Length)),
       fecundity   = switch(lifestage, 0, 0, Rm*R/(R + Rh)*Length^2),
       mortality   = switch(lifestage, Mub + A*P/(1+A*Th*Bv), Mub, Mub),
-      impact      = switch(lifestage, c(Imax*R/(R + Rh)*Length^2, Beta*Length^3, 0, 0),
-                                      c(Imax*R/(R + Rh)*Length^2, 0, Beta*Length^3, 0),
-                                      c(Imax*R/(R + Rh)*Length^2, 0, 0, Beta*Length^3))
+      impact      = switch(lifestage, c(Imax*R/(R + Rh)*Length^2, Omega*Length^3, 0, 0),
+                                      c(Imax*R/(R + Rh)*Length^2, 0, Omega*Length^3, 0),
+                                      c(Imax*R/(R + Rh)*Length^2, 0, 0, Omega*Length^3))
     )
   })
 }
@@ -1251,7 +1241,7 @@ The code box below assigns each of the model parameters a meaningful name and a 
 ```
 // Descriptive names of parameters in parameter array (at least two parameters are required)
 char  *parameternames[PARAMETER_NR] =
-    { "Rho", "Rmax", "Lb", "Lv", "Lj", "Lm", "Beta", "Imax", "Rh", "Gamma", "Rm", "Mub",
+    { "Rho", "Rmax", "Lb", "Lv", "Lj", "Lm", "Omega", "Imax", "Rh", "Gamma", "Rm", "Mub",
       "A", "Th", "Epsilon", "Delta"};
 
 // Default values of all parameters
@@ -1768,7 +1758,7 @@ Once the model has been implemented, you can proceed carrying out its analysis w
 ```
 >  output <- PSPMequi(modelname = NULL, biftype = NULL, startpoint = NULL, stepsize = NULL, 
                       parbnds = NULL, parameters = NULL, options = NULL, clean = FALSE,
-                      force  = FALSE, debug  = FALSE)
+                      force  = FALSE, debug  = FALSE, silent = FALSE)
 ```
 
 The first 5 arguments of the function \texttt{PSPMequi} are needed for the software to function properly and are hence obligatory. The last 5 arguments are optional. The last 3 arguments are boolean arguments which have to be defined as either \texttt{TRUE} or \texttt{FALSE}, for example by passing as argument to the function \texttt{PSPMequi} the argument \texttt{clean = TRUE}.
@@ -1799,17 +1789,21 @@ The first 7 arguments to the \texttt{PSPMequi} function are the following:
 4. The fourth argument to the \texttt{PSPMequi} function determines the step size along the computed curve. The absolute spacing between subsequent solution points computed on the curve is difficult to predict, as it is determined by both the step size and how quickly the different variables change along the curve. The step size can be either positive or negative, while step sizes of smaller absolute value will lead to the computation of solution points that are more closely spaced together.
 
 	
-5. The fifth argument to the \texttt{PSPMequi} function determines which of the model parameters should be varied during the computation and at which parameter values the computations should stop. This information should be specified by a (row) vector, which for every parameter to be varied specifies a triplet of values including the index of the parameter, its minimum and its maximum value at which the computation should stop. For  equilibrium computations (type \texttt{"EQ"}) the vector should hence have the following format:
+5. The fifth argument to the \texttt{PSPMequi} function determines which of the model parameters should be varied during the computation and at which parameter values the computations should stop. This information should be specified by a (row) vector, which for every parameter to be varied specifies a triplet of values including the index of the parameter, its minimum and its maximum value at which the computation should stop. For equilibrium computations (type \texttt{"EQ"}) the vector should hence have the following format:
     
     \texttt{c(}$<$*index 1*$>$,$<$*minimum 1*$>$,$<$*maximum 1*$>$\texttt{)}
-
+  
     The first element of the vector indicates the index of the parameter in the vector \texttt{DefaultParameters} (in \texttt{R}, see section [4.3.1.4](#default-parameters-1)) or in the array \texttt{parameter} (in \texttt{C}, see section [4.3.2.2](#definition-of-parameter-names-and-values-1)) to vary, while the final two elements of the array indicate the minimum and maximum value of the parameter. The computation of the equilibrium curve as a function of the model parameter stops, whenever the minimum or maximum parameter value is reached.
 
-	For all two-parameter type of computations (\texttt{"BP"}, \texttt{"BPE"}, \texttt{"LP"}, \texttt{"ESS"} and \texttt{"PIP"}) the vector should be extended with the index of the second parameter to vary in the computation as well as the minimum and the maximum value of this parameter, at which to stop the curve computation. The vector with parameter information has therefore in this case the format:
+	  For all two-parameter type of computations (\texttt{"BP"}, \texttt{"BPE"}, \texttt{"LP"} and \texttt{"PIP"}) the vector should be extended with the index of the second parameter to vary in the computation, as well as the minimum and the maximum value of this parameter, at which to stop the curve computation. The vector with parameter information has therefore in this case the format:
 
-	\texttt{c(}$<$*index 1*$>$,$<$*minimum 1*$>$,$<$*maximum 1*$>$,$<$*index 2*$>$,$<$*minimum 2*$>$,$<$*maximum 2*$>$\texttt{)}
+	  \texttt{c(}$<$*index 1*$>$,$<$*minimum 1*$>$,$<$*maximum 1*$>$,$<$*index 2*$>$,$<$*minimum 2*$>$,$<$*maximum 2*$>$\texttt{)}
 
-	For \texttt{"ESS"} computations with multiple parameters having their ESS value this vector has to be extended with a triplet of values for each of these model parameters with the triplet specifying the index of the particular ESS parameter as well as its minimum and the maximum value. The number of triplets should correspond with the number of initial estimates for the ESS values of parameters as specified in the third argument to the function.
+	  For \texttt{"ESS"} computations the vector of length 3 with the index, minimum and maximum value of the bifurcation parameter has to be extended with sets of 4 values for each of the parameters that are assumed to adopt their ESS value. Each set of 4 values indicates the index of the population that a particular ESS parameter influences, the index of the ESS parameter in the vector \texttt{DefaultParameters} (in \texttt{R}, see section [4.3.1.4](#default-parameters-1)) or in the array \texttt{parameter} (in \texttt{C}, see section [4.3.2.2](#definition-of-parameter-names-and-values-1)) and the minimum and maximum value of the parameter. In case only one parameter is to adopt its ESS value, the argument therefore has the form:
+  
+    \texttt{c(}$<$*index 1*$>$,$<$*minimum 1*$>$,$<$*maximum 1*$>$,$<$*population 2*$>$,$<$*index 2*$>$,$<$*minimum 2*$>$,$<$*maximum 2*$>$\texttt{)}
+  
+    If multiple parameters have their ESS value this vector has to include a set of 4 values for each of these model parameters. The number of sets should correspond with the number of initial estimates for the ESS values of parameters as specified in the third argument to the function. 
 
 
 6. The sixth, optional argument of the \texttt{PSPMequi} function is a (row) vector of model parameter values. When used, this array should have the same length as the number of parameters in the model (the length of the vector \texttt{DefaultParameters} in \texttt{R}, see section [4.3.1.4](#default-parameters-1), or the value of \verb|PARAMETER_NR| in \texttt{C}, see section [4.3.2.1](#definition-of-problem-dimensions-and-numerical-settings)). When of this length the values will replace the default values of the parameters that are listed in the model specification file (see code block [4.3.1.4](#code-block-4.3.1.4) or [4.3.2.2](#code-block-4.3.2.2) for an example). If the array used for this sixth argument is not of the correct length or when it is not specified at all, it will simply be ignored.
@@ -1824,9 +1818,9 @@ The first 7 arguments to the \texttt{PSPMequi} function are the following:
     i) Option pair \texttt{c("envBP", "i")}: This option pair is only relevant for continuations of a branching points or transcritical bifurcation in an environment variable (curve type \texttt{"BPE"}). The option value \texttt{"i"} determines the index of the environment variables, of which to continue the transcritical bifurcation as a function of 2 parameters. Notice that this computation can only be carried out for environment variables that are of the type \texttt{PERCAPITARATE} (see section [4.3.1.3](#names-and-types-of-environmental-state-variables) or section [4.3.2.12](#specification-of-equilibrium-conditions-of-the-environment) above).
     i) Option pair \texttt{c("popBP", "i")}: This option pair is only relevant for continuations of branching points or transcritical bifurcations of a structured population (curve type \texttt{"BP"}). The option value \texttt{"i"} determines the index of the population, of which to continue the transcritical bifurcation as a function of 2 parameters.
 	
-    i) Option pair \texttt{c("popEVO", "i")}: This option pair is relevant for the computation of the selection gradient during equilibrium continuations (curve type \texttt{"EQ"}), continuations of evolutionary fixed points (curve type \texttt{"ESS"}) and the construction of pairwise invasibility plots (curve type \texttt{"PIP"}). The option value \texttt{"i"} determines the index of the population, for which to compute the selection gradient or in which the evolutionary singularity occurs that should be computed as a function of 2 parameters.
+    i) Option pair \texttt{c("popEVO", "i")}: This option pair is relevant for the computation of the selection gradient during equilibrium continuations (curve types \texttt{"EQ"} and \texttt{"ESS"}) and the construction of pairwise invasibility plots (curve type \texttt{"PIP"}). The option value \texttt{"i"} determines the index of the population, for which to compute the selection gradient or pairwise invasibility plot.
 	
-    i) Option pair \texttt{c("parEVO", "i")}: This option pair is only relevant for the computation of the selection gradient during equilibrium continuations (curve type \texttt{"EQ"}) and then only when the option pair \texttt{c("popEVO", "i")} is also specified. In this case the index \texttt{"i"} determines the index of the parameter for which to compute the selection gradient. The default is to compute the selection gradient with respect to the bifurcation parameter. Specifying this index does compute the selection gradient for a particular parameter, but detection of evolutionary singular points is only possible if the bifurcation parameter is the evolutionary parameter.
+    i) Option pair \texttt{c("parEVO", "i")}: This option pair is only relevant for the computation of the selection gradient during equilibrium continuations (curve type \texttt{"EQ"} and \texttt{"ESS"}) and then only when the option pair \texttt{c("popEVO", "i")} is also specified. In this case the index \texttt{"i"} determines the index of the parameter for which to compute the selection gradient. The default is to compute the selection gradient with respect to the bifurcation parameter. Specifying this index does compute the selection gradient for a particular parameter, but detection of evolutionary singular points is only possible if the bifurcation parameter is the evolutionary parameter.
 	
     i) Option pair \texttt{c("envZE", "i")}: This option pair can be specified several times as part of the option vector of strings. Including this option instructs the computational module to set the value of the environment variable with index \texttt{"i"} equal to 0 during the computations of the fixed point problem that determines the curve. In addition, the equilibrium condition for this environment variable (as, for example, specified in \texttt{R} code block [4.3.1.9](#code-block-4.3.1.9) or \texttt{C} code block [4.3.2.12](#code-block-4.3.2.12)) is ignored and hence not included as condition to hold in the particular equilibrium point. Notice that this can only occur for environment variables that are of the type \texttt{PERCAPITARATE} or \texttt{POPULATIONINTEGRAL} (see section [4.3.1.3](#names-and-types-of-environmental-state-variables) or section [4.3.2.12](#specification-of-equilibrium-conditions-of-the-environment) above). Forcing an environment variable to have a zero equilibrium value as opposed to specifying a value of 0 for it as part of the initial point of the computation, allows for the proper detection and handling of branching or transcritical bifurcation points in this environment variable. Omitting this option for an environment variable, but providing instead a value of 0 as part of the initial point of the computation, may lead to the proper computation of an equilibrium curve, in which the environment variable has a 0 value, but may also lead to numerous, spurious messages about branching points in this variable.
 	
@@ -1834,6 +1828,8 @@ The first 7 arguments to the \texttt{PSPMequi} function are the following:
 	
     i) Option pair \texttt{c("isort", "i")}: This option modifies the output of the equilibrium state of the populations that are stored in an output file with a name of the form \texttt{<Modelname>-<Type>-<NNNN>.csb} (see below). By default the computational module reports the information about the stable population state distributions by subdividing the axis of the first state variable (the one with index \texttt{"0"}) in 100 subintervals of equal length and reporting the statistics for the cohort of individuals within each subinterval. By using the option \texttt{"isort"} the default choice to use the first individual state variable for this subdivision can be changed to the second, third, and so on. Therefore, passing \texttt{c("isort", "0")} as option vector to the \texttt{PSPMequi} function is the same as the default behaviour: the first individual state variable is used for the subdivision and ordering of the population state distribution, while passing \texttt{c("isort", "1")} would use the second individual state variable for this purpose. Also notice that the number of subdivisions of the individual state variable can be redefined by assigning the dimension \verb|COHORT_NR| a value different from 100 (see code block [4.3.1.2](#code-block-4.3.1.2) or [4.3.2.1](#code-block-4.3.2.1) as well as section [9.3](#optional-numerical-settings-2)).
 	
+    i) Option pair \texttt{c("report", "i")}: This option determines how much output the computational module reports to the console. Passing \texttt{c("report", "1")} as option vector to the \texttt{PSPMequi} function is the same as the default behaviour: the software writes the values of every new solution point that it has computed to the \texttt{R} console. Passing \texttt{c("report", "2")} as option vector to the \texttt{PSPMequi} function would make the program write every other computed solution point to the \texttt{R} console, while specifying \texttt{c("report", "10")} as option vector to the \texttt{PSPMequi} function implies that every 10th solution point that is computed is written to the \texttt{R} console.
+    
     i) Option \texttt{c("noBP")}: Specifying the option \texttt{"noBP"} instructs the program not to test for the occurrence of branching points (\texttt{"BP"}), when computing an ecological equilibrium as a function of a single model parameter. The advantage of specifying this option is that execution speed increases, as testing for a branching point is computationally demanding. The disadvantage is that the exact location of branching points will not be reported.
 	
     i) Option \texttt{c("noLP")}: Specifying the option \texttt{"noLP"} instructs the program not to test for the occurrence of limit points (\texttt{"LP"}), when computing an ecological equilibrium as a function of a single model parameter. The advantage of specifying this option is that execution speed increases, as testing for a limit point is computationally demanding. The disadvantage is that the exact location of limit points will not be reported.
@@ -1843,7 +1839,7 @@ The first 7 arguments to the \texttt{PSPMequi} function are the following:
     i) Option \texttt{c("test")}: The last possible option that can be passed to the \texttt{PSPMequi} function as part of the option vector is the \texttt{"test"} option. This invokes the computational module in testing mode, which implies that only a single integration of the individual life history is carried out and no iteration to locate a fixed point of a set of equations is performed. In testing mode the computational module reports on the dynamics of the individual state variables, the survival, the cumulative impact on the environment and the expected number of offspring produced by an individual during its different life stage as well as over its entire life. Testing mode is very useful to discover whether or not the model implementation gives sensible results or not.
 
 
-Three other optional arguments can be passed to the \texttt{PSPMequi} function: \texttt{clean}, \texttt{force} and \texttt{debug}. These are all boolean arguments that hence have to be passed to the \texttt{PSPMequi} function as $<$*option name*$>$\texttt{=TRUE} or $<$*option name*$>$\texttt{=FALSE}, the latter being the default value of all options (Specifying these options as argument is hence only useful when setting them equal to \texttt{TRUE}). Unlike the previous arguments, which all modify the computations to be performed, these options modify the behavior of the \texttt{PSPMequi} function itself, in particular the compilation of the model specific file into a dynamic library module that can be executed from \texttt{R}. Also unlike all the previous arguments that can be passed, these arguments can be passed in any order and at any position, the \texttt{PSPMequi} function will filter these 3 optional arguments from the argument list before passing the filtered argument list to the computational routine.
+Four other optional arguments can be passed to the \texttt{PSPMequi} function: \texttt{clean}, \texttt{force}, \texttt{debug} and \texttt{silent}. These are all boolean arguments that hence have to be passed to the \texttt{PSPMequi} function as $<$*option name*$>$\texttt{=TRUE} or $<$*option name*$>$\texttt{=FALSE}, the latter being the default value of all options (Specifying these options as argument is hence only useful when setting them equal to \texttt{TRUE}). Unlike the previous arguments, which all modify the computations to be performed, these options modify the behavior of the \texttt{PSPMequi} function itself, in particular the compilation of the model specific file into a dynamic library module that can be executed from \texttt{R}. Also unlike all the previous arguments that can be passed, these arguments can be passed in any order and at any position, the \texttt{PSPMequi} function will filter these 3 optional arguments from the argument list before passing the filtered argument list to the computational routine.
 
 
 	
@@ -1853,13 +1849,14 @@ Three other optional arguments can be passed to the \texttt{PSPMequi} function: 
 	
 * Option \texttt{debug}: When \texttt{debug=TRUE} is passed as argument, it instructs the \texttt{PSPMequi} function to turn on debugging flags while compiling the model specific file into a dynamic library module. This option can be useful to detect programming mistakes in the model-specific file that are otherwise hard to track down. The downside is that depending on the version of \texttt{R} that is used, turning on debugging flags during compilation may generate a lot of output, including warnings about standard files of the operating system that are perfectly correct. It is hence not so easy to spot among all these messages the warnings that relate to the model-specific code that has been implemented.
 
+* Option \texttt{silent}: When \texttt{silent=TRUE} is passed as argument, it instructs the \texttt{PSPMequi} function to suppress all messages from the compilation of the model specific file into a dynamic library module. This option is useful to prevent cluttering the console with superfluous messages once a model specific file has been tested sufficiently and functions without problems.
 
 ### Output variables of the \texttt{PSPMequi} function
 When calling the \texttt{PSPMequi} function it first compiles the model-specific file called \texttt{<Model>.h} using the \texttt{R} command \texttt{R CMD SHLIB} into a dynamically loadable library file, which can subsequently be executed. When the model is implemented in \texttt{R} instead of in \texttt{C}, the \texttt{PSPMequi} function compiles all necessary numerical routines in the package with the appropriate dimension settings that are taken for the \texttt{<Model>.R} model file. These compilation steps are only carried out when the dynamically loadable library file (called \texttt{<Model>equi.so} on my system on Mac OS X and Linux systems) does not exist, or when the model-specific file has been changed since the last compilation of the executable. Furthermore, the compilation step is forced by the invocation of \texttt{PSPMequi} with the additional argument \texttt{force=TRUE} as discussed in the previous section. For example, for the PNAS model, the \texttt{C} implementation of which is specified in the file \texttt{PNAS2002.h}, the dynamically loadable library file is called \texttt{PNAS2002equi.so} (on other operating systems this file may be called \texttt{PNAS2002equi.dll}). Following successful compilation the \texttt{PSPMequi} function executes the compiled, computational module with the arguments passed to it.
 
 The computational module generates on execution a single list object as output with up to 4 member elements (see the help page on \texttt{PSPMequi} using `?PSPMequi`). The first element of the output list, \verb|output$curvepoints|, contains the numerical information of the points along the computed curve (assuming that the list is assigned to a variable called \texttt{output}). This variable \verb|output$curvepoints| is a matrix, in which each row represents one solution point along the curve. The columns contain the value of the parameter(s) that have been varied, the equilibrium value of all environment variables, the equilibrium value for the birth rate of all structured populations in the problem, the equilibrium value of all interaction variables defined in the routine \texttt{Impact()} (see R code block [4.3.1.7](#code-block-4.3.1.7) or C code block [4.3.2.11](#code-block-4.3.2.11)), the per capita growth rate of all environment variables for which this is relevant (those of the type \texttt{PERCAPITARATE}, see section [4.3.1.3](#names-and-types-of-environmental-state-variables) or section [4.3.2.12](#specification-of-equilibrium-conditions-of-the-environment)), for each of the structured populations the expected number of offspring produced by an individual during its lifetime ($R_0$), for the structured population with index \texttt{popEVO} (if this index is defined via the option vector) the derivative of its $R_0$ value with respect to the evolutionary parameter (determined by the option \texttt{parEVO}, by default the bifurcation parameter) and finally the norm of the right-hand side of the system of equations that is solved. The latter quantity (referred to as RHS norm) measures how close the computed solution point is to the true solution. The derivative of the $R_0$ value for a structured population with respect to the bifurcation parameter can be used as an indicator for evolutionary change: positive and negative values of this derivative indicate that there is selection for larger and smaller values of the bifurcation parameter, respectively.
 
-The column layout just described pertains to computations of equilibrium curves. For other types of computed curves the number of columns in the output variable \verb|output$curvepoints| is different. For all curves that depend on two parameters (curve types \texttt{"BP"}, \texttt{"BPE"}, \texttt{"LP"} and \texttt{"PIP"}) the value of the second parameter is inserted as an additional column after all equilibrium values for the birth rates of the structured populations. For \texttt{"ESS"} curves additional columns are inserted after all these equilibrium birth rate values for each of the parameters that is forced to its evolutionary stationary value along the curve. In addition, preceding the final column with the RHS norm additional columns are added for the second-order partial derivatives of $R_0$ of the structured population with index \texttt{popEVO} with respect to the resident and mutant value of each of the evolutionary parameters, respectively (see sections [6.1](#theoretical-and-computational-background) to [6.3](#model-analysis-2) for more details). These partial derivatives characterize the evolutionary fixed point as a convergent stable strategy (CSS), an evolutionary repellor (ERP) or an evolutionary branching point (EBP).
+The column layout just described pertains to computations of equilibrium curves. For other types of computed curves the number of columns in the output variable \verb|output$curvepoints| is different. For all curves that depend on two parameters (curve types \texttt{"BP"}, \texttt{"BPE"}, \texttt{"LP"} and \texttt{"PIP"}) the value of the second parameter is inserted as an additional column after all equilibrium values for the birth rates of the structured populations. For \texttt{"ESS"} curves additional columns are inserted after all these equilibrium birth rate values for each of the parameters that is forced to its evolutionary stationary value along the curve. In addition, preceding the final column with the RHS norm additional columns are added for the second-order partial derivatives of $R_0$ of the structured population with respect to the resident and mutant value of each of the evolutionary parameters, respectively (see sections [6.1](#theoretical-and-computational-background) to [6.3](#model-analysis-2) for more details). These partial derivatives characterize the evolutionary fixed point as a convergent stable strategy (CSS), an evolutionary repellor (ERP) or an evolutionary branching point (EBP).
 
 When the \texttt{PSPMequi} function finishes, it prints textual information about the computation that has been carried out. This text also contains a header line indicating which column of the output contains which particular value (see the section [4.4.4](#an-example-session-using-the-function) below).
 
@@ -1881,54 +1878,52 @@ The sixth argument in the call to the \texttt{PSPMequi} function shown below is 
 ##### Command box 4.4.4.A {-}
 ```
 > output1 <- PSPMequi("PNAS2002", "EQ", c(1.0E-06, 1.0E-06), 0.5, c(1, 0, 4E-4), NULL,
-+                     c("popZE", "0", "envZE", "1", "envZE", "2"), clean=TRUE, force=TRUE);
+                      c("popZE", "0", "envZE", "1", "envZE", "2"), clean=TRUE, force=TRUE);
 
 Building executable PNAS2002equi.so ...
 
 <...compilation output lines suppressed in this box...>
 
-  1.00000000E-06  1.00000000E-06
-  1.35355339E-06  1.35355339E-06
-  1.70710678E-06  1.70710678E-06
+  1.00000000E-06, 1.00000000E-06
+  1.35355339E-06, 1.35355339E-06
+  1.70710678E-06, 1.70710678E-06
 <...output lines suppressed in this box...>
-  8.77817459E-06  8.77817459E-06
-  8.85690312E-06  8.85690312E-06  ****  BP #0   ****
-  9.13172798E-06  9.13172798E-06
+  8.77817459E-06, 8.77817459E-06
+  8.85690312E-06, 8.85690312E-06  ****  BP #0   ****
+  9.13172798E-06, 9.13172798E-06
 <...output lines suppressed in this box...>
-  3.34047294E-04  3.34047294E-04
-  3.69402633E-04  3.69402633E-04
-  4.04757972E-04  4.04757972E-04
+  3.34047294E-04, 3.34047294E-04
+  3.69402633E-04, 3.69402633E-04
+  4.04757972E-04, 4.04757972E-04
 
-
-#
-# Executing : PSPMequi("PNAS2002", "EQ", c(1E-06, 1E-06), 0.5, c(1, 0, 0.0004), NULL, c("popZE", "0", "envZE", "1", "envZE", "2"))
-#
-# Parameter values  :
-#
-# 	Rho       :  0.1          	Rmax      :  1E-06        	Lb        :  7
-# 	Lv        :  27           	Lj        :  110          	Lm        :  300
-# 	Beta      :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05
-# 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01
-# 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5
-# 	Delta     :  0.01
-#
-# Index of bifurcation parameter #1                            : 1
-#
-#           1:Rmax       2:E[0] 3:E[1] 4:E[2] 5:b[0] 6:I[0][0] .. 10:pcgE[1]     11:R0[0]  12:RHS norm
-#
+> cat(output1$curvedesc)
+ #
+ # Executing : PSPMequi("PNAS2002", "EQ", c(1E-06, 1E-06), 0.5, c(1, 0, 0.0004), NULL, c("popZE", "0", .......
+ #
+ # Parameter values  : 
+ #
+ # 	Rho       :  0.1          	Rmax      :  1E-06        	Lb        :  7            
+ # 	Lv        :  27           	Lj        :  110          	Lm        :  300          
+ # 	Omega     :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05      
+ # 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01         
+ # 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5          
+ # 	Delta     :  0.01         
+ #
+ # Index and name of bifurcation parameter #1                   : 1 (Rmax)
+ #
+ #         1:Rmax          2:E[0]          3:E[1]          4:E[2]          5:b[0]       6:I[0][0] .......
 > output1$curvepoints
-                V1           V2     V3     V4     V5        V6 ..        V10          V11          V12
+              Rmax         E[0]   E[1]   E[2]   b[0]   I[0][0] ..    pcgE[1]        R0[0]     RHS norm
  [1,] 1.000000e-06 1.000000e-06      0      0      0         0 ..      -0.01    0.0000000 0.000000e+00
- [2,] 1.353553e-06 1.353553e-06      0      0      0         0 ..      -0.01    0.0000000 4.235165e-17
- [3,] 1.707107e-06 1.707107e-06      0      0      0         0 ..      -0.01    0.0000000 4.235165e-17
+ [2,] 1.353553e-06 1.353553e-06      0      0      0         0 ..      -0.01    0.0000000 0.000000e+00
+ [3,] 1.707107e-06 1.707107e-06      0      0      0         0 ..      -0.01    0.0000000 0.000000e+00
 <...output lines suppressed in this box...>
-[70,] 2.986920e-04 2.986920e-04      0      0      0         0 ..      -0.01 4355.7372537 1.084202e-16
-[71,] 3.340473e-04 3.340473e-04      0      0      0         0 ..      -0.01 4430.1631161 5.421011e-17
-[72,] 3.694026e-04 3.694026e-04      0      0      0         0 ..      -0.01 4491.4630291 8.131516e-16
-[73,] 4.047580e-04 4.047580e-04      0      0      0         0 ..      -0.01 4542.8245742 1.084202e-16
+[71,] 3.340473e-04 3.340473e-04      0      0      0         0 ..      -0.01 4430.1631110 0.000000e+00
+[72,] 3.694026e-04 3.694026e-04      0      0      0         0 ..      -0.01 4491.4630242 0.000000e+00
+[73,] 4.047580e-04 4.047580e-04      0      0      0         0 ..      -0.01 4542.8245695 0.000000e+00
 > output1$bifpoints
-                V1           V2     V3     V4     V5        V6 ..        V10          V11          V12
- [1,] 8.856903e-06 8.856903e-06      0      0      0         0 ..      -0.01            1            0
+              Rmax         E[0]   E[1]   E[2]   b[0]   I[0][0] ..    pcgE[1]        R0[0]     RHS norm
+[1,] 8.856903e-06  8.856903e-06      0      0      0         0 ..      -0.01            1            0
 > output1$biftypes
 [1] "BP #0"
 ```
@@ -1948,46 +1943,46 @@ The next step in the analysis of the PNAS model starts from the detected transcr
 
 Dynamic library file PNAS2002equi.so is up-to-date
 
-  8.85690312E-06  8.85690312E-06  0.00000000E+00
-  9.05689403E-06  8.85690312E-06  1.90665832E-09
-  9.25688494E-06  8.85690312E-06  3.81331663E-09
+  8.85690312E-06, 8.85690312E-06, 0.00000000E+00
+  9.05689403E-06, 8.85690312E-06, 1.90665832E-09
+  9.25688494E-06, 8.85690312E-06, 3.81331663E-09
 <...output lines suppressed in this box...>
-  2.51840533E-04  8.85690312E-06  2.31653906E-06
-  2.53602314E-04  8.85690312E-06  2.33333540E-06  ****  BPE #1  ****
-  2.66316121E-04  8.85690312E-06  2.45454534E-06
+  2.51840533E-04, 8.85690312E-06, 2.31653906E-06
+  2.53602314E-04, 8.85690312E-06, 2.33333540E-06  ****  BPE #1  ****
+  2.66316121E-04, 8.85690312E-06, 2.45454534E-06
 <...output lines suppressed in this box...>
-  3.82120831E-04  8.85690312E-06  3.55859558E-06
-  3.96596420E-04  8.85690312E-06  3.69660186E-06
-  4.11072009E-04  8.85690312E-06  3.83460814E-06
+  3.82120831E-04, 8.85690312E-06, 3.55859558E-06
+  3.96596420E-04, 8.85690312E-06, 3.69660186E-06
+  4.11072009E-04, 8.85690312E-06, 3.83460814E-06
 
-#
-# Executing : PSPMequi("PNAS2002","EQ",c(8.8569E-06,8.8569E-06,0),0.2,c(1,0,0.0004),NULL,c("envZE","1","envZE","2"))
-#
-# Parameter values  :
-#
-# 	Rho       :  0.1          	Rmax      :  8.8569E-06   	Lb        :  7
-# 	Lv        :  27           	Lj        :  110          	Lm        :  300
-# 	Beta      :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05
-# 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01
-# 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5
-# 	Delta     :  0.01
-#
-# Index of bifurcation parameter #1                            : 1
-#
-# 1:           Rmax       2:E[0]       3:E[1]       4:E[2]       5:b[0]       10:pcgE[1] 11:R0[0]  12:RHS norm
-#
+> cat(output2$curvedesc)
+ #
+ # Executing : PSPMequi("PNAS2002", "EQ", c(8.8569E-06, 8.8569E-06, 0), 0.2, c(1, 0, 0.0004), NULL, ....
+ #
+ # Parameter values  : 
+ #
+ # 	Rho       :  0.1          	Rmax      :  8.8569E-06   	Lb        :  7            
+ # 	Lv        :  27           	Lj        :  110          	Lm        :  300          
+ # 	Omega     :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05      
+ # 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01         
+ # 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5          
+ # 	Delta     :  0.01         
+ #
+ # Index and name of bifurcation parameter #1                   : 1 (Rmax)
+ #
+ #         1:Rmax          2:E[0]          3:E[1]          4:E[2]          5:b[0]       6:I[0][0] ....
 > output2$curvepoints
-                 V1           V2           V3           V4           V5 ..           V10      V11          V12
- [1,]  8.856903e-06 8.856903e-06            0            0 0.000000e+00 .. -1.000000e-02        1 4.936400e-08
- [2,]  9.056894e-06 8.856903e-06            0            0 1.906658e-09 .. -9.991810e-03        1 4.936400e-08
- [3,]  9.256885e-06 8.856903e-06            0            0 3.813317e-09 .. -9.983620e-03        1 4.936401e-08
+              Rmax         E[0] E[1] E[2]         b[0]      I[0][0] ..        pcgE[1] R0[0]     RHS norm
+ [1,] 8.856903e-06 8.856903e-06    0    0 0.000000e+00 0.000000e+00 ..  -1.000000e-02     1 4.028136e-08
+ [2,] 9.056894e-06 8.856903e-06    0    0 1.906658e-09 1.999909e-08 ..  -9.991810e-03     1 4.028136e-08
+ [3,] 9.256885e-06 8.856903e-06    0    0 3.813317e-09 3.999818e-08 ..  -9.983620e-03     1 4.028136e-08
 <...output lines suppressed in this box...>
-[91,]  3.821208e-04 8.856903e-06            0            0 3.558596e-06 ..  5.235110e-03        1 5.005141e-08
-[92,]  3.965964e-04 8.856903e-06            0            0 3.696602e-06 ..  5.824070e-03        1 5.010536e-08
-[93,]  4.110720e-04 8.856903e-06            0            0 3.834608e-06 ..  6.412900e-03        1 5.016130e-08
+[91,] 3.821208e-04 8.856903e-06    0    0 3.558596e-06 3.732639e-05 ..   5.235110e-03     1 4.050461e-08
+[92,] 3.965964e-04 8.856903e-06    0    0 3.696602e-06 3.877395e-05 ..   5.824070e-03     1 4.052221e-08
+[93,] 4.110720e-04 8.856903e-06    0    0 3.834608e-06 4.022151e-05 ..   6.412900e-03     1 4.054047e-08
 > output2$bifpoints
-                 V1           V2           V3           V4           V5 ..           V10      V11          V12
- [1,]  0.0002536023 8.856903e-06            0            0 2.333335e-06 .. -9.538660e-11        1 5.628726e-09
+              Rmax         E[0] E[1] E[2]         b[0]      I[0][0] ..        pcgE[1] R0[0]     RHS norm
+[1,]  0.0002536023 8.856903e-06    0    0 2.333335e-06 2.447454e-05 ..  -1.181053e-10     1 1.024358e-08
 > output2$biftypes
 [1] "BPE #1"
 ```
@@ -2012,36 +2007,36 @@ Obviously, \verb|output2$bifpoints[3]| is equal to 0 as it represents the zero e
 
 Dynamic library file PNAS2002equi.so is up-to-date
 
-  2.53602314E-04  8.85690312E-06  0.00000000E+00  4.00801599E-06  2.33333540E-06
-  2.52575824E-04  8.85867223E-06  9.53209678E-08  4.00801603E-06  2.36171847E-06
-  2.51552996E-04  8.86045755E-06  1.90561304E-07  4.00801603E-06  2.39038298E-06
+  2.53602314E-04, 8.85690312E-06, 0.00000000E+00, 4.00801598E-06, 2.33333540E-06
+  2.52575824E-04, 8.85867223E-06, 9.53209678E-08, 4.00801603E-06, 2.36171847E-06
+  2.51552996E-04, 8.86045755E-06, 1.90561304E-07, 4.00801603E-06, 2.39038298E-06
 <...output lines suppressed in this box...>
-  8.84797878E-05  1.31293570E-05  3.80288012E-05  4.00801603E-06  5.16666426E-05
-  8.84988526E-05  1.32327343E-05  3.84539884E-05  4.00801603E-06  5.25658260E-05  ****  LP      ****
-  8.84988526E-05  1.32327343E-05  3.84539884E-05  4.00801603E-06  5.25658260E-05
+  8.84797878E-05, 1.31293570E-05, 3.80288012E-05, 4.00801603E-06, 5.16666426E-05
+  8.84814664E-05, 1.31432940E-05, 3.80864364E-05, 4.00801603E-06, 5.17883188E-05  ****  LP      ****
+  8.84988526E-05, 1.32327343E-05, 3.84539884E-05, 4.00801603E-06, 5.25658260E-05
 <...output lines suppressed in this box...>
-  3.89812802E-04  2.39609635E-04  1.32971757E-04  4.00801603E-06  2.92629903E-04
-  3.97021837E-04  2.46474525E-04  1.33292505E-04  4.00801603E-06  2.93524789E-04
-  4.04225759E-04  2.53351050E-04  1.33597449E-04  4.00801603E-06  2.94375934E-04
+  3.89812802E-04, 2.39609635E-04, 1.32971757E-04, 4.00801603E-06, 2.92629903E-04
+  3.97021837E-04, 2.46474525E-04, 1.33292505E-04, 4.00801603E-06, 2.93524789E-04
+  4.04225759E-04, 2.53351050E-04, 1.33597449E-04, 4.00801603E-06, 2.94375934E-04
 
-#
-# Executing : PSPMequi("PNAS2002","EQ",c(0.000253602,8.8569E-06,0,4.00802E-06,2.33334E-06),-0.1,c(1,0,0.0004),NULL,NULL)
-#
-# Parameter values  :
-#
-# 	Rho       :  0.1          	Rmax      :  0.000253602  	Lb        :  7
-# 	Lv        :  27           	Lj        :  110          	Lm        :  300
-# 	Beta      :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05
-# 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01
-# 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5
-# 	Delta     :  0.01
-#
-# Index of bifurcation parameter #1                            : 1
-#
-# 1:           Rmax       2:E[0]       3:E[1]       4:E[2]       5:b[0]       10:pcgE[1] 11:R0[0]  12:RHS norm
-#
+> cat(output3$curvedesc)
+ #
+ # Executing : PSPMequi("PNAS2002", "EQ", c(0.000253602, 8.8569E-06, 0, 4.00802E-06, 2.33334E-06), -0.1, ....
+ #
+ # Parameter values  : 
+ #
+ # 	Rho       :  0.1          	Rmax      :  0.000253602  	Lb        :  7            
+ # 	Lv        :  27           	Lj        :  110          	Lm        :  300          
+ # 	Omega     :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05      
+ # 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01         
+ # 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5          
+ # 	Delta     :  0.01         
+ #
+ # Index and name of bifurcation parameter #1                   : 1 (Rmax)
+ #
+ #         1:Rmax          2:E[0]          3:E[1]          4:E[2]          5:b[0]       6:I[0][0] ....
 > output3$curvepoints
-                 V1           V2           V3           V4           V5 ..           V10      V11          V12
+               Rmax         E[0]         E[1]         E[2]         b[0]          pcgE[1]    R0[0]     RHS norm
   [1,] 2.536023e-04 8.856903e-06 0.000000e+00 4.008016e-06 2.333335e-06 .. -8.589692e-11        1 5.165766e-08
   [2,] 2.525758e-04 8.858672e-06 9.532097e-08 4.008016e-06 2.361718e-06 .. -6.953758e-11        1 3.101426e-08
   [3,] 2.515530e-04 8.860458e-06 1.905613e-07 4.008016e-06 2.390383e-06 .. -4.268759e-11        1 2.153277e-08
@@ -2050,7 +2045,7 @@ Dynamic library file PNAS2002equi.so is up-to-date
 [438,] 3.970218e-04 2.464745e-04 1.332925e-04 4.008016e-06 2.935248e-04 .. -5.802998e-10        1 2.330581e-07
 [439,] 4.042258e-04 2.533510e-04 1.335974e-04 4.008016e-06 2.943759e-04 .. -5.761841e-10        1 2.314052e-07
 > output3$bifpoints
-                 V1           V2           V3           V4           V5 ..           V10      V11          V12
+               Rmax         E[0]         E[1]         E[2]         b[0]          pcgE[1]    R0[0]     RHS norm
   [1,] 8.849885e-05 1.323273e-05 3.845399e-05 4.008016e-06 5.256583e-05 .. -1.641421e-10        1 6.625094e-08
 > output3$biftypes
 [1] "LP"
@@ -2074,35 +2069,34 @@ At the consumer invasion boundary, the environment variables with index 1 and 2,
 
 Dynamic library file PNAS2002equi.so is up-to-date
 
-  8.85690312E-06  8.85690312E-06  1.00000000E-02
-  8.88483087E-06  8.88483087E-06  1.03112655E-02
-  8.91358293E-06  8.91358293E-06  1.06066164E-02
+  8.85690312E-06, 8.85690312E-06, 1.00000000E-02
+  8.88483087E-06, 8.88483087E-06, 1.03112655E-02
+  8.91358293E-06, 8.91358293E-06, 1.06066164E-02
 <...output lines suppressed in this box...>
-  3.94598924E-04  3.94598924E-04  8.27003296E-02
-  3.98126241E-04  3.98126241E-04  8.27343996E-02
-  4.01653833E-04  4.01653833E-04  8.27678949E-02
+  3.94598924E-04, 3.94598924E-04, 8.27003296E-02
+  3.98126241E-04, 3.98126241E-04, 8.27343996E-02
+  4.01653833E-04, 4.01653833E-04, 8.27678949E-02
 
-#
-# Executing : PSPMequi("PNAS2002","BP",c(8.8569E-06,8.8569E-06,0.01),0.05,c(1,0,0.0004,11,0,0.1),NULL,
-                       c("envZE", "1", "envZE", "2", "popBP", "0"))
-#
-# Parameter values  :
-#
-# 	Rho       :  0.1          	Rmax      :  8.8569E-06   	Lb        :  7
-# 	Lv        :  27           	Lj        :  110          	Lm        :  300
-# 	Beta      :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05
-# 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01
-# 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5
-# 	Delta     :  0.01
-#
-# Index of bifurcation parameter #1                            : 1
-# Index of bifurcation parameter #2                            : 11
-# Index of structured population with transcritical bifurcation: 0
-#
-#            1:Rmax       2:E[0]        3:E[1]       4:E[2]       5:b[0]      6:Mub  ..   13:RHS norm
-#
+> cat(output4$curvedesc)
+ #
+ # Executing : PSPMequi("PNAS2002", "BP", c(8.8569E-06, 8.8569E-06, 0.01), 0.05, c(1, 0, 0.0004, 11, ....
+ #
+ # Parameter values  : 
+ #
+ # 	Rho       :  0.1          	Rmax      :  8.8569E-06   	Lb        :  7            
+ # 	Lv        :  27           	Lj        :  110          	Lm        :  300          
+ # 	Omega     :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05      
+ # 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01         
+ # 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5          
+ # 	Delta     :  0.01         
+ #
+ # Index and name of bifurcation parameter #1                   : 1 (Rmax)
+ # Index and name of bifurcation parameter #2                   : 11 (Mub)
+ # Index of structured population with transcritical bifurcation: 0
+ #
+ #         1:Rmax          2:E[0]          3:E[1]          4:E[2]          5:b[0]           6:Mub ....
 > output4$curvepoints
-                 V1           V2            V3           V4           V5         V6  ..           V13
+               Rmax         E[0]          E[1]         E[2]         b[0]        Mub  ..      RHS norm
   [1,] 8.856903e-06 8.856903e-06             0            0            0 0.01000000  ..  4.920353e-08
   [2,] 8.884831e-06 8.884831e-06             0            0            0 0.01031127  ..  1.327406e-08
   [3,] 8.913583e-06 8.913583e-06             0            0            0 0.01060662  ..  1.515673e-08
@@ -2121,40 +2115,39 @@ The environment variables with index 2, representing the total biomass density o
 
 ##### Command box 4.4.4.E {-}
 ```
-> output5 <- PSPMequi("PNAS2002","BPE",c(output2$bifpoints[c(1,2,5)],0.01), 0.1,c(1,0,4E-4,11,0,0.1),NULL,
+> output5 <- PSPMequi("PNAS2002","BPE",c(output2$bifpoints[c(1,2,5)],0.01), -0.1, c(1,0,4E-4,11,0,0.1), NULL,
                       c("envZE","2","envBP","1"))
 
 Dynamic library file PNAS2002equi.so is up-to-date
 
-  2.53602314E-04  8.85690312E-06  2.33333540E-06  1.00000000E-02
-  2.44422274E-04  8.88032498E-06  2.35250524E-06  1.02628274E-02
-  2.35413020E-04  8.90710825E-06  2.37324896E-06  1.05420330E-02
+  2.53602314E-04, 8.85690312E-06, 2.33333540E-06, 1.00000000E-02
+  2.44422274E-04, 8.88032498E-06, 2.35250524E-06, 1.02628274E-02
+  2.35413020E-04, 8.90710825E-06, 2.37324896E-06, 1.05420330E-02
 <...output lines suppressed in this box...>
-  3.88476406E-04  2.61758185E-04  1.08055050E-05  8.07841851E-02
-  3.95419276E-04  2.68571865E-04  1.08238254E-05  8.09262046E-02
-  4.02376220E-04  2.75405272E-04  1.08413352E-05  8.10619333E-02
+  3.88476404E-04, 2.61758186E-04, 1.08055050E-05, 8.07841851E-02
+  3.95419275E-04, 2.68571866E-04, 1.08238254E-05, 8.09262046E-02
+  4.02376218E-04, 2.75405273E-04, 1.08413352E-05, 8.10619333E-02
 
-#
-# Executing : PSPMequi("PNAS2002","BPE",c(0.000253602,8.8569E-06,2.33334E-06,0.01),-0.1,c(1,0,0.0004,11,0,0.1),NULL,
-             c("envZE","2","envBP","1"))
-#
-# Parameter values  :
-#
-# 	Rho       :  0.1          	Rmax      :  0.000253602  	Lb        :  7
-# 	Lv        :  27           	Lj        :  110          	Lm        :  300
-# 	Beta      :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05
-# 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01
-# 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5
-# 	Delta     :  0.01
-#
-# Index of bifurcation parameter #1                            : 1
-# Index of bifurcation parameter #2                            : 11
-# Index of environment variable with transcritical bifurcation : 1
-#
-#            1:Rmax       2:E[0]        3:E[1]       4:E[2]       5:b[0]      6:Mub  ..   13:RHS norm
-#
+> cat(output5$curvedesc)
+ #
+ # Executing : PSPMequi("PNAS2002", "BPE", c(0.000253602, 8.8569E-06, 2.33334E-06, 0.01), -0.1, c(1, 0, ....
+ #
+ # Parameter values  : 
+ #
+ # 	Rho       :  0.1          	Rmax      :  0.000253602  	Lb        :  7            
+ # 	Lv        :  27           	Lj        :  110          	Lm        :  300          
+ # 	Omega     :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05      
+ # 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01         
+ # 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5          
+ # 	Delta     :  0.01         
+ #
+ # Index and name of bifurcation parameter #1                   : 1 (Rmax)
+ # Index and name of bifurcation parameter #2                   : 11 (Mub)
+ # Index of environment variable with transcritical bifurcation : 1
+ #
+ #         1:Rmax          2:E[0]          3:E[1]          4:E[2]          5:b[0]           6:Mub ....
 > output5$curvepoints
-                 V1           V2            V3           V4           V5         V6  ..           V13
+               Rmax         E[0]          E[1]         E[2]         b[0]        Mub  ..      RHS norm
   [1,] 0.0002536023 8.856903e-06             0            0 2.333335e-06 0.01000000  ..  5.082990e-08
   [2,] 0.0002444223 8.880325e-06             0            0 2.352505e-06 0.01026283  ..  1.784247e-08
   [3,] 0.0002354130 8.907108e-06             0            0 2.373249e-06 0.01054203  ..  2.365370e-08
@@ -2177,34 +2170,33 @@ For this computation the option vector is left undefined (\texttt{NULL}), becaus
 
 Dynamic library file PNAS2002equi.so is up-to-date
 
-  8.84988526E-05  1.31478259E-05  3.80697042E-05  4.00801603E-06  5.17387220E-05  1.00133536E-02
-  8.86520573E-05  1.31876853E-05  3.79221830E-05  4.00801603E-06  5.13036116E-05  1.01310924E-02
-  8.88061573E-05  1.32276419E-05  3.77736423E-05  4.00801603E-06  5.08693956E-05  1.02496461E-02
+  8.84814664E-05, 1.31432940E-05, 3.80864364E-05, 4.00801603E-06, 5.17883188E-05, 1.00000000E-02
+  8.86345687E-05, 1.31831422E-05, 3.79390306E-05, 4.00801603E-06, 5.13531071E-05, 1.01176460E-02
+  8.87885673E-05, 1.32230878E-05, 3.77906066E-05, 4.00801603E-06, 5.09187888E-05, 1.02361069E-02
 <...output lines suppressed in this box...>
-  1.12749308E-04  1.70600662E-05  5.08576521E-08  4.00801603E-06  4.95866499E-06  3.44777934E-02
-  1.12762300E-04  1.70588531E-05  3.89902246E-09  4.00801603E-06  4.94169593E-06  3.45006828E-02
-  1.12775266E-04  1.70576306E-05 -4.30752282E-08  4.00801603E-06  4.92476988E-06  3.45235657E-02
+  1.12738377E-04, 1.70610775E-05, 9.02825567E-08, 4.00801603E-06, 4.97294922E-06, 3.44585647E-02
+  1.12751391E-04, 1.70598722E-05, 4.33370914E-08, 4.00801603E-06, 4.95594400E-06, 3.44814596E-02
+  1.12764379E-04, 1.70586576E-05,-3.62404431E-09, 4.00801603E-06, 4.93898184E-06, 3.45043479E-02
 
-#
-# Executing : PSPMequi("PNAS2002","LP",c(8.84989E-05,1.32327E-05,3.8454E-05,4.00802E-06,5.25658E-05,0.01),0.05,
-                       c(1,0,0.0004,11,0,0.1),NULL,NULL)
-#
-# Parameter values  :
-#
-# 	Rho       :  0.1          	Rmax      :  8.84989E-05  	Lb        :  7
-# 	Lv        :  27           	Lj        :  110          	Lm        :  300
-# 	Beta      :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05
-# 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01
-# 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5
-# 	Delta     :  0.01
-#
-# Index of bifurcation parameter #1                            : 1
-# Index of bifurcation parameter #2                            : 11
-#
-#            1:Rmax       2:E[0]        3:E[1]       4:E[2]       5:b[0]      6:Mub  ..   13:RHS norm
-#
+> cat(output6$curvedesc)
+ #
+ # Executing : PSPMequi("PNAS2002", "LP", c(8.84815E-05, 1.31433E-05, 3.80864E-05, 4.00802E-06, ....
+ #
+ # Parameter values  : 
+ #
+ # 	Rho       :  0.1          	Rmax      :  8.84815E-05  	Lb        :  7            
+ # 	Lv        :  27           	Lj        :  110          	Lm        :  300          
+ # 	Omega     :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05      
+ # 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01         
+ # 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5          
+ # 	Delta     :  0.01         
+ #
+ # Index and name of bifurcation parameter #1                   : 1 (Rmax)
+ # Index and name of bifurcation parameter #2                   : 11 (Mub)
+ #
+ #         1:Rmax          2:E[0]          3:E[1]          4:E[2]          5:b[0]           6:Mub ....
 > output6$curvepoints
-                 V1           V2            V3           V4           V5         V6  ..           V13
+               Rmax         E[0]          E[1]         E[2]         b[0]        Mub  ..      RHS norm
   [1,] 8.849885e-05 1.314783e-05  3.806970e-05 4.008016e-06 5.173872e-05 0.01001335  ..  1.618225e-10
   [2,] 8.865206e-05 1.318769e-05  3.792218e-05 4.008016e-06 5.130361e-05 0.01013109  ..  1.958108e-11
   [3,] 8.880616e-05 1.322764e-05  3.777364e-05 4.008016e-06 5.086940e-05 0.01024965  ..  1.912080e-11
@@ -2294,6 +2286,8 @@ The [EBTtool](https://staff.fnwi.uva.nl/a.m.deroos/EBT/index.html) is a software
 
 > Even though the [EBTtool](https://staff.fnwi.uva.nl/a.m.deroos/EBT/index.html) can not be used to numerically integrate a model that is implemented in the \texttt{PSPManalysis} template, it might nonetheless be a good idea to download and install this software as it provides a useful graphical user interface to explore the results of numerical integrations. In particular, it uses the same type of data files as produced by the \texttt{PSPManalysis} package (output files with extensions \texttt{.out} and \texttt{.csb}; see section [5.3](#output-files-generated-by-the-function-2) below) and is particularly useful to analyze the changes in the population distribution over time. The [EBTtool](https://staff.fnwi.uva.nl/a.m.deroos/EBT/index.html) moreover implements methods to output sequences of these population states to an animated GIF file that can be used for presentations.
 
+> The \texttt{PSPManalysis} package implements both the simplified EBT method proposed by Brännström, Carlsson and Simpson [-@Brannstrometal2013] as well as the original EBT method [@DeRoos1988, @DeRoosetal1992]. The simplified EBT method is faster, but possibly less accurate than the original EBT method. Switching between the two methods can be done by defining the \verb|EBTMETHOD| equal to 0 or 1 in the model implementation file. See also section [9.3](#optional-numerical-settings-2).
+
 ## Arguments and output of the \texttt{PSPMecodyn} function
 The use of the \texttt{PSPMecodyn} function will be illustrated with the PNAS model as described in section [4.2](#an-example-model-for-equilibrium-and-bifurcation-analysis) and analysed in section [4.4](#model-analysis-1). A demo script \texttt{"deRoosPerssonDynamics"} is included with the \texttt{PSPManalysis} package that carries out numerical integration of the PNAS model, starting from three different initial conditions.
 
@@ -2301,7 +2295,8 @@ The general call to the \texttt{PSPMecodyn} function is shown in the command box
 
 ```
 > output <- PSPMecodyn(modelname = NULL, startstate = NULL, timepars = NULL, bifpars = NULL,
-                       parameters = NULL, options = NULL, clean = FALSE, force = FALSE, debug = FALSE)
+                       parameters = NULL, options = NULL, clean = FALSE, force = FALSE,
+                       debug = FALSE, silent = FALSE)
 ```
 
 The obligatory and optional arguments to the \texttt{PSPMecodyn} function are the following:
@@ -2344,15 +2339,17 @@ The obligatory and optional arguments to the \texttt{PSPMecodyn} function are th
     
     i. Option pair \texttt{c("info", "}*i*\texttt{")}: This option modifies the output of the DOPRI5 integration method to the output file with extension \texttt{.err} (see section [5.3](#output-files-generated-by-the-function-2) below). The value of *i* can be set equal to 1, 2, 3 or 4. The default behavior of the function \texttt{PSPMecodyn} is equivalent to *i* equal to 0, in which case no output at all is produced in the file with extension \texttt{.err}. With higher values of *i* more information is produced detailing the performance of the integration method (i.e. step sizes used, number of succesfull and unsuccesfull integration steps, etc.). This output is only useful in case problems occur during the numerical integration of the model.
     
-    i. Option pair \texttt{c("report", "}*i*\texttt{")}: This option, which should have a positive value *i*, determines the time interval between consecutive lines of data output to the console. The default behavior of the function \texttt{PSPMecodyn} is to write a line of output to the console whenever a new cohort of individuals is constructed. However, this may result in a lot of output. By choosing a higher value for this option the program can be forced to write to the console only every 10th time that a cohort is constructed. Notice that this option does not affect the freequency with which output is written to the output file with extension \texttt{.out} (see section [5.3](#output-files-generated-by-the-function-2) below).
+    i. Option pair \texttt{c("report", "}*i*\texttt{")}: This option, which should have a positive value *i*, determines the time interval between consecutive lines of data output to the console. The default behavior of the function \texttt{PSPMecodyn} is to write a line of output to the console whenever a new cohort of individuals is constructed. However, this may result in a lot of output. By choosing a higher value for this option the program can be forced to write to the console only every 10th time that a cohort is constructed. Notice that this option does not affect the frequency with which output is written to the output file with extension \texttt{.out} (see section [5.3](#output-files-generated-by-the-function-2) below).
 
-Three other optional arguments can be passed to the \texttt{PSPMecodyn} function: \texttt{clean}, \texttt{force} and \texttt{debug}. These are all boolean arguments that hence have to be passed to the \texttt{PSPMecodyn} function as $<$*option name*$>$\texttt{=TRUE} or $<$*option name*$>$\texttt{=FALSE}, the latter being the default value of all options (Specifying these options as argument is hence only useful when setting them equal to \texttt{TRUE}). Unlike the previous arguments, which all modify the computations to be performed, these options modify the behavior of the \texttt{PSPMecodyn} function itself, in particular the compilation of the model specific file into a dynamic library module that can be executed from \texttt{R}. Also unlike all the previous arguments that can be passed, these arguments can be passed in any order and at any position, the \texttt{PSPMecodyn} function will filter these 3 optional arguments from the argument list before passing the filtered argument list to the computational routine.
+Four other optional arguments can be passed to the \texttt{PSPMecodyn} function: \texttt{clean}, \texttt{force}, \texttt{debug} and \texttt{silent}. These are all boolean arguments that hence have to be passed to the \texttt{PSPMecodyn} function as $<$*option name*$>$\texttt{=TRUE} or $<$*option name*$>$\texttt{=FALSE}, the latter being the default value of all options (Specifying these options as argument is hence only useful when setting them equal to \texttt{TRUE}). Unlike the previous arguments, which all modify the computations to be performed, these options modify the behavior of the \texttt{PSPMecodyn} function itself, in particular the compilation of the model specific file into a dynamic library module that can be executed from \texttt{R}. Also unlike all the previous arguments that can be passed, these arguments can be passed in any order and at any position, the \texttt{PSPMecodyn} function will filter these 3 optional arguments from the argument list before passing the filtered argument list to the computational routine.
 	
 * Option \texttt{clean}: When \texttt{clean=TRUE} is passed as argument, this argument instructs the \texttt{PSPMecodyn} function to delete all result files that have been generated during previous calculations with the model. These result files have names of the form \texttt{<Modelname>-<Type>-<NNNN>.err}, \texttt{<Modelname>-<Type>-<NNNN>.csb} and \texttt{<Modelname>-<Type>-<NNNN>.out}, in which \texttt{<Modelname>} refers to the name of the model, \texttt{<Type>} refers to the type of computation that has been performed, which in the case of \texttt{PSPMecodyn} equals \texttt{ECODYN}, and \texttt{<NNNN>} is a unique number that distinguishes consecutive computations of the same type of curve with the same model. Deleting all the output files from previous computations and/or the compiled program executables that the package has generated can also be done separately. The package implements a function \texttt{PSPMclean()} to delete all \texttt{.bif}, \texttt{.err}, \texttt{.csb} and \texttt{.out} files and/or all executable files that are present in the current working directory.
 	
 * Option \texttt{force}: When \texttt{force=TRUE} is passed as argument, it instructs the \texttt{PSPMecodyn} function to force re-compilation of the model specific file into a dynamic library module that can be executed by \texttt{R}. This option will usually not be needed by normal users, as the \texttt{PSPMecodyn} function automatically recompiles the computational module when the model specific file with an \texttt{'.h'} or \texttt{'.h'} extension is more recently changed than the compiled dynamic library file. However, if for some unclear reason this automatic recompilation fails, the \texttt{force} option can be used to initiate re-compilation.
 	
 * Option \texttt{debug}: When \texttt{debug=TRUE} is passed as argument, it instructs the \texttt{PSPMecodyn} function to turn on debugging flags while compiling the model specific file into a dynamic library module. This option can be useful to detect programming mistakes in the model-specific file that are otherwise hard to track down. The downside is that depending on the version of \texttt{R} that is used, turning on debugging flags during compilation may generate a lot of output, including warnings about standard files of the operating system that are perfectly correct. It is hence not so easy to spot among all these messages the warnings that relate to the model-specific code that has been implemented.
+
+* Option \texttt{silent}: When \texttt{silent=TRUE} is passed as argument, it instructs the \texttt{PSPMecodyn} function to suppress all messages from the compilation of the model specific file into a dynamic library module. This option is useful to prevent cluttering the console with superfluous messages once a model specific file has been tested sufficiently and functions without problems.
 
 The computational module generates on execution a single list object as output with 2 member elements (see the help page on \texttt{PSPMecodyn} using `?PSPMecodyn`). The first element of the output list, \verb|output$curvepoints| contains the numerical information of the points along the computed curve. This variable \verb|output$curvepoints| is a matrix, in which each row represents one solution point along the curve. The columns contain the time value, the value of all environment variables, the value for the birth rate of all structured populations in the problem, followed by the value of all interaction variables defined in the routine \texttt{Impact()}.
 
@@ -2363,30 +2360,16 @@ The demo script \texttt{"deRoosPerssonDynamics"} illustrates the use of the \tex
 
 ##### Command box 5.2.A {-}
 ```
-> output <- PSPMequi("PNAS2002", "EQ", c(3.0E-04, 1.561E-04, 1.270E-04, 4.008E-06, 2.761E-04), 0.1, c(1, 0, 1), options = c("single"), clean = TRUE, force = TRUE)
+> output <- PSPMequi("PNAS2002", "EQ", c(3.0E-04, 1.561E-04, 1.270E-04, 4.008E-06, 2.761E-04), 0.1, 
+                     c(1, 0, 1), options = c("single"), clean = TRUE, force = TRUE)
 
 <...compilation output lines suppressed in this box...>
 
   3.00000000E-04, 1.56127570E-04, 1.27032702E-04, 4.00801603E-06, 2.76129173E-04
 
-#
-# Executing : PSPMequi("PNAS2002", "EQ", c(0.0003, 0.0001561, 0.000127, 4.008E-06, 0.0002761), 0.1, c(1, 0, 1), NULL, c("single"))
-#
-# Parameter values  : 
-#
-# 	Rho       :  0.1          	Rmax      :  0.0003       	Lb        :  7            
-# 	Lv        :  27           	Lj        :  110          	Lm        :  300          
-# 	Beta      :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05      
-# 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01         
-# 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5          
-# 	Delta     :  0.01         
-#
-# Index and name of bifurcation parameter #1                   :  1 (Rmax)
-#
-#         1:Rmax         2:E[ 0]         3:E[ 1]         4:E[ 2]         5:b[ 0]     6:I[ 0][ 0]     7:I[ 0][ 1]     8:I[ 0][ 2]     9:I[ 0][ 3]     10:pcgE[ 1]       11:R0[ 0]     12:RHS norm
-#
 > initstate <- csbread("PNAS2002-EQ-0000.csb", 1)
-> output1 <- PSPMecodyn("PNAS2002", initstate, c(1, 1, 10, 1000), options = c("report", "50"), clean = TRUE, force = TRUE)
+> output1 <- PSPMecodyn("PNAS2002", initstate, c(1, 1, 10, 1000), options = c("report", "50"),
+                        clean = TRUE, force = TRUE)
 
 <...compilation output lines suppressed in this box...>
 
@@ -2402,27 +2385,29 @@ The demo script \texttt{"deRoosPerssonDynamics"} illustrates the use of the \tex
 RUN PNAS2002-ECODYN-0000 COMPLETED at T = 1000.00:
 ** Program terminated. Normal closure of output files succeeded.          **
 
-#
-# Executing : PSPMecodyn("PNAS2002", <Initial state>, c(1, 1, 10, 1000), NULL, NULL, c("report", "50"))
-#
-# Parameter values  : 
-#
-# 	Rho       :  0.1          	Rmax      :  0.0003       	Lb        :  7            
-# 	Lv        :  27           	Lj        :  110          	Lm        :  300          
-# 	Beta      :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05      
-# 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01         
-# 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5          
-# 	Delta     :  0.01         
-#
-#	Cohort cycle time interval                                         : 1.0
-#	Output time interval                                               : 1.0
-#	Complete state output interval                                     : 10.0
-#	Maximum integration time                                           : 1000.0
-#
-#
-#     1:Time       2:E[0]       3:E[1]       4:E[2]       5:b[0] ..    7:I[0][1]    8:I[0][2]    9:I[0][3]
+> cat(output1$curvedesc)
+ #
+ # Executing : PSPMecodyn("PNAS2002", <Initial state>, c(1, 1, 10, 1000), NULL, NULL, c("report", "50"))
+ #
+ # Parameter values  : 
+ #
+ # 	Rho       :  0.1          	Rmax      :  0.0003       	Lb        :  7            
+ # 	Lv        :  27           	Lj        :  110          	Lm        :  300          
+ # 	Omega     :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05      
+ # 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01         
+ # 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5          
+ # 	Delta     :  0.01         
+ #
+ #	Cohort cycle time interval                                         : 1.0
+ #	Output time interval                                               : 1.0
+ #	Complete state output interval                                     : 10.0
+ #	Maximum integration time                                           : 1000.0
+ #
+ #
+ #   1:Time            2:E[0]          3:E[1]          4:E[2]          5:b[0]       6:I[0][0] ....
+
 > output1$curvepoints
-          V1           V2           V3           V4           V5 ..           V7           V8           V9
+        Time         E[0]         E[1]         E[2]         b[0] ..      I[0][1]      I[0][2]      I[0][3]
    [1,]    0 0.0001561276 0.0001270327 3.262443e-06 0.0000000000 .. 3.262443e-06 1.414324e-05 0.0001710999
    [2,]    1 0.0001562952 0.0001268490 3.571646e-06 0.0002817937 .. 3.571646e-06 9.659792e-06 0.0001755738
    [3,]    2 0.0001563517 0.0001267466 3.775143e-06 0.0002807738 .. 3.775143e-06 1.000305e-05 0.0001752195
@@ -2440,16 +2425,17 @@ This starting point of the numerical integration is passed to the function \text
 
 In the \texttt{R} command box above the values of the computed points along the trajectory of the model dynamics are saved in the output list element \verb|output1$curvepoints|, the contents of which are inspected after the \texttt{PSPMecodyn} function finishes and it has printed out the textual information about the computation. The output list element \verb|output1$curvepoints| contains in consecutive columns the time value, the values of all environmental state variables, the current population birth rate of all structured populations and the values of all interaction variables defined in the function `Impact()` (see section [4.3.2.11](#specification-of-feedback-impact-on-the-environment)). The demo script \texttt{"deRoosPerssonDynamics"} uses the data contained in \verb|output1$curvepoints| to plot the juvenile biomass (the sum of column 7 and 8 of \verb|output1$curvepoints|) as well as the adult biomass (column 9 of \verb|output1$curvepoints|) as a function of time.
 
-In the following \texttt{R} command box, another trajectory of the dynamics is computed, but now starting from an initial state generated by the function \texttt{PSPMind}. This function computes the individual life history at a specific set of values for the environmental state variables. The details abut the function \texttt{PSPMind} are discussed in chapter [8](#simulating-the-individual-life-history) and hence will not be covered here. The only thing to point out here is that the second argument in the call to the function \texttt{PSPMind} is a vector \texttt{c(1.561276e-04, 1.270327e-04, 4.008016e-06, 0.01)} with as its first 3 elements the values of the environemental state variables at which to compute the individual life history (see section [4.3.2.1](#definition-of-problem-dimensions-and-numerical-settings) for the interpretation of these environmental state variables). The last element of this vector (0.01) defines the population birth rate, which value will be used to scale the number of individuals in all cohorts of the population. Larger values of this birth rate will hence imply that the size-structured consumer population is initially larger. The output of the function \texttt{PSPMind} is a list with the same structure as produced by the function \texttt{PSPMequi} in its state output file with extension \texttt{.csb}. This state produced as output by the function \texttt{PSPMind} is assigned to the variable \texttt{initstate}, which is subsequently used as starting point for the numerical integration. The subsequent call to the function \texttt{PSPMecodyn} is identical to the one shown in \texttt{R} command box [5.2.A](#command-box-5.2.a), while also its output is similar to the output shown in command box [5.2.A](#command-box-5.2.a) and discussed above. These will hence not be further discussed here. The demo script \texttt{"deRoosPerssonDynamics"} uses also the data contained in \verb|output2$curvepoints| to plot the juvenile biomass (the sum of column 7 and 8 of \verb|output2$curvepoints|) as well as the adult biomass (column 9 of \verb|output2$curvepoints|) of this trajectory as a function of time.
+In the following \texttt{R} command box, another trajectory of the dynamics is computed, but now starting from an initial state generated by the function \texttt{PSPMind}. This function computes the individual life history at a specific set of values for the environmental state variables. The details about the function \texttt{PSPMind} are discussed in chapter [8](#simulating-the-individual-life-history) and hence will not be covered here. The only thing to point out here is that the second argument in the call to the function \texttt{PSPMind} is a vector \texttt{c(1.561276e-04, 1.270327e-04, 4.008016e-06, 0.01)} with as its first 3 elements the values of the environmental state variables at which to compute the individual life history (see section [4.3.2.1](#definition-of-problem-dimensions-and-numerical-settings) for the interpretation of these environmental state variables). The last element of this vector (0.01) defines the population birth rate, which value will be used to scale the number of individuals in all cohorts of the population. Larger values of this birth rate will hence imply that the size-structured consumer population is initially larger. The output of the function \texttt{PSPMind} is a list with the same structure as produced by the function \texttt{PSPMequi} in its state output file with extension \texttt{.csb}. This state produced as output by the function \texttt{PSPMind} is assigned to the variable \texttt{initstate}, which is subsequently used as starting point for the numerical integration. The subsequent call to the function \texttt{PSPMecodyn} is identical to the one shown in \texttt{R} command box [5.2.A](#command-box-5.2.a), while also its output is similar to the output shown in command box [5.2.A](#command-box-5.2.a) and discussed above. These will hence not be further discussed here. The demo script \texttt{"deRoosPerssonDynamics"} uses also the data contained in \verb|output2$curvepoints| to plot the juvenile biomass (the sum of column 7 and 8 of \verb|output2$curvepoints|) as well as the adult biomass (column 9 of \verb|output2$curvepoints|) of this trajectory as a function of time.
 
 ##### Command box 5.2.B {-}
 ```
-> initstate <- PSPMind("PNAS2002", c(1.561276e-04, 1.270327e-04, 4.008016e-06, 0.01), options = c("isort", "1"))
+> initstate <- PSPMind("PNAS2002", c(1.561276e-04, 1.270327e-04, 4.008016e-06, 0.01),
+                       options = c("isort", "1"))
 
 <...compilation output lines suppressed in this box...>
 
-                                    Istate[ 0]     Istate[ 1]       Survival             R0        Impact[ 0]        Impact[ 1]        Impact[ 2]        Impact[ 3]
-Pop. # 0 - Bstate  0 - (Final):        1248.79        273.555          1E-09              1         0.0521033          0.014515         0.0426407          0.628847
+                                Istate[ 0]  Istate[ 1]    Survival        R0    Impact[ 0] ....
+Pop. # 0 - Bstate  0 - (Final):    1248.79    273.555       1E-09          1     0.0521033 ....
 
 
 > output2 <- PSPMecodyn("PNAS2002", initstate, c(1, 1, 10, 1000), options = c("report", "50"))
@@ -2467,27 +2453,29 @@ Dynamic library file PNAS2002ecodyn.so is up-to-date
 RUN PNAS2002-ECODYN-0001 COMPLETED at T = 1000.00:
 ** Program terminated. Normal closure of output files succeeded.          **
 
-#
-# Executing : PSPMecodyn("PNAS2002", <Initial state>, c(1, 1, 10, 1000), NULL, NULL, c("report", "50"))
-#
-# Parameter values  : 
-#
-# 	Rho       :  0.1          	Rmax      :  0.0003       	Lb        :  7            
-# 	Lv        :  27           	Lj        :  110          	Lm        :  300          
-# 	Beta      :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05      
-# 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01         
-# 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5          
-# 	Delta     :  0.01         
-#
-#	Cohort cycle time interval                                         : 1.0
-#	Output time interval                                               : 1.0
-#	Complete state output interval                                     : 10.0
-#	Maximum integration time                                           : 1000.0
-#
-#
-#     1:Time       2:E[0]       3:E[1]       4:E[2]       5:b[0] ..    7:I[0][1]    8:I[0][2]    9:I[0][3]
+> cat(output2$curvedesc)
+ #
+ # Executing : PSPMecodyn("PNAS2002", <Initial state>, c(1, 1, 10, 1000), NULL, NULL, c("report", "50"))
+ #
+ # Parameter values  : 
+ #
+ # 	Rho       :  0.1          	Rmax      :  0.0003       	Lb        :  7            
+ # 	Lv        :  27           	Lj        :  110          	Lm        :  300          
+ # 	Omega     :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05      
+ # 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01         
+ # 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5          
+ # 	Delta     :  0.01         
+ #
+ #	Cohort cycle time interval                                         : 1.0
+ #	Output time interval                                               : 1.0
+ #	Complete state output interval                                     : 10.0
+ #	Maximum integration time                                           : 1000.0
+ #
+ #
+ #   1:Time            2:E[0]          3:E[1]          4:E[2]          5:b[0]       6:I[0][0] ....
+ 
 > output2$curvepoints
-          V1           V2           V3           V4           V5 ..           V7           V8           V9
+        Time         E[0]         E[1]         E[2]         b[0] ..      I[0][1]      I[0][2]      I[0][3]
    [1,]    0 1.561276e-04 0.0001270327 1.008012e-04 0.0000000000 .. 1.008012e-04 1.769969e-04 0.0010387677
    [2,]    1 2.133163e-05 0.0001569627 8.017346e-05 0.0011930961 .. 8.017346e-05 1.817787e-04 0.0010364129
    [3,]    2 4.103512e-06 0.0001795904 4.068710e-05 0.0004298024 .. 4.068710e-05 1.806636e-04 0.0010172865
@@ -2502,7 +2490,8 @@ In the following \texttt{R} command box, another trajectory of the dynamics is c
 
 ##### Command box 5.2.C {-}
 ```
-> initstate <- list(Environment = c(1.561276e-04, 1.270327e-04, 4.008016e-06), Pop00 = matrix(c(0.001, 0, 7.0, 1.0E-5, 300, 111), ncol = 3, byrow = TRUE))
+> initstate <- list(Environment = c(1.561276e-04, 1.270327e-04, 4.008016e-06),
+                    Pop00 = matrix(c(0.001, 0, 7.0, 1.0E-5, 300, 111), ncol = 3, byrow = TRUE))
 > output3 <- PSPMecodyn("PNAS2002", initstate, c(1, 1, 10, 1000), options = c("report", "50"))
 Dynamic library file PNAS2002ecodyn.so is up-to-date
 
@@ -2518,27 +2507,38 @@ Dynamic library file PNAS2002ecodyn.so is up-to-date
 RUN PNAS2002-ECODYN-0002 COMPLETED at T = 1000.00:
 ** Program terminated. Normal closure of output files succeeded.          **
 
-#
-# Executing : PSPMecodyn("PNAS2002", <Initial state>, c(1, 1, 10, 1000), NULL, NULL, c("report", "50"))
-#
-# Parameter values  : 
-#
-# 	Rho       :  0.1          	Rmax      :  0.0003       	Lb        :  7            
-# 	Lv        :  27           	Lj        :  110          	Lm        :  300          
-# 	Beta      :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05      
-# 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01         
-# 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5          
-# 	Delta     :  0.01         
-#
-#	Cohort cycle time interval                                         : 1.0
-#	Output time interval                                               : 1.0
-#	Complete state output interval                                     : 10.0
-#	Maximum integration time                                           : 1000.0
-#
-#
-#     1:Time       2:E[0]       3:E[1]       4:E[2]       5:b[0] ..    7:I[0][1]    8:I[0][2]    9:I[0][3]
+Warning messages:
+1: In PSPMecodyn("PNAS2002", initstate, c(1, 1, 10, 1000), options = c("report",  :
+  
+Initial state list does not contain an element "Parameters" with parameter values
+Parameter values taken from model file
+
+2: In PSPMecodyn("PNAS2002", initstate, c(1, 1, 10, 1000), options = c("report",  :
+  
+Birth states of population Pop00 not specified, will be obtained through calls to SetBirthStates() and StateAtBirth()
+
+> cat(output3$curvedesc)
+ #
+ # Executing : PSPMecodyn("PNAS2002", <Initial state>, c(1, 1, 10, 1000), NULL, NULL, c("report", "50"))
+ #
+ # Parameter values  : 
+ #
+ # 	Rho       :  0.1          	Rmax      :  0.0003       	Lb        :  7            
+ # 	Lv        :  27           	Lj        :  110          	Lm        :  300          
+ # 	Omega     :  9E-06        	Imax      :  0.0001       	Rh        :  1.5E-05      
+ # 	Gamma     :  0.006        	Rm        :  0.003        	Mub       :  0.01         
+ # 	A         :  5000         	Th        :  0.1          	Epsilon   :  0.5          
+ # 	Delta     :  0.01         
+ #
+ #	Cohort cycle time interval                                         : 1.0
+ #	Output time interval                                               : 1.0
+ #	Complete state output interval                                     : 10.0
+ #	Maximum integration time                                           : 1000.0
+ #
+ #
+ #   1:Time            2:E[0]          3:E[1]          4:E[2]          5:b[0]       6:I[0][0] ....
 > output3$curvepoints
-          V1           V2           V3           V4           V5 ..           V7           V8           V9
+        Time         E[0]         E[1]         E[2]         b[0] ..      I[0][1]      I[0][2]      I[0][3]
    [1,]    0 0.0001561276 0.0001270327 3.087000e-06 0.0000000000 .. 3.087000e-06            0 0.0001230868
    [2,]    1 0.0001545920 0.0001269028 4.032747e-06 0.0003394561 .. 4.032747e-06            0 0.0001250936
    [3,]    2 0.0001529027 0.0001270109 4.607412e-06 0.0003415640 .. 4.607412e-06            0 0.0001270795
@@ -2607,6 +2607,9 @@ The first element \verb|$Time| in the list \texttt{popstate} contains the value 
 
 The \texttt{R} command box above also illustrates that the dimension of the array \verb|$Pop00| indicates that the population at time $t$ consists of 22 cohorts. However, this number of cohorts will vary over time and is here still rather low because the initial population consisted of only two cohorts of individuals (see command box [5.2.C](#command-box-5.2.c)).
 
+## Additional remarks
+The \texttt{PSPMecodyn} function allows for studying the dynamics of models can that can be analyzed with the other functions of the \texttt{PSPManalysis} package as well. In these models reproduction should be continuous in time. The package does allow to carry out demographic analysis for models in which reproduction is pulsed in time (see section [9.2](#periodic-environments)), but pulsed reproduction in combination with feedback of the environment on individual life history can not be dealt with by \texttt{PSPManalysis}. Moreover, the computations of the equilibrium state of a model, as carried out by the \texttt{PSPMequi} function, rely heavily on the assumption that the environmental variables are constant, which would exclude that the environmental variables exhibit seasonality or other time-dependent dynamics. However, the \texttt{PSPMecodyn} function can be used to study time-dependent dynamics. To allow for this a global variable called `Time` is defined that holds the current time value. This global variable can for example be used in the function specifying the dynamics of the environmental variables (`EnvEqui()`; see section [4.3.2.12](#specification-of-equilibrium-conditions-of-the-environment)). Notice that this global variable `Time` is always equal to 0 when using all other functions in the \texttt{PSPManalysis} package.
+
 ----
 
 \clearpage
@@ -2645,7 +2648,9 @@ During an equilibrium computation with the \texttt{PSPMequi} script the program 
 
 Once an evolutionary fixed point is detected, the software allows for 2 further steps of analysis of the evolutionary fixed point. The first type of analysis that can be carried out is that the evolutionary fixed point can be computed for a range of values of a second model parameter. More precisely, the condition ${R_0}_x=0$ is added as supplementary condition to the system of equations determining the equilibrium of the PSPM and because of this additional condition one more unknown quantity, the value of a second model parameter, has to be solved for. This type of computations is referred to with the acronym \texttt{"ESS"}. They yield curves that show the evolutionary stable value of the evolutionary parameter as a function of the first bifurcation parameter.
 
-The software is in fact sufficiently general to allow for continuation of curves with multiple model parameters having their evolutionary stationary value. These curves are all indicated with the acronym \texttt{"ESS"}. For each evolutionary parameter the corresponding condition ${R_0}_x=0$ is added to the system of equations to solve. For each parameter at its evolutionary stationary value the vector of initial estimates of a solution point (the third argument to the function \texttt{PSPMequi}) should contain a value close this evolutionary stationary value, whereas the index of the parameter in the model and its allowable minimum and maximum value are defined by the triplet in the fifth argument to the function \texttt{PSPMequi} (see section [4.4.2](#arguments-of-the-function)). As discussed in section [4.4.2](#arguments-of-the-function) this fifth argument to the function \texttt{PSPMequi} should for \texttt{"ESS"} computations contain at least 2 triplets, one for the (first) bifurcation parameter and one for the model parameter that is fixed at its evolutionary stationary value, but it can be extended with more triplets in case the \texttt{"ESS"} curve is characterized by multiple parameters at their evolutionary stationary value. The number of triplets for evolutionary parameters should match the number of initial estimates for these parameters in the third argument to the function \texttt{PSPMequi}. The current version of the software computes for each parameter at its evolutionary stationary value the second-order partial derivatives ${R_0}_{xx}$ and ${R_0}_{yy}$ and writes these second-order derivatives to the output file. Notice, however, that these derivatives only provide a classification of the evolutionary stationary point in terms of convergent stable, evolutionary repellor or evolutionary branching point in the case of a single evolutionary parameter, as the classification of multidimensional evolutionary fixed point involves more complex computations of derivatives (see @Leimar2005).
+The software is in fact sufficiently general to allow for continuation of curves with multiple model parameters having their evolutionary stationary value. These curves are all indicated with the acronym \texttt{"ESS"}. For each evolutionary parameter the corresponding condition ${R_0}_x=0$ is added to the system of equations to solve. For each parameter at its evolutionary stationary value the vector of initial estimates of a solution point (the third argument to the function \texttt{PSPMequi}) should contain a value close to this evolutionary stationary value. In addition, the fifth argument to the function \texttt{PSPMequi} (see section [4.4.2](#arguments-of-the-function)) has to be extended with a set of 4 values for each parameter at its evolutionary stationary value, specifying the index of the population that the parameter pertains to, the index of the parameter in the model and its allowable minimum and maximum value. As discussed in section [4.4.2](#arguments-of-the-function) this fifth argument to the function \texttt{PSPMequi} should for \texttt{"ESS"} computations contain at least 7 values, the first 3 values for the bifurcation parameter and the following 4 values for the model parameter that is fixed at its evolutionary stationary value, but it can be extended with more sets of 4 values in case the \texttt{"ESS"} curve is characterized by multiple parameters at their evolutionary stationary value. The number of sets of 4 values for evolutionary parameters should match the number of initial estimates for these parameters in the third argument to the function \texttt{PSPMequi}. 
+
+In case their is only a single model parameter at its evolutionary stationary value the current version of the software computes the second-order partial derivatives ${R_0}_{xx}$ and ${R_0}_{yy}$ and writes these second-order derivatives to the output file. These derivatives provide a classification of the evolutionary stationary point in terms of convergent stable, evolutionary repellor or evolutionary branching point (@Geritzetal1998). In the multi-dimensional case, when computing curves of evolutionary stationary points with multiple life history traits evolving, the situation is more complicated. During such multi-dimensional \texttt{ESS} continuations, the program does not report the quantities \verb|R0_xx| and \verb|R0_yy|, but instead provides as output the dominant eigenvalues of the Jacobian and Hessian matrices of the canonical equation, as well as the quantity $z^TC_{01} z$, which determines whether or not evolutionary branching can occur at an evolutionary stationary state that is attracting, but not evolutionary stable. In this expression $z$ is the dominant eigenvector of the Hessian matrix and $C_{01}=J-H$, the matrix with cross-derivatives of the canonical equation with respect to the mutant and the resident traits. For more details, see @Leimar2005 and @Geritzetal2016. However, in these multi-dimensional cases these quantities are only computed if all parameters at their ESS value pertain to the same structured population. When ESS parameters pertain to different structured populations (i.e. co-evolutionary studies) these second-order derivatives are not computered and hence not written to the output file.
 
 The second type of analysis that can be performed is the computation of the pairwise invasibility plot (or PIP; for an explanation see @Geritzetal1998) starting from the evolutionary fixed point. This type of computation is indicated with the acronym \texttt{"PIP"} and is carried out by supplementing the system of equations determining the equilibrium of the PSPM with the condition $R_0(y, \tilde{E}(x))=1$. Because of this extension, one more unknown variable has to be solved for, which in this case is the mutant value of the model parameter $y$. The first and second bifurcation parameter in this case have the same index in the array of parameter values, but the first bifurcation parameter refers to the resident value $x$ of this parameter, while the second bifurcation parameter refers to the mutant value $y$. The result of such a computation is a curve in the parameter space spanned by $x$ and $y$, where the growth rate of a mutant with parameter value $y$ in an equilibrium environment determined by a resident population with parameter value $x$ has a zero population growth rate. PIPs are plots of such curves and these plots can be used for inferring various evolutionary consequences [@Geritzetal1998].
 
@@ -2698,35 +2703,36 @@ Building executable Indet_growthequi.so ...
 
 <...compilation output lines suppressed in this box...>
 
-  1.00000000E+00  2.20000000E-01  3.55373787E-02
-  9.98043762E-01  2.19653632E-01  3.45381701E-02
-  9.96005285E-01  2.19313094E-01  3.35389579E-02
+  1.00000000E+00, 2.20000000E-01, 3.55373787E-02
+  9.98043762E-01, 2.19653632E-01, 3.45381701E-02
+  9.96005285E-01, 2.19313094E-01, 3.35389579E-02
 <...output lines suppressed in this box...>
-  9.44570226E-01  2.15621677E-01  1.85536239E-02
-  9.38263361E-01  2.15592978E-01  1.75885671E-02  ****  CSS #0  ****
-  9.38034889E-01  2.15593014E-01  1.75557539E-02
+  9.44570226E-01, 2.15621677E-01, 1.85536239E-02
+  9.38263361E-01, 2.15592978E-01, 1.75885671E-02  ****   CSS #0  ****
+  9.38034889E-01, 2.15593014E-01, 1.75557539E-02
 <...output lines suppressed in this box...>
-  5.18672354E-01  2.40531837E-01  7.04499110E-03
-  5.09283848E-01  2.41208401E-01  7.01122421E-03
-  4.99855837E-01  2.41890186E-01  6.97858797E-03
+  5.18672353E-01, 2.40531837E-01, 7.04499110E-03
+  5.09283848E-01, 2.41208400E-01, 7.01122420E-03
+  4.99855836E-01, 2.41890186E-01, 6.97858797E-03
 
-#
-# Executing : PSPMequi("Indet_growth", "EQ", c(1, 0.22, 0), -0.1, c(6, 0.5, 2), NULL, c("popEVO", "0"))
-#
-# Parameter values  :
-#
-# 	Delta     :  0.1          	Rmax      :  2            	Sb        :  0.05
-# 	Sj        :  1            	Sm        :  2            	Imax      :  1
-# 	q         :  1            	Sigma     :  0.5          	T         :  0.1
-# 	p         :  1            	Mu        :  0.01
-#
-# Index of bifurcation parameter #1                            : 6
-#
-#           1:q    2:E[0]     3:b[0] 4:I[0][0]  5:I[0][1] 6:I[0][2]   7:R0[0]     8:R0_x[6]   9:RHS norm
-#
-
+> cat(output1$curvedesc)
+ #
+ # Executing : PSPMequi("Indet_growth", "EQ", c(1, 0.22, 0), -0.1, c(6, 0.5, 2), NULL, c("popEVO", "0"))
+ #
+ # Parameter values  : 
+ #
+ # 	Delta     :  0.1          	Rmax      :  2            	Sb        :  0.05         
+ # 	Sj        :  1            	Sm        :  2            	Imax      :  1            
+ # 	q         :  1            	Sigma     :  0.5          	T         :  0.1          
+ # 	p         :  1            	Mu        :  0.01         
+ #
+ # Index and name of bifurcation parameter #1                   : 6 (q)
+ # Index of parameter for computation of selection gradient     : 6
+ # Index of structured population selection gradient belongs to : 0
+ #
+ #            1:q          2:E[0]          3:b[0]       4:I[0][0]       5:I[0][1]       6:I[0][2] ....
 > output1$curvepoints
-             V1        V2         V3        V4         V5        V6        V7            V8           V9
+              q      E[0]       b[0]   I[0][0]    I[0][1]   I[0][2]     R0[0]       R0_x[6]     RHS norm
  [1,] 1.0000000 0.2200000 0.03553738 0.1780000 0.53230236 0.2767885 1.0000000 -4.144555e+01 9.579106e-09
  [2,] 0.9980438 0.2196536 0.03453817 0.1780346 0.52939068 0.2798577 1.0000000 -3.894615e+01 3.294274e-08
  [3,] 0.9960053 0.2193131 0.03353896 0.1780687 0.52628792 0.2831152 1.0000000 -3.648053e+01 3.052791e-08
@@ -2740,7 +2746,7 @@ Building executable Indet_growthequi.so ...
 [58,] 0.4998558 0.2418902 0.00697859 0.1758110 0.09742641 0.7017144 1.0000000  6.227017e+00 1.991225e-09
 
 > output1$bifpoints
-             V1        V2         V3        V4         V5        V6        V7            V8           V9
+              q      E[0]       b[0]   I[0][0]    I[0][1]   I[0][2]     R0[0]       R0_x[6]     RHS norm
 [1,]  0.9382634  0.215593 0.01758857 0.1784407  0.4194359 0.3916582         1 -9.063882e-11 7.983139e-09
 
 > output1$biftypes
@@ -2753,51 +2759,48 @@ Because the program is instructed to assess the evolutionary properties of the c
 
 In the next step of the analysis the detected evolutionary fixed point is used as starting point for a computation of its value as a function of a second model parameter, $p$, the allometric scaling exponent of the maintenance rate with body size. The acronym of this type of computation is \texttt{"ESS"}, which is supplied as the second argument to the \texttt{PSPMequi} function in the next \texttt{R} command box. Such \texttt{"ESS"} computations always use a parameter that is not defined to have its evolutionary stationary value as (first) bifurcation parameter. The evolutionary parameters are added as additional variables to the problem, which are following all values for the environmental variable(s) and population birth rate(s). Since the default parameter value for $p$ is 1.0, the initial point of the \texttt{"ESS"} computation below is specified as \verb|c(1.0,output1$bifpoints[c(2,3,1)])|, given that the second, third and first element of the array \texttt{bdata1} represent the equilibrium resource density, equilibrium birth rate and the evolutionary stationary value $q$-value in the evolutionary fixed point, respectively.
 
-The fifth argument to the function \texttt{PSPMequi}, specifying the indices and range limits of the variable parameters in the computation, now has to contain as first triplet the index, minimum and maximum value of the bifurcation parameter $p$ in the problem, while the second triplet specifies the index, minimum and maximum value of the parameter $q$, which is assumed to have its evolutionary stationary value. The parameter $p$ has index 9 in the parameter array defined in the model-specific file \verb|Indet_growth.h| (see line 50--80 in that file) and for the computation its value is restricted to the interval $0.5\leq p\leq 2.0$. The array \texttt{c(9,0.5,2.0,6,0.5,2.0)} is therefore passed as 5th argument to the \texttt{PSPMequi} function.
-
-Lastly, as in the invocation of the function \texttt{PSPMequi} shown in command box [6.3.A](#command-box-6.3.a) the option vector that is supplied to the \texttt{PSPMequi} function as 7th argument equals \texttt{c("popEVO","0")} to indicate that the evolutionary computations should focus on the $R_0$ value of the structured population with index 0.
+The fifth argument to the function \texttt{PSPMequi}, specifying the indices and range limits of the variable parameters in the computation, now has to contain as first triplet the index, minimum and maximum value of the bifurcation parameter $p$ in the problem. This initial triplet is followed by a set of 4 values specifying the index of the population that the ESS parameter pertains to, plus the index, minimum and maximum value of the parameter $q$, which is assumed to have its evolutionary stationary value. Because there is only a single population in this model, the evolutionary computations focus on the $R_0$ value of the structured population with index 0. Furtermore, the parameter $p$ has index 9 in the parameter array defined in the model-specific file \verb|Indet_growth.h| (see line 50--80 in that file) and for the computation its value is restricted to the interval $0.5\leq p\leq 2.0$. The array \texttt{c(9,0.5,2.0,0,6,0.5,2.0)} is therefore passed as 5th argument to the \texttt{PSPMequi} function.
 
 ##### Command box 6.3.B {-}
 ```
-> output2 <- PSPMequi("Indet_growth","ESS",c(1.0,output1$bifpoints[c(2,3,1)]),-0.1,c(9,0.5,2.0,6,0.5,2.0),
-                      NULL,c("popEVO","0"))
+> output2 <- PSPMequi("Indet_growth","ESS",c(1.0,output1$bifpoints[c(2,3,1)]),-0.1,c(9,0.5,2.0,0,6,0.5,2.0))
 
 Dynamic library file Indet_growthequi.so is up-to-date
 
-  1.00000000E+00  2.15592978E-01  1.75885671E-02  9.38263361E-01
-  9.52112206E-01  2.15270182E-01  1.68344054E-02  8.93418030E-01
-  9.02584076E-01  2.14960684E-01  1.61012822E-02  8.46885465E-01
+  1.00000000E+00, 2.15592978E-01, 1.75885671E-02, 9.38263361E-01
+  9.52112206E-01, 2.15270182E-01, 1.68344054E-02, 8.93418030E-01
+  9.02584076E-01, 2.14960684E-01, 1.61012822E-02, 8.46885465E-01
 <...output lines suppressed in this box...>
-  5.46566010E-01  2.13317616E-01  1.20009255E-02  5.08772277E-01
-  5.39357300E-01  2.13292903E-01  1.19355247E-02  5.01872554E-01
-  5.32149192E-01  2.13268473E-01  1.18707128E-02  4.94971646E-01
+  5.46566010E-01, 2.13317616E-01, 1.20009255E-02, 5.08772277E-01
+  5.39357300E-01, 2.13292903E-01, 1.19355247E-02, 5.01872554E-01
+  5.32149192E-01, 2.13268473E-01, 1.18707128E-02, 4.94971646E-01
 
-#
-# Executing : PSPMequi("Indet_growth", "ESS", c(1, 0.215593, 0.0175886, 0.938263), -0.1, c(9, 0.5, 2, 6, 0.5, 2), NULL,
-                       c("popEVO", "0"))
-#
-# Parameter values  :
-#
-# 	Delta     :  0.1          	Rmax      :  2            	Sb        :  0.05
-# 	Sj        :  1            	Sm        :  2            	Imax      :  1
-# 	q         :  0.938263     	Sigma     :  0.5          	T         :  0.1
-# 	p         :  1            	Mu        :  0.01
-#
-# Index of bifurcation parameter #1                            : 9
-# Index of parameter #1 at ESS value                           : 6
-# Index of structured population for evolutionary analysis     : 0
-#
-#           1:p    2:E[0]     3:b[0]       4:q  .. 8:R0[0]  9:R0_x[9]  10:R0_xx[0]   11:R0_yy[0]  12:RHS norm
-#
+> cat(output2$curvedesc)
+ #
+ # Executing : PSPMequi("Indet_growth", "ESS", c(1, 0.215593, 0.0175886, 0.938263), -0.1, c(9, 0.5, ....
+ #
+ # Parameter values  : 
+ #
+ # 	Delta     :  0.1          	Rmax      :  2            	Sb        :  0.05         
+ # 	Sj        :  1            	Sm        :  2            	Imax      :  1            
+ # 	q         :  0.938263     	Sigma     :  0.5          	T         :  0.1          
+ # 	p         :  1            	Mu        :  0.01         
+ #
+ # Index and name of bifurcation parameter #1                   : 9 (p)
+ # Index and name of parameter #1 at ESS value                  : 6 (q)
+ # Index of the population that parameter #1 pertains to        : 0
+ #
+ #            1:p          2:E[0]          3:b[0]             4:q       5:I[0][0]       6:I[0][1] ....
+
 > output2$curvepoints
-             V1        V2         V3        V4  ..      V8         V9          V10           V11          V12
- [1,] 1.0000000 0.2155930 0.01758857 0.9382634  ..       1 -1.5738698 0.0001364242 -0.0001362397 1.863626e-07
- [2,] 0.9521122 0.2152702 0.01683441 0.8934180  ..       1 -1.4786767 0.0001259623 -0.0001259056 1.668385e-09
- [3,] 0.9025841 0.2149607 0.01610128 0.8468855  ..       1 -1.3850836 0.0001152072 -0.0001151722 1.916194e-09
+              p      E[0]       b[0]         q  ..   R0[0]    R0_x[9] R0_xx[0]  R0_yy[0]     RHS norm
+ [1,] 1.0000000 0.2155930 0.01758857 0.9382634  ..       1 -1.5738698 309.7485 -309.7484 1.835198e-07
+ [2,] 0.9521122 0.2152702 0.01683441 0.8934180  ..       1 -1.4786767 315.4750 -315.4750 1.667893e-09
+ [3,] 0.9025841 0.2149607 0.01610128 0.8468855  ..       1 -1.3850836 321.1646 -321.1645 1.915999e-09
 <...output lines suppressed in this box...>
-[44,] 0.5465660 0.2133176 0.01200093 0.5087723  ..       1 -0.8414241 0.0045940400 -0.0045956900 7.193510e-10
-[45,] 0.5393573 0.2132929 0.01193552 0.5018725  ..       1 -0.8324827 0.0044773900 -0.0044790100 6.769479e-10
-[46,] 0.5321492 0.2132685 0.01187071 0.4949716  ..       1 -0.8236145 0.0043610400 -0.0043635600 6.244701e-10
+[44,] 0.5465660 0.2133176 0.01200093 0.5087723  ..       1 -0.8414241 355.0860 -355.0859 7.337919e-10
+[45,] 0.5393573 0.2132929 0.01193552 0.5018725  ..       1 -0.8324827 355.6522 -355.6522 6.843518e-10
+[46,] 0.5321492 0.2132685 0.01187071 0.4949716  ..       1 -0.8236145 356.2138 -356.2138 6.314061e-10
 ```
 
 (Notice that some of the intermediate columns of output have been suppressed in the \texttt{R} command box above to keep the displayed output within the page width).
@@ -2817,32 +2820,32 @@ The last step in the analysis of the evolutionary fixed point is to construct th
 
 Dynamic library file Indet_growthequi.so is up-to-date
 
-  9.38263361E-01  2.15592978E-01  1.75885671E-02  9.38263361E-01
-  9.44757579E-01  2.15623452E-01  1.85841380E-02  9.31442039E-01
-  9.50520866E-01  2.15706603E-01  1.95802172E-02  9.24768482E-01
+  9.38263361E-01, 2.15592978E-01, 1.75885671E-02, 9.38263361E-01
+  9.44757539E-01, 2.15623452E-01, 1.85841314E-02, 9.31442086E-01
+  9.50520830E-01, 2.15706603E-01, 1.95802106E-02, 9.24768527E-01
 <...output lines suppressed in this box...>
-  1.05716678E+00  2.40976093E-01  8.16044991E-02  5.12503828E-01
-  1.05797641E+00  2.41437457E-01  8.23722323E-02  5.06112695E-01
-  1.05878535E+00  2.41902724E-01  8.31367021E-02  4.99682764E-01
+  1.05716677E+00, 2.40976089E-01, 8.16044924E-02, 5.12503885E-01
+  1.05797640E+00, 2.41437453E-01, 8.23722257E-02, 5.06112752E-01
+  1.05878535E+00, 2.41902720E-01, 8.31366955E-02, 4.99682821E-01
 
-#
-# Executing : PSPMequi("Indet_growth", "PIP", c(0.938263, 0.215593, 0.0175886, 0.938263), 0.1, c(6, 0.5, 2, 9, 0.5, 2), NULL,
-                       c("popEVO", "0"))
-#
-# Parameter values  :
-#
-# 	Delta     :  0.1          	Rmax      :  2            	Sb        :  0.05
-# 	Sj        :  1            	Sm        :  2            	Imax      :  1
-# 	q         :  0.938263     	Sigma     :  0.5          	T         :  0.1
-# 	p         :  1            	Mu        :  0.01
-#
-# Index of bifurcation parameter #1                            : 6
-# Index of structured population for evolutionary analysis     : 0
-#
-#           1:q    2:E[0]     3:b[0]      4:q' 5:I[0][0]  6:I[0][1] 7:I[0][2] 8:R0[0]   9:R0[1]  10:RHS norm
-#
+> cat(output3$curvedesc)
+ #
+ # Executing : PSPMequi("Indet_growth", "PIP", c(0.938263, 0.215593, 0.0175886, 0.938263), 0.1, c(6, ....
+ #
+ # Parameter values  : 
+ #
+ # 	Delta     :  0.1          	Rmax      :  2            	Sb        :  0.05         
+ # 	Sj        :  1            	Sm        :  2            	Imax      :  1            
+ # 	q         :  0.938263     	Sigma     :  0.5          	T         :  0.1          
+ # 	p         :  1            	Mu        :  0.01         
+ #
+ # Index and name of bifurcation parameter #1                   : 6 (q)
+ # Index of structured population for PIP construction          : 0
+ #
+ #            1:q          2:E[0]          3:b[0]            4:q'       5:I[0][0]       6:I[0][1] ....
+
 > output3$curvepoints
-             V1        V2         V3        V4        V5         V6        V7      V8        V9          V10
+              q      E[0]       b[0]        q'   I[0][0]    I[0][1]   I[0][2]   R0[0]     R0[1]     RHS norm
  [1,] 0.9382634 0.2155930 0.01758857 0.9382634 0.1784407  0.4194359 0.3916582       1         1 1.461957e-07
  [2,] 0.9447576 0.2156234 0.01858414 0.9314420 0.1784377  0.4321497 0.3789306       1         1 7.201710e-10
  [3,] 0.9505209 0.2157066 0.01958022 0.9247685 0.1784293  0.4434929 0.3675496       1         1 4.059613e-09
@@ -2856,39 +2859,38 @@ Dynamic library file Indet_growthequi.so is up-to-date
 
 Dynamic library file Indet_growthequi.so is up-to-date
 
-  9.38263361E-01  2.15592978E-01  1.75885671E-02  9.38263361E-01
-  9.30859689E-01  2.15628723E-01  1.65937656E-02  9.45282279E-01
-  9.22302855E-01  2.15749165E-01  1.56001074E-02  9.52520009E-01
+  9.38263361E-01, 2.15592978E-01, 1.75885671E-02, 9.38263361E-01
+  9.30859739E-01, 2.15628722E-01, 1.65937720E-02, 9.45282229E-01
+  9.22302915E-01, 2.15749164E-01, 1.56001138E-02, 9.52519962E-01
 <...output lines suppressed in this box...>
-  5.13691984E-01  2.40890443E-01  7.02691650E-03  1.05701563E+00
-  5.04282772E-01  2.41569757E-01  6.99375827E-03  1.05820719E+00
-  4.94835713E-01  2.42254183E-01  6.96170534E-03  1.05939157E+00
+  5.13692391E-01, 2.40890414E-01, 7.02691795E-03, 1.05701558E+00
+  5.04283181E-01, 2.41569728E-01, 6.99375967E-03, 1.05820714E+00
+  4.94836123E-01, 2.42254153E-01, 6.96170670E-03, 1.05939152E+00
 
-#
-# Executing : PSPMequi("Indet_growth", "PIP", c(0.938263, 0.215593, 0.0175886, 0.938263), -0.1, c(6, 0.5, 2, 9, 0.5, 2), NULL,
-                       c("popEVO", "0"))
-#
-# Parameter values  :
-#
-# 	Delta     :  0.1          	Rmax      :  2            	Sb        :  0.05
-# 	Sj        :  1            	Sm        :  2            	Imax      :  1
-# 	q         :  0.938263     	Sigma     :  0.5          	T         :  0.1
-# 	p         :  1            	Mu        :  0.01
-#
-# Index of bifurcation parameter #1                            : 6
-# Index of structured population for evolutionary analysis     : 0
-#
-#           1:q    2:E[0]     3:b[0]      4:q' 5:I[0][0]  6:I[0][1] 7:I[0][2] 8:R0[0]   9:R0[1]  10:RHS norm
-#
+> cat(output4$curvedesc)
+ #
+ # Executing : PSPMequi("Indet_growth", "PIP", c(0.938263, 0.215593, 0.0175886, 0.938263), -0.1, c(6, ....
+ #
+ # Parameter values  : 
+ #
+ # 	Delta     :  0.1          	Rmax      :  2            	Sb        :  0.05         
+ # 	Sj        :  1            	Sm        :  2            	Imax      :  1            
+ # 	q         :  0.938263     	Sigma     :  0.5          	T         :  0.1          
+ # 	p         :  1            	Mu        :  0.01         
+ #
+ # Index and name of bifurcation parameter #1                   : 6 (q)
+ # Index of structured population for evolutionary analysis     : 0
+ #
+ #            1:q          2:E[0]          3:b[0]            4:q'       5:I[0][0]       6:I[0][1] ....
 > output4$curvepoints
-             V1        V2         V3        V4        V5         V6        V7      V8        V9          V10
- [1,] 0.9382634 0.2155930 0.01758857 0.9382634 0.1784407 0.41943589 0.3916582       1 1.0000001 1.461957e-07
- [2,] 0.9308597 0.2156287 0.01659377 0.9452823 0.1784371 0.40513171 0.4059461       1 1.0000000 2.609046e-10
- [3,] 0.9223029 0.2157492 0.01560011 0.9525200 0.1784251 0.38897893 0.4220442       1 1.0000000 9.018195e-09
+              q      E[0]       b[0]        q'   I[0][0]    I[0][1]   I[0][2]     R0[0]     R0[1]     RHS norm
+ [1,] 0.9382634 0.2155930 0.01758857 0.9382634 0.1784407 0.41943589 0.3916582 1.0000001 1.0000001 1.461915e-07
+ [2,] 0.9308597 0.2156287 0.01659377 0.9452822 0.1784371 0.40513181 0.4059461 1.0000000 1.0000000 2.399669e-10
+ [3,] 0.9223029 0.2157492 0.01560011 0.9525200 0.1784251 0.38897904 0.4220441 1.0000000 1.0000000 9.012954e-09
 <...output lines suppressed in this box...>
-[38,] 0.5136920 0.2408904 0.00702692 1.0570156 0.1759110 0.10039077 0.6992045       1 1.0000001 1.027275e-07
-[39,] 0.5042828 0.2415698 0.00699376 1.0582072 0.1758430 0.09835918 0.7009273       1 1.0000001 1.015845e-07
-[40,] 0.4948357 0.2422542 0.00696171 1.0593916 0.1757746 0.09638593 0.7025894       1 1.0000001 1.184862e-07
+[38,] 0.5136924 0.2408904 0.00702692 1.0570156 0.1759110 0.10039086 0.6992044 1.0000000 1.0000001 1.027277e-07
+[39,] 0.5042832 0.2415697 0.00699376 1.0582071 0.1758430 0.09835927 0.7009272 1.0000000 1.0000001 1.015844e-07
+[40,] 0.4948361 0.2422542 0.00696171 1.0593915 0.1757746 0.09638602 0.7025894 1.0000000 1.0000001 1.184842e-07
 ```
 
 The commands and output in the box above do not need further explanation, except that the first and the fourth column are the value of the resident and the mutant value of the parameter $q$, respectively. From the 8th and 9th column it can be verified that both the resident and the mutant type indeed attain $R_0=1$ in the equilibrium states computed. The demo script \verb|"Indet_growth"| uses the first and fourth output columns, corresponding to the two bifurcation parameters, from the data matrices \verb|output3$curvepoints| and \verb|output4$curvepoints| that result from the first and second call to the function \texttt{PSPMequi} in the command box above to construct the pairwise invasibility plot (PIP).
@@ -2927,7 +2929,8 @@ The general call to the \texttt{PSPMevodyn} function is shown in the command box
 
 ```
 > output <- PSPMevodyn(modelname = NULL, startpoint = NULL, curvepars = NULL, evopars = NULL, covars = NULL,
-                       parameters = NULL, options = NULL, clean = FALSE, force = FALSE, debug = FALSE)
+                       parameters = NULL, options = NULL, clean = FALSE, force = FALSE, debug = FALSE,
+                       silent = FALSE)
 ```
 
 The obligatory and optional arguments to the \texttt{PSPMevodyn} function are the following:
@@ -2943,15 +2946,15 @@ The obligatory and optional arguments to the \texttt{PSPMevodyn} function are th
 	
 1. The third, obligatory argument to the \texttt{PSPMevodyn} function is a row vector consisting of 2 elements: (1) the maximum step size in evolutionary time during the integration of the canonical equation and (2) the maximum evolutionary time at which to stop the integration of the canonical equation.
 	
-1. The fourth, obligatory argument to the \texttt{PSPMevodyn} function determines which of the model parameters are allowed to evolve and at which limits further evolution of these parameter is prohibited. This information should be specified by a (row) vector, which for every evolving parameter should include a triplet of values specifying the index of the parameter, its minimum and its maximum value at which its evolution should stop. Therefore, in case of a single evolving parameter, the row vector is of the form:
+1. The fourth, obligatory argument to the \texttt{PSPMevodyn} function determines which of the model parameters are allowed to evolve and at which limits further evolution of these parameter is prohibited. This information should be specified by a (row) vector, which for every evolving parameter should include 4 values specifying the index of a structured population, the index of the parameter, its minimum and its maximum value at which its evolution should stop. Therefore, in case of a single evolving parameter, the row vector is of the form:
     
-    \texttt{c(}$<$*index 1*$>$,$<$*minimum 1*$>$,$<$*maximum 1*$>$\texttt{)}
+    \texttt{c(}$<$*population 1*$>$,$*index 1*$>$,$<$*minimum 1*$>$,$<$*maximum 1*$>$\texttt{)}
     
-    The first element of the vector indicates the index of the parameter in the array \texttt{parameter} to vary, while the final two elements of the array indicate the minimum and maximum value of the parameter. When two parameters are allowed to evolve, the row vector is of the form:
+    The evolving parameter should influence the life history of the individuals of only one structured population in the model, which population is hence evolving. The first element of the vector indicates the index of this evolving structured population that the evolving parameter influences. The second element of the vector indicates the index of the parameter in the array \texttt{parameter} to vary, while the final two elements of the array indicate the minimum and maximum value of the parameter. When two parameters are allowed to evolve, the row vector is of the form:
     
-    \texttt{c(}$<$*index 1*$>$,$<$*minimum 1*$>$,$<$*maximum 1*$>$,$<$*index 2*$>$,$<$*minimum 2*$>$,$<$*maximum 2*$>$\texttt{)}
+    \texttt{c(}$<$*population 1*$>$,$<$*index 1*$>$,$<$*minimum 1*$>$,$<$*maximum 1*$>$,$<$*population 2*$>$,$<$*index 2*$>$,$<$*minimum 2*$>$,$<$*maximum 2*$>$\texttt{)}
     
-    With multiple evolving parameters the vector has to be extended with a triplet of values for each of these model parameters with the triplet specifying the index of the particular parameter as well as its minimum and the maximum value. The number of triplets should correspond with the number of initial values for the evolving parameters as specified in the second argument to the function. The integration of the canonical equation is halted before reaching the maximum integration time specified in the third argument to the function, whenever all evolving parameter have reached either their minimum or their maximum limit.
+    With multiple evolving parameters the vector has to be extended with 4 values for each of these model parameters with the 4 values specifying the index of the evolving structured population, the index of the evolving parameter as well as its minimum and the maximum value. The number of quadruplets should correspond with the number of initial values for the evolving parameters as specified in the second argument to the function. The integration of the canonical equation is halted before reaching the maximum integration time specified in the third argument to the function, whenever all evolving parameter have reached either their minimum or their maximum limit.
 
 
 1. The fifth, optional argument of the \texttt{PSPMevodyn} function specifies the variance--covariance matrix $\mathbf{\Sigma}$ (see equation (\ref{eq:evodyn:canonicalequation})). This argument can be specified as an $n\times n$ matrix or as a vector of length $n\cdot n$, where $n$ equals the number of evolving parameters. The element $(i,j)$ of the matrix (or equivalently the element $(i\cdot n+j)$ of the vector) should indicate how the selection gradient in trait $j$ changes the value of trait $i$ through genetic coupling. If the vector is not specified the matrix $\mathbf{\Sigma}$ is taken equal to the identity matrix.
@@ -2965,20 +2968,22 @@ The obligatory and optional arguments to the \texttt{PSPMevodyn} function are th
     
     Possible options are:
     
-    i. Option pair \texttt{c("popEVO", "i")}: This option pair specifies the index of the structured population, whose life history parameters are evolving. If not specified, this index defaults to 0.
     i. Option pair \texttt{c("envZE", "i")}: This option pair can be specified several times as part of the option vector of strings. Including this option instructs the computational module to set the value of the environment variable with index \texttt{"i"} equal to 0 during the computations of the fixed point problem that determines the selection gradient in the evolving parameters. In addition, the equilibrium condition for this environment variable (as, for example, specified in code block [4.3.1.9](#code-block-4.3.1.9) and [4.3.2.12](#code-block-4.3.2.12)) is ignored and hence not included as condition to hold in the particular equilibrium point. Notice that this can only occur for environment variables that are of the type \texttt{PERCAPITARATE} or \texttt{POPULATIONINTEGRAL} (see section [4.3.1.3](#names-and-types-of-environmental-state-variables) or section [4.3.2.12](#specification-of-equilibrium-conditions-of-the-environment) above).
     i. Option pair \texttt{c("popZE", "i")}: This option pair can be specified several times as part of the option vector. Including this option forces the computational module to assume that the structured population with index \texttt{"i"} in the model is in a zero equilibrium state. This is the only way to compute an equilibrium with a zero equilibrium state for a particular population. Even if a value of 0 would be specified for the birth rate of a population as part of the initial point of the computation, the software would compute the equilibrium curve with a non-zero (non-trivial) equilibrium state for this population. Notice that if a structured population is forced to be in a zero equilibrium state by using the \texttt{"popZE"} option, a zero equilibrium state should also be enforced for all the environment variables that represent integrals over this population distribution (that are hence of the type \texttt{POPULATIONINTEGRAL}).
     i. Option pair \texttt{c("isort", "i")}: This option modifies the output of the equilibrium state of the populations that are stored in an output file with a name of the form \texttt{<Modelname>-EVODYN-<NNNN>.csb} (see below). By default the computational module reports the information about the stable population state distributions by subdividing the axis of the first state variable (the one with index \texttt{"0"}) in 100 subintervals of equal length and reporting the statistics for the cohort of individuals within each subinterval. By using the option \texttt{"isort"} the default choice to use the first individual state variable for this subdivision can be changed to the second, third, and so on. Therefore, passing \texttt{c("isort", "0")} as option vector to the \texttt{PSPMevodyn} function is the same as the default behaviour: the first individual state variable is used for the subdivision and ordering of the population state distribution, while passing \texttt{c("isort", "1")} would use the second individual state variable for this purpose. Also notice that the number of subdivisions of the individual state variable can be redefined by assigning the dimension \verb|COHORT_NR| a value different from 100 (see section [9.3](#optional-numerical-settings-2)).
+    i. Option pair \texttt{c("report", "i")}: This option determines how much output the computational module reports to the console. Passing \texttt{c("report", "1")} as option vector to the \texttt{PSPMevodyn} function is the same as the default behaviour: the software writes the values of every new solution point that it has computed to the \texttt{R} console. Passing \texttt{c("report", "2")} as option vector to the \texttt{PSPMevodyn} function would make the program write every other computed solution point to the \texttt{R} console, while specifying \texttt{c("report", "10")} as option vector to the \texttt{PSPMevodyn} function implies that every 10th solution point that is computed is written to the \texttt{R} console.    
     i. Option \texttt{c("test")}: The last possible option that can be passed to the \texttt{PSPMevodyn} function as part of the option vector is the \texttt{"test"} option. This invokes the computational module in testing mode, which implies that only a single integration of the individual life history is carried out and no iteration to locate a fixed point of a set of equations is performed. In testing mode the computational module reports on the dynamics of the individual state variables, the survival, the cumulative impact on the environment and the expected number of offspring produced by an individual during its different life stage as well as over its entire life. Testing mode is very useful to discover whether or not the model implementation gives sensible results or not.
 
 
-Three other optional arguments can be passed to the \texttt{PSPMevodyn} function: \texttt{clean}, \texttt{force} and \texttt{debug}. These are all boolean arguments that hence have to be passed to the \texttt{PSPMevodyn} function as $<$*option name*$>$\texttt{=TRUE} or $<$*option name*$>$\texttt{=FALSE}, the latter being the default value of all options (Specifying these options as argument is hence only useful when setting them equal to \texttt{TRUE}). Unlike the previous arguments, which all modify the computations to be performed, these options modify the behavior of the \texttt{PSPMevodyn} function itself, in particular the compilation of the model specific file into a dynamic library module that can be executed from \texttt{R}. Also unlike all the previous arguments that can be passed, these arguments can be passed in any order and at any position, the \texttt{PSPMevodyn} function will filter these 3 optional arguments from the argument list before passing the filtered argument list to the computational routine.
+Four other optional arguments can be passed to the \texttt{PSPMevodyn} function: \texttt{clean}, \texttt{force}, \texttt{debug} and \texttt{silent}. These are all boolean arguments that hence have to be passed to the \texttt{PSPMevodyn} function as $<$*option name*$>$\texttt{=TRUE} or $<$*option name*$>$\texttt{=FALSE}, the latter being the default value of all options (Specifying these options as argument is hence only useful when setting them equal to \texttt{TRUE}). Unlike the previous arguments, which all modify the computations to be performed, these options modify the behavior of the \texttt{PSPMevodyn} function itself, in particular the compilation of the model specific file into a dynamic library module that can be executed from \texttt{R}. Also unlike all the previous arguments that can be passed, these arguments can be passed in any order and at any position, the \texttt{PSPMevodyn} function will filter these 3 optional arguments from the argument list before passing the filtered argument list to the computational routine.
 	
 * Option \texttt{clean}: When \texttt{clean=TRUE} is passed as argument, this argument instructs the \texttt{PSPMevodyn} function to delete all result files that have been generated during previous calculations with the model. These result files have names of the form \texttt{<Modelname>-<Type>-<NNNN>.err}, \texttt{<Modelname>-<Type>-<NNNN>.csb} and \texttt{<Modelname>-<Type>-<NNNN>.out}, in which \texttt{<Modelname>} refers to the name of the model, \texttt{<Type>} refers to the type of computation that has been performed, which in the case of \texttt{PSPMevodyn} equals \texttt{EVODYN}, and \texttt{<NNNN>} is a unique number that distinguishes consecutive computations of the same type of curve with the same model. Deleting all the output files from previous computations and/or the compiled program executables that the package has generated can also be done separately. The package implements a function \texttt{PSPMclean()} to delete all \texttt{.bif}, \texttt{.err}, \texttt{.csb} and \texttt{.out} files and/or all executable files that are present in the current working directory.
 	
 * Option \texttt{force}: When \texttt{force=TRUE} is passed as argument, it instructs the \texttt{PSPMevodyn} function to force re-compilation of the model specific file into a dynamic library module that can be executed by \texttt{R}. This option will usually not be needed by normal users, as the \texttt{PSPMevodyn} function automatically recompiles the computational module when the model specific file with an \texttt{'.h'} extension is more recently changed than the compiled dynamic library file. However, if for some unclear reason this automatic recompilation fails, the \texttt{force} option can be used to initiate re-compilation.
 	
 * Option \texttt{debug}: When \texttt{debug=TRUE} is passed as argument, it instructs the \texttt{PSPMevodyn} function to turn on debugging flags while compiling the model specific file into a dynamic library module. This option can be useful to detect programming mistakes in the model-specific file that are otherwise hard to track down. The downside is that depending on the version of \texttt{R} that is used, turning on debugging flags during compilation may generate a lot of output, including warnings about standard files of the operating system that are perfectly correct. It is hence not so easy to spot among all these messages the warnings that relate to the model-specific code that has been implemented.
+
+* Option \texttt{silent}: When \texttt{silent=TRUE} is passed as argument, it instructs the \texttt{PSPMevodyn} function to suppress all messages from the compilation of the model specific file into a dynamic library module. This option is useful to prevent cluttering the console with superfluous messages once a model specific file has been tested sufficiently and functions without problems.
 
 The computational module generates on execution a single list object as output with 2 member elements (see the help page on \texttt{PSPMevodyn} using `?PSPMevodyn`). The first element of the output list, \verb|output$curvepoints| contains the numerical information of the points along the computed curve. This variable \verb|output$curvepoints| is a matrix, in which each row represents one solution point along the curve. The columns contain the evolutionary time value, the equilibrium value of all environment variables, the equilibrium value for the birth rate of all structured populations in the problem, the current value of the evolving parameter(s), the equilibrium value of all interaction variables defined in the routine \texttt{Impact()}, the per capita growth rate of all environment variables for which this is relevant (those of the type \texttt{PERCAPITARATE}), for each of the structured populations the expected number of offspring produced by an individual during its lifetime ($R_0$) and finally the norm of the right-hand side of the system of equations that is solved to obtain the ecological equilibrium. The latter quantity (referred to as RHS norm) measures how close the computed equilibrium point is to the true solution.
 
@@ -2989,92 +2994,94 @@ The demo script \verb|"Indet_growth"| illustrates the use of the \texttt{PSPMevo
 
 ##### Command box 7.3.A {-}
 ```
-> output1 <- PSPMevodyn("Indet_growth", c(0.22, 0.03554, 1.0), c(0.05, 10), c(6, 0.5, 1.5), options=c("popEVO", "0"))
+> output1 <- PSPMevodyn("Indet_growth", c(0.22, 0.03554, 1.0), c(0.05, 10), c(0, 6, 0.5, 1.5))
 
 Building executable Indet_growthevodyn.so ...
 
 <...compilation output lines suppressed in this box...>
 
- 0.005000    2.20000000E-01  3.55373787E-02  1.00000000E+00
- 0.010000    2.18793851E-01  3.19778211E-02  9.92635669E-01
- 0.015000    2.18089189E-01  2.97666950E-02  9.87408855E-01
+ 0.005000, 2.20000000E-01, 3.55373787E-02, 1.00000000E+00
+ 0.010000, 2.18793851E-01, 3.19778211E-02, 9.92635669E-01
+ 0.015000, 2.18089189E-01, 2.97666950E-02, 9.87408855E-01
 <...output lines suppressed in this box...>
- 2.581562    2.15592977E-01  1.75885665E-02  9.38263363E-01
- 2.631562    2.15592977E-01  1.75885665E-02  9.38263362E-01
- 2.681562    2.15592977E-01  1.75885664E-02  9.38263362E-01
+ 2.555312, 2.15592974E-01, 1.75885630E-02, 9.38263364E-01
+ 2.605312, 2.15592974E-01, 1.75885630E-02, 9.38263363E-01
+ 2.655312, 2.15592974E-01, 1.75885629E-02, 9.38263363E-01
 
-#
-# Executing : PSPMevodyn("Indet_growth", c(0.22, 0.03554, 1), c(0.05, 10), c(6, 0.5, 1.5), NULL, NULL, c("popEVO", "0"))
-#
-# Parameter values  :
-#
-# 	Delta     :  0.1          	Rmax      :  2            	Sb        :  0.05
-# 	Sj        :  1            	Sm        :  2            	Imax      :  1
-# 	q         :  1            	Sigma     :  0.5          	T         :  0.1
-# 	p         :  1            	Mu        :  0.01
-#
-# Index of structured population for evolutionary dynamics   : 0
-# Index of evolution parameter #0                            : 6
-#
-#  1:Evol.time    2:E[0]     3:b[0]       4:q 5:I[0][0] 6:I[0][1] 7:I[0][2]   8:R0[0]   9:RHS norm
-#
+> cat(output1$curvedesc)
+ #
+ # Executing : PSPMevodyn("Indet_growth", c(0.22, 0.03554, 1), c(0.05, 10), c(0, 6, 0.5, 1.5), NULL, ....
+ #
+ # Parameter values  : 
+ #
+ # 	Delta     :  0.1          	Rmax      :  2            	Sb        :  0.05         
+ # 	Sj        :  1            	Sm        :  2            	Imax      :  1            
+ # 	q         :  1            	Sigma     :  0.5          	T         :  0.1          
+ # 	p         :  1            	Mu        :  0.01         
+ #
+ # Index and name of evolution parameter #1                       : 6 (q)
+ # Index of structured population for which parameter #1 evolves  : 0
+ #
+ #  1:Evol.time          2:E[0]          3:b[0]             4:q       5:I[0][0]       6:I[0][1] .... 
 > output1$curvepoints
-            V1        V2         V3        V4        V5        V6        V7        V8           V9
- [1,] 0.005000 0.2200000 0.03553738 1.0000000 0.1780000 0.5323024 0.2767885 1.0000000 9.586909e-09
- [2,] 0.010000 0.2187939 0.03197782 0.9926357 0.1781206 0.5210074 0.2886318 1.0000000 8.771789e-09
- [3,] 0.015000 0.2180892 0.02976670 0.9874089 0.1781911 0.5124553 0.2975042 1.0000000 3.522374e-09
+      Evol.time      E[0]       b[0]         q   I[0][0]   I[0][1]   I[0][2]     R0[0]     RHS norm
+ [1,]  0.005000 0.2200000 0.03553738 1.0000000 0.1780000 0.5323024 0.2767885 1.0000000 4.892178e-09
+ [2,]  0.010000 0.2187939 0.03197782 0.9926357 0.1781206 0.5210074 0.2886318 1.0000000 6.853246e-09
+ [3,]  0.015000 0.2180892 0.02976670 0.9874089 0.1781911 0.5124553 0.2975042 1.0000000 4.976306e-09
 <...output lines suppressed in this box...>
-[71,] 2.581562 0.2155930 0.01758857 0.9382634 0.1784407 0.4194359 0.3916581 0.9999998 2.308560e-07
-[72,] 2.631562 0.2155930 0.01758857 0.9382634 0.1784407 0.4194359 0.3916581 0.9999998 2.308562e-07
-[73,] 2.681562 0.2155930 0.01758857 0.9382634 0.1784407 0.4194359 0.3916581 0.9999998 2.308564e-07
+[67,]  2.555312 0.2155930 0.01758856 0.9382634 0.1784406 0.4194358 0.3916580 0.9999993 9.697419e-07
+[68,]  2.605312 0.2155930 0.01758856 0.9382634 0.1784406 0.4194358 0.3916580 0.9999993 9.697423e-07
+[69,]  2.655312 0.2155930 0.01758856 0.9382634 0.1784406 0.4194358 0.3916580 0.9999993 9.697427e-07
 ```
 
 Starting from an (approximate) equilibrium resource density of 0.22 and an (approximate) equilibrium birth rate value of 0.03554 for an initial parameter value $q=1.0$ the evolutionary dynamics is simulated from $t=0$ (this starting time is always taken equal to 0) till $t=2.681562$. The simulation stops at this time point, because the evolution in $q$ has converged to a fixed value and $q$ is not going to change any further. This final value of $q$ hence represents a stable and attracting evolutionary state (CSS). In general, the computation will be stopped whenever all evolving parameters have stabilized at a constant value.
 
-The starting point of the computation is contained in the second argument to the function \texttt{PSPMevodyn}, as shown above, whereas the first argument defines the basename of the file with the model implementation \verb|"Indet_growth"|. The third argument to the function \texttt{PSPMevodyn} sets the maximum evolutionary time step to 0.05 and the maximum time at which to stop the evolutionary simulation to 10.0, but the latter is never reached because of the convergence to an evolutionarily constant $q$ value. The fourth argument to the function \texttt{PSPMevodyn} contains a single triplet of values, given that only a single parameter is allowed to evolve, defining the index of the parameter $q$ in the \texttt{parameter} array as defined in \verb|Indet_growth.h| and its minimum and maximum value at which to stop the computations. The fifth and sixth argument are left undefined, which implies that the variance--covariance matrix $\mathbf{\Sigma}$ (refer to equation (\ref{eq:evodyn:canonicalequation})) defaults to the identity matrix and default values are used for all non-evolving model parameters. These default values are defined in the file \verb|Indet_growth.h|. The final argument to the function \texttt{PSPMevodyn}, the option vector, defines the index of the structured population, in which the evolutionary dynamics takes place, equal to 0, but as discussed before, specifying this option is superfluous as the option \texttt{"popEVO"} is equal to 0 by default.
+The starting point of the computation is contained in the second argument to the function \texttt{PSPMevodyn}, as shown above, whereas the first argument defines the basename of the file with the model implementation \verb|"Indet_growth"|. The third argument to the function \texttt{PSPMevodyn} sets the maximum evolutionary time step to 0.05 and the maximum time at which to stop the evolutionary simulation to 10.0, but the latter is never reached because of the convergence to an evolutionarily constant $q$ value. The fourth argument to the function \texttt{PSPMevodyn} contains a single quadruplet of values, given that only a single parameter is allowed to evolve, defining the index 0 of the structured population that is evolving, the index of the parameter $q$ in the \texttt{parameter} array as defined in \verb|Indet_growth.h| and its minimum and maximum value at which to stop the computations. The further arguments are left undefined, which implies that the variance--covariance matrix $\mathbf{\Sigma}$ (refer to equation (\ref{eq:evodyn:canonicalequation})) defaults to the identity matrix and default values are used for all non-evolving model parameters. These default values are defined in the file \verb|Indet_growth.h|.
 
 During the computations the program reports the current value of the evolutionary time, the ecological equilibrium values of the resource density and the population birth rate and the current value of the evolving parameter $q$. In the \texttt{R} command box above the values of the computed points along the evolutionary trajectory are saved in the output list element \verb|output1$curvepoints|, the contents of which are inspected after the \texttt{PSPMevodyn} function finishes and it has printed out the textual information about the computation. The demo script \verb|"Indet_growth"| uses the data contained in the first and the fourth column of \verb|output1$curvepoints| to plot the time course of evolutionary change in the parameter $q$.
 
-In the following \texttt{R} command box, a similar trajectory of the evolutionary dynamics is computed starting from the same ecological equilibrium, but now both the parameter $q$ and the parameter $p$, which relates the maintenance costs to individual body size (see section [6.2](#an-example-model-for-the-analysis-of-evolutionary-fixed-points)), are allowed to evolve. To that end, the starting point of the computation is extended with an initial value for the parameter $p$ (1.0) and the fourth argument of the \texttt{PSPMevodyn} function is extended with a triplet of values that indicate the index of the parameter $p$ in the \texttt{parameter} array as defined in \verb|Indet_growth.h| and its minimum and maximum value at which to stop the computations. In addition, the maximum integration time at which to stop the evolutionary computations is increased to 100. Otherwise, the command line of this computation is identical to the one shown in \texttt{R} command box [7.3.A](#command-box-7.3.a).
+In the following \texttt{R} command box, a similar trajectory of the evolutionary dynamics is computed starting from the same ecological equilibrium, but now both the parameter $q$ and the parameter $p$, which relates the maintenance costs to individual body size (see section [6.2](#an-example-model-for-the-analysis-of-evolutionary-fixed-points)), are allowed to evolve. To that end, the starting point of the computation is extended with an initial value for the parameter $p$ (1.0) and the fourth argument of the \texttt{PSPMevodyn} function is extended with 4 values that indicate the index 0 of the structured population that is evolving, the index of the parameter $p$ in the \texttt{parameter} array as defined in \verb|Indet_growth.h| and its minimum and maximum value at which to stop the computations. In addition, the maximum integration time at which to stop the evolutionary computations is increased to 100. Otherwise, the command line of this computation is identical to the one shown in \texttt{R} command box [7.3.A](#command-box-7.3.a).
 
 ##### Command box 7.3.B {-}
 ```
-> output2 <- PSPMevodyn("Indet_growth",c(0.22,0.03554,1.0,1.0),c(0.05,100),c(6,0.5,1.5,9,0.5,1.5),options=c("popEVO","0"))
+> output2 <- PSPMevodyn("Indet_growth",c(0.22, 0.03554, 1.0, 1.0),c(0.05, 100),c(0, 6, 0.5, 1.5, 0, 9, 0.5, 1.5))
 Dynamic library file Indet_growthevodyn.so is up-to-date
 
- 0.005000    2.20000000E-01  3.55373787E-02  1.00000000E+00    1.00000000E+00
- 0.010000    2.18004640E-01  2.95832099E-02  9.92635669E-01    1.00669514E+00
- 0.015000    2.17277498E-01  2.70926149E-02  9.88746582E-01    1.01012886E+00
+ 0.005000, 2.20000000E-01, 3.55373787E-02, 1.00000000E+00, 1.00000000E+00
+ 0.010000, 2.18004640E-01, 2.95832099E-02, 9.92635669E-01, 1.00669514E+00
+ 0.015000, 2.17277498E-01, 2.70926149E-02, 9.88746582E-01, 1.01012886E+00
 <...output lines suppressed in this box...>
-59.960312    2.13281602E-01  1.20360784E-02  4.99880243E-01    5.34824255E-01
-60.010312    2.13281602E-01  1.20360784E-02  4.99880243E-01    5.34824254E-01
-60.060312    2.13281602E-01  1.20360784E-02  4.99880243E-01    5.34824254E-01
+59.942812, 2.13281908E-01, 1.20369433E-02, 4.99967380E-01, 5.34914891E-01
+59.992812, 2.13281908E-01, 1.20369433E-02, 4.99967380E-01, 5.34914891E-01
+60.042812, 2.13281908E-01, 1.20369433E-02, 4.99967380E-01, 5.34914890E-01
 
-#
-# Executing : PSPMevodyn("Indet_growth",c(0.22,0.03554,1,1),c(0.05,100),c(6,0.5,1.5,9,0.5,1.5),NULL,NULL,c("popEVO","0"))
-#
-# Parameter values  :
-#
-# 	Delta     :  0.1          	Rmax      :  2            	Sb        :  0.05
-# 	Sj        :  1            	Sm        :  2            	Imax      :  1
-# 	q         :  1            	Sigma     :  0.5          	T         :  0.1
-# 	p         :  1            	Mu        :  0.01
-#
-# Index of structured population for evolutionary dynamics   : 0
-# Index of evolution parameter #0                            : 6
-# Index of evolution parameter #1                            : 9
-#
-#     1:Evol.time    2:E[0]     3:b[0]       4:q       5:p 6:I[0][0] 7:I[0][1] 8:I[0][2] 9:R0[0]  10:RHS norm
-#
+> cat(output2$curvedesc)
+ #
+ # Executing : PSPMevodyn("Indet_growth", c(0.22, 0.03554, 1, 1), c(0.05, 100), c(0, 6, 0.5, 1.5, ....
+ #
+ # Parameter values  : 
+ #
+ # 	Delta     :  0.1          	Rmax      :  2            	Sb        :  0.05         
+ # 	Sj        :  1            	Sm        :  2            	Imax      :  1            
+ # 	q         :  1            	Sigma     :  0.5          	T         :  0.1          
+ # 	p         :  1            	Mu        :  0.01         
+ #
+ # Index and name of evolution parameter #1                       : 6 (q)
+ # Index of structured population for which parameter #1 evolves  : 0
+ # Index and name of evolution parameter #2                       : 9 (p)
+ # Index of structured population for which parameter #2 evolves  : 0
+ #
+ #  1:Evol.time          2:E[0]          3:b[0]             4:q             5:p       6:I[0][0] ....
+
 > output2$curvepoints
-               V1        V2         V3        V4        V5        V6        V7        V8      V9          V10
-   [1,]  0.005000 0.2200000 0.03553738 1.0000000  1.000000 0.1780000 0.5323024 0.2767885       1 9.586909e-09
-   [2,]  0.010000 0.2180046 0.02958321 0.9926357  1.006695 0.1781995 0.5129883 0.3003329       1 3.986293e-09
-   [3,]  0.015000 0.2172775 0.02709261 0.9887466  1.010129 0.1782722 0.5013552 0.3134773       1 3.482050e-09
+        Evol.time      E[0]       b[0]         q         p   I[0][0]   I[0][1]   I[0][2] R0[0]     RHS norm
+   [1,]  0.005000 0.2200000 0.03553738 1.0000000 1.0000000 0.1780000 0.5323024 0.2767885     1 4.892178e-09
+   [2,]  0.010000 0.2180046 0.02958321 0.9926357 1.0066951 0.1781995 0.5129883 0.3003329     1 4.469165e-09
+   [3,]  0.015000 0.2172775 0.02709261 0.9887466 1.0101289 0.1782722 0.5013552 0.3134773     1 5.888298e-09
 <...output lines suppressed in this box...>
-[1216,] 59.960312 0.2132816 0.01203608 0.4998802 0.5348243 0.1786718 0.3554964 0.3474220 0.99999 7.866359e-07
-[1217,] 60.010312 0.2132816 0.01203608 0.4998802 0.5348243 0.1786718 0.3554964 0.3474220 0.99999 7.866359e-07
-[1218,] 60.060312 0.2132816 0.01203608 0.4998802 0.5348243 0.1786718 0.3554964 0.3474220 0.99999 7.866356e-07
+[1213,] 59.942812 0.2132819 0.01203694 0.4999674 0.5349149 0.1786717 0.3555098 0.3474280     1 1.283301e-06
+[1214,] 59.992812 0.2132819 0.01203694 0.4999674 0.5349149 0.1786717 0.3555098 0.3474280     1 1.283300e-06
+[1215,] 60.042812 0.2132819 0.01203694 0.4999674 0.5349149 0.1786717 0.3555098 0.3474280     1 1.283300e-06
 ```
 
 The output in the command box above shows that again the evolutionary dynamics are halted before the maximum time (100) is reached. As soon as an evolving parameter (here the parameter $q$) drops below its minimum value or exceeds its maximum value, as specified in the fourth argument to the function \texttt{PSPMevodyn}, it is stopped from evolving further, which in the case of the computation shown above leads to convergence to a constant value of the second evolving life history parameter $p$. This convergence ultimately halts the computation. The computation is therefore in this case stopped because no further evolution occurs, but computations will also stop whenever all evolving parameters have reached either their minimum or their maximum limit.
@@ -3158,7 +3165,7 @@ The general call to the \texttt{PSPMind} function is shown in the command box be
 
 ```
 > output <- PSPMind(modelname = NULL, environment = NULL, parameters = NULL, options = NULL,
-                    clean = FALSE, force = FALSE, debug = FALSE)
+                    clean = FALSE, force = FALSE, debug = FALSE, silent = FALSE)
 ```
 
 The obligatory and optional arguments to the \texttt{PSPMind} function are the following:
@@ -3185,7 +3192,7 @@ The obligatory and optional arguments to the \texttt{PSPMind} function are the f
     
     This option modifies the output of the equilibrium state of the populations that are stored in the output file with a name of the form \texttt{<Modelname>-IND-<NNNN>.csb} (see below). By default the computational module reports the information about the stable population state distributions by subdividing the axis of the first state variable (the one with index \texttt{"0"}) in 100 subintervals of equal length and reporting the statistics for the cohort of individuals within each subinterval. By using the option \texttt{"isort"} the default choice to use the first individual state variable for this subdivision can be changed to the second, third, and so on. Therefore, passing \texttt{c("isort", "0")} as option vector to the \texttt{PSPMind} function is the same as the default behaviour: the first individual state variable is used for the subdivision and ordering of the population state distribution, while passing \texttt{c("isort", "1")} would use the second individual state variable for this purpose. Also notice that the number of subdivisions of the individual state variable can be redefined by assigning the dimension \verb|COHORT_NR| a value different from 100 (see section [9.3](#optional-numerical-settings-2)).
 
-Three other optional arguments can be passed to the \texttt{PSPMind} function: \texttt{clean}, \texttt{force} and \texttt{debug}. These are all boolean arguments that hence have to be passed to the \texttt{PSPMind} function as $<$*option name*$>$\texttt{=TRUE} or $<$*option name*$>$\texttt{=FALSE}, the latter being the default value of all options (Specifying these options as argument is hence only useful when setting them equal to \texttt{TRUE}). Unlike the previous arguments, which all modify the computations to be performed, these options modify the behavior of the \texttt{PSPMind} function itself, in particular the compilation of the model specific file into a dynamic library module that can be executed from \texttt{R}. Also unlike all the previous arguments that can be passed, these arguments can be passed in any order and at any position, the \texttt{PSPMind} function will filter these 3 optional arguments from the argument list before passing the filtered argument list to the computational routine.
+Four other optional arguments can be passed to the \texttt{PSPMind} function: \texttt{clean}, \texttt{force}, \texttt{debug} and \texttt{silent}. These are all boolean arguments that hence have to be passed to the \texttt{PSPMind} function as $<$*option name*$>$\texttt{=TRUE} or $<$*option name*$>$\texttt{=FALSE}, the latter being the default value of all options (Specifying these options as argument is hence only useful when setting them equal to \texttt{TRUE}). Unlike the previous arguments, which all modify the computations to be performed, these options modify the behavior of the \texttt{PSPMind} function itself, in particular the compilation of the model specific file into a dynamic library module that can be executed from \texttt{R}. Also unlike all the previous arguments that can be passed, these arguments can be passed in any order and at any position, the \texttt{PSPMind} function will filter these 3 optional arguments from the argument list before passing the filtered argument list to the computational routine.
 
 * Option \texttt{clean}: When \texttt{clean=TRUE} is passed as argument, this argument instructs the \texttt{PSPMind} function to delete all result files that have been generated during previous calculations with the model. These result files have names of the form \texttt{<Modelname>-<Type>-<NNNN>.csb}, in which \texttt{<Modelname>} refers to the name of the model, \texttt{<Type>} refers to the type of computation that has been performed, which in the case of \texttt{PSPMind} equals \texttt{IND}, and \texttt{<NNNN>} is a unique number that distinguishes consecutive computations of the same type of curve with the same model. Deleting all the output files from previous computations and/or the compiled program executables that the package has generated can also be done separately. The package implements a function \texttt{PSPMclean()}, taking no arguments, to delete all \texttt{.bif}, \texttt{.err}, \texttt{.csb} and \texttt{.out} files and/or all executable files that are present in the current working directory.
 	
@@ -3193,6 +3200,7 @@ Three other optional arguments can be passed to the \texttt{PSPMind} function: \
 	
 * Option \texttt{debug}: When \texttt{debug=TRUE} is passed as argument, it instructs the \texttt{PSPMind} function to turn on debugging flags while compiling the model specific file into a dynamic library module. This option can be useful to detect programming mistakes in the model-specific file that are otherwise hard to track down. The downside is that depending on the version of \texttt{R} that is used, turning on debugging flags during compilation may generate a lot of output, including warnings about standard files of the operating system that are perfectly correct. It is hence not so easy to spot among all these messages the warnings that relate to the model-specific code that has been implemented.
 
+* Option \texttt{silent}: When \texttt{silent=TRUE} is passed as argument, it instructs the \texttt{PSPMind} function to suppress all messages from the compilation of the model specific file into a dynamic library module. This option is useful to prevent cluttering the console with superfluous messages once a model specific file has been tested sufficiently and functions without problems.
 
 The output of function is discussed in the example below.
 
@@ -3201,7 +3209,8 @@ To illustrate the use of the \texttt{PSPMind} function, I will consider the exam
 
 ##### Command box 8.1.2 {-}
 ```
-> output <- PSPMind("PNAS2002",c(2.533511e-04, 1.335974e-04, 4.008016e-06), options = c("isort", "1"), clean=TRUE, force=TRUE)
+> output <- PSPMind("PNAS2002",c(2.533511e-04, 1.335974e-04, 4.008016e-06), options = c("isort", "1"),
+                    clean=TRUE, force=TRUE)
 
 Building executable PNAS2002ind.so using sources from /Users/andre/programs/PSPM analysis ...
 
@@ -3382,28 +3391,28 @@ Building executable KlanjscekDEB2demo.so ...
 
 <...compilation output lines suppressed in this box...>
 
-  1.00000000E+00  6.95508116E-01
-  9.80000000E-01  6.82539595E-01
-  9.60000000E-01  6.69183490E-01
+  1.00000000E+00, 6.95508116E-01
+  9.80000000E-01, 6.82539595E-01
+  9.60000000E-01, 6.69183490E-01
 <...output lines suppressed in this box...>
-  4.40000000E-01  9.73367354E-02
-  4.20000000E-01  5.99646757E-02
-  4.00000000E-01  2.03431517E-02
+  4.40000000E-01, 9.73367353E-02
+  4.20000000E-01, 5.99646757E-02
+  4.00000000E-01, 2.03431517E-02
 
-#
-# Executing : PSPMdemo("KlanjscekDEB2", c(0, 1, -0.02, 0.4, 1), NULL, NULL)
-#
-# Parameter values  :
-#
-# 	Food      :  1            	Kappa     :  0.8          	Kappa_R   :  0.001
-# 	Nu        :  0.075        	m         :  0.583        	g         :  1.286
-# 	Vb        :  1E-09        	Vp        :  1.73E-06     	[Em]      :  0.7
-# 	ha        :  0.15
-#
-# Index of bifurcation parameter #1                            : 0
-#
-#  1:Food  2:PGR[ 0]  3:Tc[ 0]  4:S[ 0][ 0]  5:S[ 0][ 1]  6:S[ 0][ 2]  ..  12:S[ 0][ 8]  13:S[ 0][ 9]
-#
+> cat(output2$curvedesc)
+ #
+ # Executing : PSPMdemo("KlanjscekDEB2", c(0, 1, -0.02, 0.4, 1), NULL, NULL)
+ #
+ # Parameter values  : 
+ #
+ # 	Food      :  1            	Kappa     :  0.8          	Kappa_R   :  0.001        
+ # 	Nu        :  0.075        	m         :  0.583        	g         :  1.286        
+ # 	Vb        :  1E-09        	Vp        :  1.73E-06     	[Em]      :  0.7          
+ # 	ha        :  0.15         
+ #
+ # Index and name of bifurcation parameter #1                   :  0 (Food)
+ #
+ #         1:Food        2:PGR[0]         3:Tc[0]       4:S[0][0]       5:S[0][1]       6:S[0][2] ....
 ```
 
 Obviously, this model contains more parameters and hence there are many more columns in the output representing sensitivities of the population growth rate with respect to model parameters. Loading the first structure from the output file \texttt{KlanjscekDEB2-PGR-0000.csb} containing the stable population states and displaying its contents reveals the additional elements due to the multiple states at births:
@@ -3431,26 +3440,26 @@ $Pop00_BirthStates
 
 $Pop00_Bstate00
          StableDist   Istate00     Istate01     Istate02   Istate03  ReproVal
-  [1,] 1.000000e+00  0.0000000 7.000000e-10 0.000000e+00 0.00000000  1.069154
-  [2,] 9.258141e-01  0.1101390 8.928356e-09 7.625625e-09 0.01058176  1.154825
-  [3,] 8.558545e-01  0.2202781 3.423292e-08 3.154797e-08 0.02537620  1.249224
+  [1,] 7.097291e-01  0.0000000 7.000000e-10 0.000000e+00 0.00000000  1.069154
+  [2,] 6.570771e-01  0.1101390 8.928356e-09 7.625625e-09 0.01058176  1.154825
+  [3,] 6.074248e-01  0.2202781 3.423292e-08 3.154797e-08 0.02537620  1.249224
 <...output lines suppressed in this box...>
- [98,] 2.186738e-09 10.6834855 3.313724e-04 9.494863e-04 2.86850014  5.715571
- [99,] 1.472939e-09 10.7936245 3.367025e-04 9.735928e-04 2.91605415  3.380034
-[100,] 1.000000e-09 10.9001686 3.418510e-04 9.971985e-04 2.96246948  0.000000
+ [98,] 1.551992e-09 10.6834855 3.313724e-04 9.494863e-04 2.86850013  5.715531
+ [99,] 1.045388e-09 10.7936245 3.367025e-04 9.735928e-04 2.91605413  3.380026
+[100,] 7.097291e-10 10.9001686 3.418510e-04 9.971985e-04 2.96246947  0.000000
 
 $Pop00_Bstate01
          StableDist   Istate00     Istate01     Istate02    Istate03  ReproVal
-  [1,] 1.000000e+00  0.0000000 1.300000e-09 0.000000e+00 0.000000000 0.8309155
-  [2,] 9.258768e-01  0.1101019 1.177775e-08 9.742355e-09 0.009863215 0.8974364
-  [3,] 8.560174e-01  0.2202038 4.088023e-08 3.735042e-08 0.024398777 0.9706759
+  [1,] 2.902709e-01  0.0000000 1.300000e-09 0.000000e+00 0.000000000 0.8309155
+  [2,] 2.687551e-01  0.1101019 1.177775e-08 9.742355e-09 0.009863215 0.8974364
+  [3,] 2.484770e-01  0.2202038 4.088023e-08 3.735042e-08 0.024398778 0.9706759
 <...output lines suppressed in this box...>
- [98,] 2.187430e-09 10.6798867 3.321082e-04 9.527934e-04 2.871120863 4.3466694
- [99,] 1.473172e-09 10.7899886 3.374354e-04 9.769332e-04 2.918718544 2.5706244
-[100,] 1.000000e-09 10.8964976 3.425811e-04 1.000571e-03 2.965176460 0.0000000
+ [98,] 6.349473e-10 10.6798867 3.321082e-04 9.527934e-04 2.871120854 4.3466391
+ [99,] 4.276192e-10 10.7899886 3.374354e-04 9.769332e-04 2.918718535 2.5706185
+[100,] 2.902709e-10 10.8964976 3.425811e-04 1.000571e-03 2.965176457 0.0000000
 ```
 
-The first additional element of the list representing the equilibrium population state is \verb|Pop00_StableBirthDist|, which specifies the stable distribution of offspring produced with the 2 possible states at birth that are defined in the model. Each of the rows of the element \verb|Pop00_BirthStates| of the structure specifies a different state at birth with its columns specifying the value of the 4 individual state variables in that particular state. For each state at birth, a stable population distribution for individuals born in that particular state is stored in two-dimensional arrays, called \verb|Pop00_Bstate00| and \verb|Pop00_Bstate01| respectively. As before, these two-dimensional arrays contain as the first and last column the stable population density and the reproductive value, respectively, while the intervening columns contain the values of the individual state variables.
+The first additional element of the list representing the equilibrium population state is \verb|Pop00_StableBirthDist|, which specifies the stable distribution of offspring produced with the 2 possible states at birth that are defined in the model. Each of the rows of the element \verb|Pop00_BirthStates| of the structure specifies a different state at birth with its columns specifying the value of the 4 individual state variables in that particular state. For each state at birth, a stable population distribution for individuals born in that particular state is stored in two-dimensional arrays, called \verb|Pop00_Bstate00| and \verb|Pop00_Bstate01| respectively. As before, these two-dimensional arrays contain as the first and last column the stable population density and the reproductive value, respectively, while the intervening columns contain the values of the individual state variables. Notice, however, that the first column containing the stable population density does not start at an initial value of 1.0, as for each of the possible states at birth the stable density is multiplied by the corresponding element of the stable population distribution at birth, contained in the two-dimensional array \verb|Pop00_Bstate00|.
 
 #### Periodic environments
 The file \verb|Medfly_periodic.h| implements a variant of the Medfly model that is discussed in section [3.2](#an-example-model-for-demographic-analysis), in which juvenile medflies are periodically exposed to a very high mortality rate that decays exponentially within a short time period. Such a scenario could, for example, reflect a periodic treatment of the population with an insecticide that affects all juvenile individuals equally, irrespective of their age. This model is discussed in detail in @DeRoos2008[, see pp. 8-10] and will thus not be presented further here. The script \verb|Medfly_periodic| that is included with the package as a demo can be used to obtain the results that are also shown in Figure 3 of @DeRoos2008. Notice, however, that this computation takes a while to finish because the periodicity in the juvenile mortality makes it computationally very intensive.
@@ -3741,6 +3750,13 @@ Setting name               Default value   Interpretation
 \verb|JACOBIAN_UPDATES|    5               Number of Newton adjustments before the Jacobian
                                            matrix is computed anew. Initializes the globally
                                            accesible variable \verb|Jacobian_Updates|.
+                                           
+\verb|EBTMETHOD|           1               Type of EBT method to use for simulating ecological
+                                           dynamics. Possible values are 0 for using the
+                                           simplified EBT method proposed by Brännström, 
+                                           Carlsson and Simpson (2013) or 1 to use the original
+                                           EBT method (de Roos (1988)).
+                        
 -----------------------------------------------------------------------------------------------
 
 

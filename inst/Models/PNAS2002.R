@@ -24,7 +24,7 @@
 #     3 : Total biomass of non-vulnerable juveniles
 #     4 : Total adult biomass
 #
-#  Last modification: AMdR - Nov 22, 2017
+#  Last modification: AMdR - Apr 18, 2018
 #
 
 #
@@ -115,7 +115,7 @@ EnvironmentState <- c(R = "GENERALODE", P = "PERCAPITARATE", Bv = "POPULATIONINT
 # given names, these names can be used conveniently in the functions below that define
 # the life history processes.
 
-DefaultParameters <- c(Rho = 0.1, Rmax = 3.0E-4, Lb = 7.0, Lv = 27.0, Lj = 110.0, Lm = 300.0, Beta = 9.0E-6, Imax = 1.0E-4, Rh = 1.5E-5, Gamma = 0.006, Rm = 0.003, Mub = 0.01, A = 5000.0, Th = 0.1, Epsilon = 0.5, Delta = 0.01)
+DefaultParameters <- c(Rho = 0.1, Rmax = 3.0E-4, Lb = 7.0, Lv = 27.0, Lj = 110.0, Lm = 300.0, Omega = 9.0E-6, Imax = 1.0E-4, Rh = 1.5E-5, Gamma = 0.006, Rm = 0.003, Mub = 0.01, A = 5000.0, Th = 0.1, Epsilon = 0.5, Delta = 0.01)
 
 #
 # Function name: StateAtBirth  (required)
@@ -282,9 +282,9 @@ LifeHistoryRates <- function(lifestage, istate, birthstate, BirthStateNr, E, par
 
                         mortality   = switch(lifestage, Mub + A*P/(1+A*Th*Bv), Mub, Mub),
 
-                        impact      = switch(lifestage, c(Imax*R/(R + Rh)*Length^2, Beta*Length^3, 0, 0),
-                                             c(Imax*R/(R + Rh)*Length^2, 0, Beta*Length^3, 0),
-                                             c(Imax*R/(R + Rh)*Length^2, 0, 0, Beta*Length^3))
+                        impact      = switch(lifestage, c(Imax*R/(R + Rh)*Length^2, Omega*Length^3, 0, 0),
+                                             c(Imax*R/(R + Rh)*Length^2, 0, Omega*Length^3, 0),
+                                             c(Imax*R/(R + Rh)*Length^2, 0, 0, Omega*Length^3))
                 )
         })
 }

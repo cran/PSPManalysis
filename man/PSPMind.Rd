@@ -5,16 +5,17 @@
 \title{Computes the individual life history of a physiologically structured population model in a given environment}
 \usage{
 PSPMind(modelname = NULL, environment = NULL, parameters = NULL,
-  options = NULL, clean = FALSE, force = FALSE, debug = FALSE)
+  options = NULL, clean = FALSE, force = FALSE, debug = FALSE,
+  silent = FALSE)
 }
 \arguments{
 \item{modelname}{(string, required)
 \preformatted{}
-              Basename of the file with model specification. The file
-              should have extension ".h". For example, the model "PNAS2002"
-              is specified in the file "PNAS2002.h". If the model is specified in R
-              include the .R extension explicitly, i.e. specify the model name
-              as "PNAS2002.R"}
+              Basename of the file with the model specification. The file
+              should have an extension ".h". For example, the model "PNAS2002"
+              is specified in the file "PNAS2002.h". If the model is specified 
+              in R include the .R extension explicitly, i.e. specify the model
+              name as "PNAS2002.R"}
 
 \item{environment}{(row vector, required)
 \preformatted{}
@@ -57,6 +58,11 @@ PSPMind(modelname = NULL, environment = NULL, parameters = NULL,
 \item{debug}{(Boolean, optional argument)
 Specify debug = TRUE as argument to compile the model in verbose
 mode and with debugging flag set}
+
+\item{silent}{(Boolean, optional argument)
+\preformatted{}
+              Specify silent = TRUE as argument to suppress reporting of compilation
+              commands and results on the console}
 }
 \value{
 The output is a structure with the population state as normally stored in the
@@ -70,7 +76,7 @@ set of values for the environmental variables
 }
 \details{
 output <- PSPMind(modelname = NULL, environment = NULL, parameters = NULL, options = NULL,
-                    clean = FALSE, force = FALSE, debug = FALSE)
+                    clean = FALSE, force = FALSE, debug = FALSE, silent = FALSE)
 }
 \examples{
 PSPMind("PNAS2002_5bs", c(1.30341E-05, 3.84655E-05, 4.00802E-06), 

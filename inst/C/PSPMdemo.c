@@ -25,7 +25,7 @@
     You should have received a copy of the GNU General Public License
     along with PSPManalysis. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Oct 25, 2017
+    Last modification: AMdR - May 05, 2018
 ***/
 
 #define PSPMDEMO                  1
@@ -135,6 +135,7 @@ static int                        TestRun       = 0;
 static int                        DoStateOutput = 0;
 static int                        SortIndex     = 0;
 static int                        FirstEstimate = 0;
+static int                        ReportLevel   = 1;
 
 // Global variables for other purposes
 
@@ -423,12 +424,12 @@ int Equation(double *argument, double *result)
                       STDOUT("%15.6G", NextGenMatrix[b*BirthStateNr[p] + j]);
                     }
                   STDOUT(" |");
-                  STDOUT("%15.6G", ASUM(BirthStateNr[p], NextGenMatrix + b*BirthStateNr[p], 1));
+                  STDOUT("%15.6G", SUM(BirthStateNr[p], NextGenMatrix + b*BirthStateNr[p], 1));
                   STDOUT("\n");
                 }
               for (j = 0; j < BirthStateNr[p]; j++) STDOUT("  -------------");
               STDOUT("\n");
-              for (j = 0; j < BirthStateNr[p]; j++) STDOUT("%15.6G", ASUM(BirthStateNr[p], NextGenMatrix + j, BirthStateNr[p]));
+              for (j = 0; j < BirthStateNr[p]; j++) STDOUT("%15.6G", SUM(BirthStateNr[p], NextGenMatrix + j, BirthStateNr[p]));
 
               STDOUT("\n\nStable birth distribution       Reproductive value\n");
               for (b = 0; b < BirthStateNr[p]; b++)
@@ -488,17 +489,25 @@ int DefineOutput(double *x, double *output)
             parpntr = parameter + j;
 
           old =*parpntr;
-          dif = fabs(Jacobian_Step*(*parpntr));
+          dif = max(fabs(Jacobian_Step*(*parpntr)), Jacobian_Min_Step);
 
           *parpntr = old + dif;
           dif      =*parpntr - old;
           Equation(x, rhsH);
 
           *parpntr = old - dif;
-          Equation(x, rhsL);
-          *parpntr = old;
-
-          drdp[j][p] = (rhsH[p] - rhsL[p])/(2*dif);
+          if (*parpntr > 0)
+            {
+              Equation(x, rhsL);
+              *parpntr = old;
+              drdp[j][p] = (rhsH[p] - rhsL[p])/(2*dif);
+            }
+          else
+            {
+              *parpntr = old;
+              Equation(x, rhsL);
+              drdp[j][p] = (rhsH[p] - rhsL[p])/(dif);
+            }
 
           drdp[j][p] /= -dR0dr;
 
@@ -684,13 +693,22 @@ void ComputeCurve(const int argc, char **argv)
 #endif
       sprintf(tmpstr, "%2d:%s", colnr++, parameternames[Bifparone]);
       fprintf(outfile, "#%15s", tmpstr);
-      for (i = 0; i < PopulationNr; i++) fprintf(outfile, "      %2d:PGR[%2d]", colnr++, i);
       for (i = 0; i < PopulationNr; i++)
         {
-          fprintf(outfile, "       %2d:Tc[%2d]", colnr++, i);
-          for (j = 0; j < ParameterNr; j++) fprintf(outfile, "    %2d:S[%2d][%2d]", colnr++, i, j);
+          sprintf(tmpstr, "%d:PGR[%d]", colnr++, i);
+          fprintf(outfile, "%16s", tmpstr);
         }
-      fprintf(outfile, "\n#\n");
+      for (i = 0; i < PopulationNr; i++)
+        {
+          sprintf(tmpstr, "%d:Tc[%d]", colnr++, i);
+          fprintf(outfile, "%16s", tmpstr);
+          for (j = 0; j < ParameterNr; j++)
+            {
+              sprintf(tmpstr, "%d:S[%d][%d]", colnr++, i, j);
+              fprintf(outfile, "%16s", tmpstr);
+            }
+        }
+      fprintf(outfile, "\n");
       fflush(outfile);
     }
   else
@@ -720,12 +738,22 @@ void ComputeCurve(const int argc, char **argv)
       colnr = 1;
 #endif
       STDOUT("#");
-      STDOUT("     %2d:PGR[ 0]", colnr++);
-      for (i = 1; i < PopulationNr; i++) STDOUT("      %2d:PGR[%2d]", colnr++, i);
+      sprintf(tmpstr, "%d:PGR[0]", colnr++);
+      STDOUT("%15s", tmpstr);
+      for (i = 1; i < PopulationNr; i++)
+        {
+          sprintf(tmpstr, "%d:PGR[%d]", colnr++, i);
+          STDOUT("%16s", tmpstr);
+        }
       for (i = 0; i < PopulationNr; i++)
         {
-          STDOUT("       %2d:Tc[%2d]", colnr++, i);
-          for (j = 0; j < ParameterNr; j++) STDOUT("    %2d:S[%2d][%2d]", colnr++, i, j);
+          sprintf(tmpstr, "%d:Tc[%d]", colnr++, i);
+          STDOUT("%16s", tmpstr);
+          for (j = 0; j < ParameterNr; j++)
+            {
+              sprintf(tmpstr, "%d:S[%d][%d]", colnr++, i, j);
+              STDOUT("%16s", tmpstr);
+            }
         }
       STDOUT("\n#\n");
       fflush(NULL);
@@ -767,7 +795,7 @@ void ComputeCurve(const int argc, char **argv)
             }
           hasjac = 0;
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE) || defined(R_PACKAGE)
-          if (checkInterrupt()) return;
+          if (checkInterrupt()) break;
 #endif
 
           if (retval == SUCCES) break;
@@ -838,7 +866,7 @@ void ComputeCurve(const int argc, char **argv)
           if (pntnr > 20) CurveEnd = CurveEnd || (parameter[Bifparone] <= minbound1) || (parameter[Bifparone] >= maxbound1);
 
           // Generate output: invoked after setting CurveEnd to allow for output of last solution point on branch
-          if (Bifparone != -1)
+          if ((Bifparone != -1) && (((pntnr + 1) % ReportLevel) == 0))
             {
               for (i = 0; i < pntdim; i++)
                 {
@@ -858,7 +886,7 @@ void ComputeCurve(const int argc, char **argv)
 
           outmax = DefineOutput(point, Output);
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE) || defined(R_PACKAGE)
-          if (checkInterrupt()) return;
+          if (checkInterrupt()) break;
 #endif
           if (outmax) PrettyPrintArray(outfile, outmax, Output);
 
@@ -866,7 +894,7 @@ void ComputeCurve(const int argc, char **argv)
           if ((CurveEnd) || (Bifparone == -1)) break;
 
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE) || defined(R_PACKAGE)
-          if (checkInterrupt()) return;
+          if (checkInterrupt()) break;
 #endif
 
           pntnr++;
@@ -877,7 +905,7 @@ void ComputeCurve(const int argc, char **argv)
           // Compute the new tangent vector
           retval = TangentVec(pntdim, point, Jacmat, tanvec, Equation, NULL, DYTOL);
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE) || defined(R_PACKAGE)
-          if (checkInterrupt()) return;
+          if (checkInterrupt()) break;
 #endif
           hasjac = 1;
 
@@ -926,6 +954,10 @@ void InitialiseVars(void)
   Stepreduce = 1;
   strcpy(runname, "");
 
+#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE) || defined(R_PACKAGE)
+  CtrlCPressed = 0;
+#endif
+
   // Get the machine precisions
   epsMach = dlamch("Epsilon");
 
@@ -934,6 +966,12 @@ void InitialiseVars(void)
   CohortDim         = IStateDim + 2;
   PopDensCohortDim  = CohortDim;
   Bifparone         = -1;
+
+  TestRun       = 0;
+  DoStateOutput = 0;
+  SortIndex     = 0;
+  FirstEstimate = 0;
+  ReportLevel   = 1;
   
   CurveType         = PGR;
   
@@ -956,6 +994,8 @@ void InitialiseVars(void)
   Odesolve_Abs_Err    = ODESOLVE_ABS_ERR;
   Odesolve_Rel_Err    = ODESOLVE_REL_ERR;
   Odesolve_Func_Tol   = ODESOLVE_FUNC_TOL;
+
+  Time                = 0;
 
 #if (PULSED == 1)
   if (REPRODUCTION_INTERVAL <= Odesolve_Min_Step)
@@ -995,6 +1035,7 @@ static void Usage(char *progname)
   fprintf(stderr, "\t                 If not specified, a single computation of the population growth rate and parameter sensitivities\n");
   fprintf(stderr, "\t                 is carried out for the current parameter values.\n");
   fprintf(stderr, "\t-isort  <index>: Index of i-state variable to use as ruling variable for sorting the structured populations.\n");
+  fprintf(stderr, "\t-report <value>: Interval of reporting computed output to console. Minimum value of 1 implies output of every point.\n");
   fprintf(stderr, "\t-test          : Perform only a single integration over the life history, reporting dynamics of survival, R0\n");
   fprintf(stderr, "\t                 and i-state variables.\n");
 
@@ -1075,6 +1116,17 @@ int main(int argc, char **argv)
               Usage(argv[0]);
             }
           SortIndex = tmpint;
+        }
+      else if (!strcmp(*argpnt1, "-report"))
+        {
+          argpnt1++;
+          if (!*argpnt1)
+            {
+              fprintf(stderr, "\nNo index of i-state variable specified for argument -report!\n");
+              Usage(argv[0]);
+            }
+          tmpint = atoi(*argpnt1);
+          ReportLevel = max(tmpint, 1);
         }
       else if (!strcmp(*argpnt1, "-cvf"))
         {
@@ -1211,7 +1263,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       cell_element_ptr = mxGetCell(prhs[2], i);
       buflen           = mxGetN(cell_element_ptr)*sizeof(mxChar) + 1;
       status           = mxGetString(cell_element_ptr, optname, buflen);
-      if (!((!strcmp(optname, "test")) || (!strcmp(optname, "isort"))))
+      if (!((!strcmp(optname, "test")) || (!strcmp(optname, "isort")) || (!strcmp(optname, "report"))))
         mexErrMsgIdAndTxt("MATLAB:PSPMdemo:options", "\nIllegal option %s!\n", optname);
 
       if (!strcmp(optname, "test"))
@@ -1242,6 +1294,26 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               continue;
             }
           SortIndex = tmpint;
+
+          // optstring still equal to "{"
+          if (strlen(optstring) == 1) strcat(optstring, "'");
+          else strcat(optstring, ", '");
+          strcat(optstring, optname);
+          strcat(optstring, "', '");
+          strcat(optstring, optval);
+          strcat(optstring, "'");
+        }
+      else if (!strcmp(optname, "report"))
+        {
+          if (!(++i < total_num_of_cells)) mexErrMsgIdAndTxt("MATLAB:PSPMdemo:options", "\nNo value specified for option %s!\n", optname);
+
+          cell_element_ptr = mxGetCell(prhs[2], i);
+          buflen           = mxGetN(cell_element_ptr)*sizeof(mxChar) + 1;
+          status           = mxGetString(cell_element_ptr, optval, buflen);
+          if (status) mexErrMsgIdAndTxt("MATLAB:PSPMdemo:options", "\nError in retrieving value for option %s!\n", optname);
+
+          tmpint = atoi(optval);
+          ReportLevel = max(tmpint, 1);
 
           // optstring still equal to "{"
           if (strlen(optstring) == 1) strcat(optstring, "'");
@@ -1367,7 +1439,7 @@ SEXP PSPMdemo(SEXP moduleName, SEXP curveVals, SEXP parVals, SEXP optVals)
   for (i = 0; i < ncols; i++)
     {
       strcpy(optname, CHAR(STRING_ELT(optVals, i)));
-      if (!((!strcmp(optname, "test")) || (!strcmp(optname, "isort")))) error("\nIllegal option %s!\n\n", optname);
+      if (!((!strcmp(optname, "test")) || (!strcmp(optname, "isort")) || (!strcmp(optname, "report")))) error("\nIllegal option %s!\n\n", optname);
 
       if (!strcmp(optname, "test"))
         {
@@ -1398,6 +1470,25 @@ SEXP PSPMdemo(SEXP moduleName, SEXP curveVals, SEXP parVals, SEXP optVals)
           strcat(optstring, "\", \"");
           strcat(optstring, optval);
           strcat(optstring, "\"");
+          continue;
+        }
+
+      if (!strcmp(optname, "report"))
+        {
+          if (!(++i < ncols))
+            error("\nInterval for reporting computed output to console (option \"%s\") not specified!\n\n", optname);
+
+          strcpy(optval, CHAR(STRING_ELT(optVals, i)));
+          tmpint = atoi(optval);
+
+          ReportLevel = max(tmpint, 1);
+          if (!strlen(optstring)) strcat(optstring, "c(\"");
+          else strcat(optstring, ", \"");
+          strcat(optstring, optname);
+          strcat(optstring, "\", \"");
+          strcat(optstring, optval);
+          strcat(optstring, "\"");
+          continue;
         }
     }
   if (strlen(optstring)) strcat(optstring, ")");

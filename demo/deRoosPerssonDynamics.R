@@ -2,6 +2,7 @@ devAskNewPage(ask = FALSE)
 oldwd = getwd()
 setwd(system.file("Models", package="PSPManalysis"))
 if (!exists("par.defaults")) par.defaults <- par(no.readonly = T)
+if (exists("CFLAGS")) rm("CFLAGS")
 
 # Do the numerical integration using the EBT: Trajectory 1
 cat("\n\n\nSimulating the ecological dynamics of predators, consumers and resource from a computed equilibrium state\n\n")
@@ -54,6 +55,17 @@ output3 <- PSPMecodyn("PNAS2002", initstate, c(1, 1, 10, 1000), options = c("rep
 
 lines(output3$curvepoints[,1], output3$curvepoints[,7]+output3$curvepoints[,8], type="l", lty=4, lwd=3, col=rgb(0,0,0.6))
 lines(output3$curvepoints[,1], output3$curvepoints[,9], type="l", lty=4, lwd=3, col=rgb(0.6,0,0))
+
+# Repeat with the simplified EBT method proposed by Brannstrom et al. (SIAM J Num Anal 51 (2013), 3213-3231)
+cat("\n\n\nSimulating the same trajectory with the simplified EBT method proposed by Brannstram et al. (SIAM J Num Anal 51 (2013), 3213-3231)\n\n")
+str <- readline("Press any key to continue....\n")
+
+CFLAGS="-DEBTMETHOD=0 "
+output4 <- PSPMecodyn("PNAS2002", initstate, c(1, 1, 10, 1000), options = c("report", "50"), force = T)
+if (exists("CFLAGS")) rm("CFLAGS")
+
+lines(output4$curvepoints[,1], output4$curvepoints[,7]+output4$curvepoints[,8], type="l", lwd=2, col="black")
+lines(output4$curvepoints[,1], output4$curvepoints[,9], type="l", lwd=2, col="black")
 
 par(par.defaults)
 PSPMclean('F')

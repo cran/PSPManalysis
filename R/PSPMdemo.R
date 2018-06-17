@@ -6,7 +6,7 @@
 #' varies one of the parameters over a range of values specified by the user
 #'
 #'   output <- PSPMdemo(modelname = NULL, curvepars = NULL, parameters = NULL, options = NULL,
-#'                      clean = FALSE, force = FALSE, debug = FALSE)
+#'                      clean = FALSE, force = FALSE, debug = FALSE, silent = FALSE)
 #'
 #'
 #' @param   modelname  (string, required)
@@ -54,6 +54,10 @@
 #'                      ruling variable for sorting the
 #'                      structured populations
 #' \preformatted{}
+#'               \verb{"report", "<value>"}: Interval between consecutive output of 
+#'                      computed points to the console ( >= 1). Minimum value of 1 
+#'                      implies output of every point
+#' \preformatted{}
 #'               \verb{"test"}: Perform only a single integration over
 #'                      the life history, reporting dynamics
 #'                      of survival, R0, i-state and
@@ -74,6 +78,11 @@
 #'               Specify debug = TRUE as argument to compile the model in verbose
 #'               mode and with debugging flag set
 #'
+#' @param   silent     (Boolean, optional argument)
+#' \preformatted{}
+#'               Specify silent = TRUE as argument to suppress reporting of compilation
+#'               commands and results on the console
+#'
 #' @return  The output is a list containing the following elements:
 #' \preformatted{}
 #' \verb{curvepoints}: Matrix with output for all computed points along the curve
@@ -87,23 +96,30 @@
 #'
 #' @import utils
 #' @export
-PSPMdemo <- function(modelname = NULL, curvepars = NULL, parameters = NULL, options = NULL, clean = FALSE, force = FALSE, debug = FALSE) {
+PSPMdemo <- function(modelname = NULL, curvepars = NULL, parameters = NULL, options = NULL, clean = FALSE, force = FALSE, debug = FALSE, silent = FALSE) {
 
   Oldwd = model.Name = Rmodel = Varlist = Funlist = libfile.Basename = DefaultParameters = NULL;
 
-  libfile.Fullname = buildSO("PSPMdemo", modelname, debug, force)
+  libfile.Fullname = buildSO("PSPMdemo", modelname, debug, force, silent)
   setwd(Oldwd)
 
   if (!file.exists(libfile.Fullname)) stop(paste0("\nExecutable ", libfile.Basename, " not found! Computation aborted.\n"))
 
   if (Rmodel == 1) {
-    if ((is.character(curvepars[1])) && (length((1:length(DefaultParameters))[curvepars[1]==names(DefaultParameters)]) == 1)) {
-      curvepars <- c(as.integer((1:length(DefaultParameters))[curvepars[1]==names(DefaultParameters)])-1,
-                 as.double(curvepars[2]), as.double(curvepars[3]), as.double(curvepars[4]), as.double(curvepars[5]))
+    if ((length(curvepars))  && (length(curvepars) != 5)) stop('If specified the curve parameter argument should be a vector of length 5') 
+    if ((length(curvepars))  && (is.character(curvepars[1]))) {
+      defpars <- get("DefaultParameters", envir = .GlobalEnv)
+      if (curvepars[1] %in% names(defpars)) {
+        indx <- (1:length(defpars))[curvepars[1] == names(defpars)]
+        curvepars <- c(as.integer(indx)-1, as.double(curvepars[2]), as.double(curvepars[3]), as.double(curvepars[4]), as.double(curvepars[5]))
+      }
+      else {
+        stop(paste0("\nName of curve parameter ", curvepars[1], " not found in DefaultParameters! Computation aborted.\n"))
+      }
     }
   }
 
-  if ((length(curvepars))  && ((length(curvepars) != 5) || (!is.double(curvepars)))) stop('If specified the curve parameter argument should be a vector of length 5 with double values')
+  if ((length(curvepars))  && ((length(curvepars) != 5) || (!is.double(curvepars)))) stop('If specified the curve parameter argument should be a vector of length 5 with double values') 
   if ((length(parameters)) && (!is.double(parameters))) stop('If specified parameter values should be a vector with double values')
   if ((length(options)) && (!is.character(options))) stop('If specified options should be an array with strings')
 
@@ -129,7 +145,12 @@ PSPMdemo <- function(modelname = NULL, curvepars = NULL, parameters = NULL, opti
       desc <- readLines(outfile.name)
       data <- as.matrix(read.table(text=desc, blank.lines.skip = TRUE, fill=TRUE))
       desc <- desc[grepl("^#", desc)]
-      cat(desc, sep='\n')
+      lbls <- strsplit(desc[length(desc)], ":")[[1]]
+      cnames <- gsub("[ ]+[0-9]+$", "", lbls[2:length(lbls)])
+      colnames(data) <- gsub("\\[[ ]+", "[", cnames)
+#      cat(desc, sep='\n')
+      desc[-length(desc)] <- paste0(desc[-length(desc)], '\n')
+      desc[1] <- ' #\n'
     }
   }
 

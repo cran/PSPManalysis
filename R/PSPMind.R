@@ -5,15 +5,15 @@
 #' set of values for the environmental variables
 #'
 #'   output <- PSPMind(modelname = NULL, environment = NULL, parameters = NULL, options = NULL,
-#'                     clean = FALSE, force = FALSE, debug = FALSE)
+#'                     clean = FALSE, force = FALSE, debug = FALSE, silent = FALSE)
 #'
 #' @param   modelname  (string, required)
 #' \preformatted{}
-#'               Basename of the file with model specification. The file
-#'               should have extension ".h". For example, the model "PNAS2002"
-#'               is specified in the file "PNAS2002.h". If the model is specified in R
-#'               include the .R extension explicitly, i.e. specify the model name
-#'               as "PNAS2002.R"
+#'               Basename of the file with the model specification. The file
+#'               should have an extension ".h". For example, the model "PNAS2002"
+#'               is specified in the file "PNAS2002.h". If the model is specified 
+#'               in R include the .R extension explicitly, i.e. specify the model
+#'               name as "PNAS2002.R"
 #'
 #' @param  environment  (row vector, required)
 #' \preformatted{}
@@ -57,6 +57,11 @@
 #'                 Specify debug = TRUE as argument to compile the model in verbose
 #'                 mode and with debugging flag set
 #'
+#' @param   silent     (Boolean, optional argument)
+#' \preformatted{}
+#'               Specify silent = TRUE as argument to suppress reporting of compilation
+#'               commands and results on the console
+#'
 #' @return  The output is a structure with the population state as normally stored in the
 #'   .csb output file of \code{\link{PSPMdemo}}, \code{\link{PSPMequi}}, \code{\link{PSPMecodyn}} and
 #' \code{\link{PSPMevodyn}}.
@@ -66,10 +71,10 @@
 #'         options = c("isort", "1"), clean=TRUE, force=TRUE)
 #'
 #' @export
-PSPMind <- function(modelname = NULL, environment = NULL, parameters = NULL, options = NULL, clean = FALSE, force = FALSE, debug = FALSE) {
+PSPMind <- function(modelname = NULL, environment = NULL, parameters = NULL, options = NULL, clean = FALSE, force = FALSE, debug = FALSE, silent = FALSE) {
 
   Oldwd = model.Name = Rmodel = Varlist = Funlist = libfile.Basename = NULL;
-  libfile.Fullname = buildSO("PSPMind", modelname, debug, force)
+  libfile.Fullname = buildSO("PSPMind", modelname, debug, force, silent)
   setwd(Oldwd)
 
   if (!file.exists(libfile.Fullname)) stop(paste0("\nExecutable ", libfile.Basename, " not found! Computation aborted.\n"))

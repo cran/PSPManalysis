@@ -22,7 +22,7 @@
     You should have received a copy of the GNU General Public License
     along with this software. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Oct 23, 2017
+    Last modification: AMdR - Jun 01, 2018
 ***/
 #ifndef GLOBALS
 #define GLOBALS
@@ -231,6 +231,8 @@ EXTERN int                        CurveType;
 EXTERN int                        LocalizeType;
 EXTERN int                        FastNumerics;
 EXTERN double                     Output[MAX_OUTPUTDIM];
+EXTERN double                     Time;
+
 
 // Layout: RightEigenvec[CurPopulationNr][MaxStatesAtBirth]
 #define RightEigenvec(p, b)       (*(rightEigenvecMem + (p)*MaxStatesAtBirth + (b)))
@@ -258,7 +260,6 @@ EXTERN int                        Bifpartwo;
 EXTERN double                     MutantParVal;
 EXTERN int                        EnvBPIndex;
 EXTERN int                        PopBPIndex;
-EXTERN int                        PopEVOIndex;
 EXTERN char                       runname[MAXPATHLEN];
 
 
@@ -285,7 +286,7 @@ int DefineOutput(double *x, double *output);
 int                               LocateLP(const int pntdim, double *y, int (*fnc)(double *, double *), double dytol, double rhstol);
 int                               LocateBP(int *dimpntr, double *y, int (*fnc)(double *, double *), double dytol, double rhstol, int nr, int indx);
 int                               LocateBPE(int *dimpntr, double *y, int (*fnc)(double *, double *), double dytol, double rhstol, int nr, int indx);
-int                               LocateESS(const int pntdim, double *y, int (*fnc)(double *, double *), double dytol, double rhstol, const int R0index);
+int                               LocateESS(const int pntdim, double *y, int (*fnc)(double *, double *), double dytol, double rhstol, const int popindex, const int R0index);
 int                               ESSclassify(const int pntdim, double *pnt, int (*fnc)(double *, double *), double dytol, double rhstol,
                                               const int R0index, double *EVmaxJ, double *EVmaxH, double *zC01z, const int detecting);
 
@@ -329,7 +330,7 @@ void                              PrettyPrintArray(FILE *, const int, double *);
 // For Ctrl-C detection
 int                               checkInterrupt(void);
 
-EXTERN int CtrlCPressed;
+EXTERN int                        CtrlCPressed;
 #endif
 
 char                              *ReadDouble(double *val, char *cpnt);
@@ -491,6 +492,18 @@ extern void                       dsyevr(char *jobz, char *range, char *uplo, LA
 #endif
 
 #endif
+
+// Like the BLAS Level 1 function, but summing the actual values of an array, not the absolute value
+
+INLINE double SUM(int a, double *b, int c)
+{
+  int         ii, jj;
+  double      result = 0.0;
+
+  for (ii = 0, jj = 0; ii < a; ii++, jj += c) result += b[jj];
+
+  return result;
+}
 
 
 /*==================================================================================================================================*/

@@ -6,7 +6,7 @@
      Train software of a physiologically structured population model that is specificied in the type of
      header file used for the PSPManalysis package.
 
-  Last modification: AMdR - Jan 12, 2018
+  Last modification: AMdR - May 05, 2018
 */
 
 #define PSPMECODYN                1                                                 // File identification
@@ -44,6 +44,9 @@ int                               EnvironmentType[ENVIRON_DIM];
 
 /*================================ IMPORT THE MODEL DIMENSIONS AND IMPLEMENTATION ==================================================*/
 
+#define Survival(p)               (exp(-(istate[p][-1] - 1.0)))  
+#define SetSurvival(p, s)         istate[p][-1] = (((s) >= 0) && ((s) < exp(-(istate[p][-1] - 1.0)))) ? (1.0 - log(max((s), DBL_EPSILON))) : (istate[p][-1])
+
 #if ((RFUNCTIONS != 1) && (MFUNCTIONS != 1))
 #undef POPULATION_NR
 #undef STAGES
@@ -58,6 +61,10 @@ int                               EnvironmentType[ENVIRON_DIM];
 #else
 #error No header file defined!
 #endif
+#endif
+
+#ifndef EBTMETHOD
+#define EBTMETHOD                 1
 #endif
 
 
@@ -135,6 +142,8 @@ static int                        MaxCohortNr = -1;
 static int                        MaxStatesAtBirth = -1;
 static double                     curPSPMEnv[ENVIRON_DIM];
 static double                     logMinSurvival;
+int                               EBTMethod;
+static double                     Time = 0;
 
 static void setCurrentEnvironmentValues(double *env, population *pop, population *ofs, double popImpacts[POPULATION_NR][INTERACT_DIM]);
 
@@ -174,6 +183,7 @@ void	UserInit( int argc, char **argv, double *env,  population *pop)
   double  limitVals[POPULATION_NR];
   int     bstateNr[POPULATION_NR];
 
+  Time = env[0];
   logMinSurvival = 1.0 - log(MIN_SURVIVAL);
 
   // Set the maximum number of cohorts
@@ -258,6 +268,7 @@ void SetBpointNo(double *env, population *pop, int *bpoint_no)
 {
   int pp;
 
+  Time = env[0];
   for (pp = 0, MaxCohortNr = 0; pp < POPULATION_NR; pp++)
     MaxCohortNr = max(MaxCohortNr, cohort_no[pp]);
 
@@ -287,6 +298,7 @@ void	SetBpoints(double *env, population *pop, population *bpoints)
   double *bstatePnt[POPULATION_NR];
   double  dummy[I_STATE_DIM];
 
+  Time = env[0];
   // No need to update the POPULATIONINTEGRAL variables
 
   for (bb = 0; bb < MaxStatesAtBirth; bb++)
@@ -300,6 +312,9 @@ void	SetBpoints(double *env, population *pop, population *bpoints)
         if (bb < bpoint_no[pp])
           {
             memcpy(ofsIDcard[pp][bb] + 1, bpoints[pp][bb] + 1, I_STATE_DIM*sizeof(double));
+#if (EBTMETHOD == 0)
+            memcpy(ofs[pp][bb] + 1, bpoints[pp][bb] + 1, I_STATE_DIM*sizeof(double));
+#endif
             ofsIDbstatenr(pp, bb)  = bb;
             ofsIDbirthtime(pp, bb) = env[0];
           }
@@ -327,15 +342,18 @@ void Gradient(double *env, population *pop, population *ofs, double *envgrad, po
   double  istateVals[POPULATION_NR][I_STATE_DIM];
   double  development[POPULATION_NR][I_STATE_DIM];
   double  mortality[POPULATION_NR];
+#if (EBTMETHOD != 0)
   double  istateValsdI[POPULATION_NR][I_STATE_DIM], istateDiff;
   double  developmentdI[POPULATION_NR][I_STATE_DIM];
   double  mortalitydI[POPULATION_NR];
+#endif
   double *fecundity[POPULATION_NR], *fecundityMem;
   double *curBirthRate[POPULATION_NR], *curBirthRateMem;
   double  curPopIntegrals[POPULATION_NR][INTERACT_DIM];
   double  curEnvCondition[ENVIRON_DIM];
   double  cohortDensity;
 
+  Time = env[0];
   fecundityMem = malloc(POPULATION_NR*MaxStatesAtBirth*sizeof(double));
   if (!fecundityMem) ErrorExit(0, "Memory allocation failure in Gradient()!");
 
@@ -406,8 +424,11 @@ void Gradient(double *env, population *pop, population *ofs, double *envgrad, po
         {
           jj = (j < bpoint_no[pp]) ? j : bpoint_no[pp] - 1;
 
+#if (EBTMETHOD != 0)
           memcpy(istateVals[pp], ofsIDcard[pp][jj] + 1, I_STATE_DIM*sizeof(double));
-
+#else
+          memcpy(istateVals[pp], ofs[pp][jj] + 1, I_STATE_DIM*sizeof(double));
+#endif
           istatePnt[pp] = istateVals[pp];
           bstatePnt[pp] = ofsIDcard[pp][jj] + 1;
           lifeStage[pp] = getOfsIDlifestage(pp, jj);
@@ -436,10 +457,17 @@ void Gradient(double *env, population *pop, population *ofs, double *envgrad, po
               ofsgrad[pp][jj][number]  = -mortality[pp]*ofs[pp][jj][number];
               ofsgrad[pp][jj][number] += curBirthRate[pp][jj];
               for (ii = 0; ii < I_STATE_DIM; ii++)
-                ofsgrad[pp][jj][i_state(ii)] = development[pp][ii]*ofs[pp][jj][number] - mortality[pp]*ofs[pp][jj][i_state(ii)];
+                {
+                  ofsgrad[pp][jj][i_state(ii)] = development[pp][ii];
+#if (EBTMETHOD != 0)
+                  ofsgrad[pp][jj][i_state(ii)] *= ofs[pp][jj][number];
+                  ofsgrad[pp][jj][i_state(ii)] -= mortality[pp]*ofs[pp][jj][i_state(ii)];
+#endif
+                }
             }
         }
 
+#if (EBTMETHOD != 0)
       // Numerically compute the forward derivative of the development and mortality function
       for (ii = 0; ii < I_STATE_DIM; ii++)
         {
@@ -485,6 +513,7 @@ void Gradient(double *env, population *pop, population *ofs, double *envgrad, po
                 }
             }
         }
+#endif
     }
 
   memset(curEnvCondition, 0, ENVIRON_DIM*sizeof(double));
@@ -532,6 +561,7 @@ void	EventLocation(double *env, population *pop, population *ofs, population *bp
   double *bstatePnt[POPULATION_NR];
   double  limitVals[POPULATION_NR];
 
+  Time = env[0];
   // Set the current values of the environmental variables
   setCurrentEnvironmentValues(env, pop, ofs, NULL);
 
@@ -579,6 +609,7 @@ int	ForceCohortEnd(double *env, population *pop, population *ofs, population *bp
   double *bstatePnt[POPULATION_NR];
   double  limitVals[POPULATION_NR];
 
+  Time = env[0];
   // No need to set the current values of the environmental variables, have been set in EventLocation()
 
   for (pp = 0; pp < POPULATION_NR; pp++) newStage[pp] = -1;
@@ -646,6 +677,7 @@ void	InstantDynamics(double *env, population *pop, population *ofs)
   double *bstatePnt[POPULATION_NR];
   double  limitVals[POPULATION_NR];
 
+  Time = env[0];
   for (pp = 0; pp < POPULATION_NR; pp++) newStage[pp] = -1;
   for (j = 0; j < MaxCohortNr; j++)
     {
@@ -698,6 +730,16 @@ void	InstantDynamics(double *env, population *pop, population *ofs)
         {
           ofsIDcard[pp][jj][number] = ofs[pp][jj][number];
           ofs[pp][jj][number]       = 1.0;
+#if (EBTMETHOD == 0)
+          // In addition to the method proposed by Brännström et al., who suggest to use dx_b/dt=g(E,x_b) as ODE for the boundary
+          // cohort, here we at the end of the cohort interval the value of x_b(t) is averaged with the value x_b(0), the 
+          // initial value of the state at birth.
+          for (ii = 0; ii < I_STATE_DIM; ii++)
+            {
+              ofs[pp][jj][1 + ii] += ofsIDcard[pp][jj][1 + ii];
+              ofs[pp][jj][1 + ii] /= 2.0;
+            }
+#endif
         }
     }
 
@@ -726,6 +768,7 @@ void	DefineOutput(double *env, population *pop, double *output)
   double         cohortDensity;
   static double  nextreport = 0.0;
 
+  Time = env[0];
   // Compute MaxCohortNr anew after SievePop()
   for (pp = 0, MaxCohortNr = 0; pp < POPULATION_NR; pp++)
     MaxCohortNr = max(MaxCohortNr, cohort_no[pp]);
@@ -843,6 +886,7 @@ static void setCurrentEnvironmentValues(double *env, population *pop, population
   double  curEnvCondition[ENVIRON_DIM];
   double  cohortDensity;
 
+  Time = env[0];
   memcpy(curPSPMEnv, env + 1, ENVIRON_DIM*sizeof(double));
   for (dd = 0; dd < DECEPENDENCYLEVEL; dd++)
     {
@@ -885,6 +929,9 @@ static void setCurrentEnvironmentValues(double *env, population *pop, population
               for (pp = 0; pp < POPULATION_NR; pp++)
                 {
                   jj = (j < bpoint_no[pp]) ? j : bpoint_no[pp] - 1;
+#if (EBTMETHOD == 0)
+                  memcpy(istateVals[pp], ofs[pp][jj] + 1, I_STATE_DIM*sizeof(double));
+#else
                   memcpy(istateVals[pp], ofsIDcard[pp][jj] + 1, I_STATE_DIM*sizeof(double));
 
                   if (ofs[pp][jj][number] > DYTOL)
@@ -892,7 +939,7 @@ static void setCurrentEnvironmentValues(double *env, population *pop, population
                       for (ii = 0; ii < I_STATE_DIM; ii++)
                         istateVals[pp][ii] += ofs[pp][jj][i_state(ii)]/ofs[pp][jj][number];
                     }
-
+#endif
                   istatePnt[pp] = istateVals[pp];
                   bstatePnt[pp] = ofsIDcard[pp][jj] + 1;
                   lifeStage[pp] = getOfsIDlifestage(pp, jj);
@@ -996,7 +1043,7 @@ static void setCurrentEnvironmentValues(double *env, population *pop, population
              }
            if (dbgfile)(void)fprintf(dbgfile, "==============================================================\n");
          }
-       TransBcohorts();
+       if (EBTMethod) TransBcohorts();
        sprintf(fpe_mes, "Floating point error at time %.4f", env[0]);
        ErrorExit(1, fpe_mes);
      }
@@ -1029,6 +1076,12 @@ static void InitVars()
   EBTEnvironDim = ENVIRON_DIM_EBT;
   IConstDim     = I_CONST_DIM;
   output_var_nr = OUTPUT_VAR_NR;
+
+  EBTMethod     = EBTMETHOD;
+
+#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE) || defined(R_PACKAGE)
+  CtrlCPressed  = 0;
+#endif
 
   Odesolve_Init_Step  = ODESOLVE_INIT_STEP;
   Odesolve_Fixed_Step = ODESOLVE_FIXED_STEP;
@@ -1081,6 +1134,7 @@ static void InitVars()
   char            csbname[MAXFILENAMELEN], dbgname[MAXFILENAMELEN], outname[MAXFILENAMELEN];
   double          oldBifParVal = 0;
   struct stat     buffer;
+  char            tmpstr[MAX_STR_LEN];
   
   i = 0;
   while (1)
@@ -1163,12 +1217,29 @@ static void InitVars()
 #else
   colnr = 1;
 #endif
-  fprintf(outfile, "#%2d:%6s  ", colnr++, "Time");
-  for (i = 0; i < ENVIRON_DIM; i++) fprintf(outfile, "        %2d:E[%2d]", colnr++, i);
-  for (i = 0; i < POPULATION_NR; i++) fprintf(outfile, "        %2d:b[%2d]", colnr++, i);
+  sprintf(tmpstr, "%d:%s  ", colnr++, "Time");
+  fprintf(outfile, "#%11s", tmpstr);
+  for (i = 0; i < ENVIRON_DIM; i++)
+    {
+      sprintf(tmpstr, "%d:E[%d]", colnr++, i);
+      fprintf(outfile, "%16s", tmpstr);
+    }
   for (i = 0; i < POPULATION_NR; i++)
-    for (j = 0; j < INTERACT_DIM; j++) fprintf(outfile, "    %2d:I[%2d][%2d]", colnr++, i, j);
-  if (BifurcationRun) fprintf(outfile, "    %2d:Bif. par.", colnr++);
+    {
+      sprintf(tmpstr, "%d:b[%d]", colnr++, i);
+      fprintf(outfile, "%16s", tmpstr);
+    }
+  for (i = 0; i < POPULATION_NR; i++)
+    for (j = 0; j < INTERACT_DIM; j++)
+      {
+        sprintf(tmpstr, "%d:I[%d][%d]", colnr++, i, j);
+        fprintf(outfile, "%16s", tmpstr);
+      }
+  if (BifurcationRun)
+    {
+      sprintf(tmpstr, "%d:Bif. par.", colnr++);
+      fprintf(outfile, "%16s", tmpstr);
+    }
   fprintf(outfile, "\n");
   fflush(outfile);
 
@@ -1445,7 +1516,44 @@ int main(int argc, char **argv)
     }
   strcat(parstring, "]");
 
+  //============================== Process the time settings argument ================================================================
+
+  irhs  = 1;
+  nrows = mxGetM(prhs[irhs]);
+  ncols = mxGetN(prhs[irhs]);
+  if ((ncols == 4) && (nrows == 1))
+    {
+      dblpnt = mxGetPr(prhs[irhs]);
+
+      cohort_limit  = dblpnt[0];
+      delt_out      = dblpnt[1];
+      state_out     = dblpnt[2];
+      max_time      = dblpnt[3];
+      if (cohort_limit <= 0.0)
+        mexErrMsgIdAndTxt("MATLAB:PSPMecodyn:times", "\nCohort cylce time should be positive!\n\n");
+      if (delt_out < cohort_limit)
+        mexErrMsgIdAndTxt("MATLAB:PSPMecodyn:times", "\nInterval for data output to .out file should be larger than or equal to cohort cylce time!\n\n");
+      if ((state_out != 0) && (state_out < cohort_limit))
+        mexErrMsgIdAndTxt("MATLAB:PSPMecodyn:times", "\nInterval for complete state output to .csb file should either be 0 or larger than or equal to cohort cylce time!\n\n");
+      if (max_time < cohort_limit)
+        mexErrMsgIdAndTxt("MATLAB:PSPMecodyn:times", "\nMaximum integration time should be larger than cohort or equal to cylce time!\n\n");
+    }
+  else if (ncols)
+    mexErrMsgIdAndTxt("MATLAB:PSPMecodyn:times", "\n%s\n%s\n"
+                      "Time settings argument ignored as it is not a row vector of length 4 consisting of",
+                      "cohort cycle time, interval between data output, interval between state output and maximum integration time");
+
+  strcpy(timestring, "[");
+  for (i = 0; i < (nrows*ncols); i++)
+    {
+      if (i) strcat(timestring, " ");
+      sprintf(tmpstr, "%.6G", dblpnt[i]);
+      strcat(timestring, tmpstr);
+    }
+  strcat(timestring, "]");
+
   //============================== Process the bifurcation settings argument =========================================================
+  // max_time has to be set before this point
 
   irhs  = 2;
   nrows = mxGetM(prhs[irhs]);
@@ -1496,42 +1604,6 @@ int main(int argc, char **argv)
       strcat(bifstring, tmpstr);
     }
   strcat(bifstring, "]");
-
-  //============================== Process the time settings argument ================================================================
-
-  irhs  = 1;
-  nrows = mxGetM(prhs[irhs]);
-  ncols = mxGetN(prhs[irhs]);
-  if ((ncols == 4) && (nrows == 1))
-    {
-      dblpnt = mxGetPr(prhs[irhs]);
-
-      cohort_limit  = dblpnt[0];
-      delt_out      = dblpnt[1];
-      state_out     = dblpnt[2];
-      max_time      = dblpnt[3];
-      if (cohort_limit <= 0.0)
-        mexErrMsgIdAndTxt("MATLAB:PSPMecodyn:times", "\nCohort cylce time should be positive!\n\n");
-      if (delt_out < cohort_limit)
-        mexErrMsgIdAndTxt("MATLAB:PSPMecodyn:times", "\nInterval for data output to .out file should be larger than or equal to cohort cylce time!\n\n");
-      if ((state_out != 0) && (state_out < cohort_limit))
-        mexErrMsgIdAndTxt("MATLAB:PSPMecodyn:times", "\nInterval for complete state output to .csb file should either be 0 or larger than or equal to cohort cylce time!\n\n");
-      if (max_time < cohort_limit)
-        mexErrMsgIdAndTxt("MATLAB:PSPMecodyn:times", "\nMaximum integration time should be larger than cohort or equal to cylce time!\n\n");
-    }
-  else if (ncols)
-    mexErrMsgIdAndTxt("MATLAB:PSPMecodyn:times", "\n%s\n%s\n"
-                      "Time settings argument ignored as it is not a row vector of length 4 consisting of",
-                      "cohort cycle time, interval between data output, interval between state output and maximum integration time");
-
-  strcpy(timestring, "[");
-  for (i = 0; i < (nrows*ncols); i++)
-    {
-      if (i) strcat(timestring, " ");
-      sprintf(tmpstr, "%.6G", dblpnt[i]);
-      strcat(timestring, tmpstr);
-    }
-  strcat(timestring, "]");
 
   //============================== Process the initial point argument ================================================================
 
@@ -1831,7 +1903,38 @@ SEXP PSPMecodyn(SEXP moduleName, SEXP initState, SEXP timePars, SEXP bifPars, SE
   if (ncols && (!parsdefined))
     warning("\nParameter argument ignored as it is not a real-valued vector of length PARAMETER_NR\n\n");
 
+  //============================== Process the time parameter argument ===============================================================
+
+  strcpy(timestring, "NULL");
+  ncols  = length(timePars);
+
+  if ((!isReal(timePars)) || (ncols != 4))
+    error("\nTime settings argument is not a real-valued vector of length 4\n\n");
+
+  dblpnt = REAL(timePars);
+  cohort_limit  = dblpnt[0];
+  delt_out      = dblpnt[1];
+  state_out     = dblpnt[2];
+  max_time      = dblpnt[3];
+  if (cohort_limit <= 0.0)
+    error("\nCohort cylce time should be positive!\n\n");
+  if (delt_out < cohort_limit)
+    error("\nInterval for data output to .out file should be larger than or equal to cohort cylce time!\n\n");
+  if ((state_out != 0) && (state_out < cohort_limit))
+    error("\nInterval for complete state output to .csb file should either be 0 or larger than or equal to cohort cylce time!\n\n");
+  if (max_time < cohort_limit)
+    error("\nMaximum integration time should be larger than cohort or equal to cylce time!\n\n");
+  strcpy(timestring, "c(");
+  for (ii = 0; ii < ncols; ii++)
+    {
+      if (ii) strcat(timestring, ", ");
+      sprintf(tmpstr, "%.6G", dblpnt[ii]);
+      strcat(timestring, tmpstr);
+    }
+  strcat(timestring, ")");
+
   //============================== Process the bifurcation parameter argument ========================================================
+  // max_time has to be set before this point
 
   strcpy(bifstring, "NULL");
   BifurcationRun = 0;
@@ -1879,36 +1982,6 @@ SEXP PSPMecodyn(SEXP moduleName, SEXP initState, SEXP timePars, SEXP bifPars, SE
         }
       strcat(bifstring, ")");
     }
-
-  //============================== Process the time parameter argument ===============================================================
-
-  strcpy(timestring, "NULL");
-  ncols  = length(timePars);
-
-  if ((!isReal(timePars)) || (ncols != 4))
-    error("\nTime settings argument is not a real-valued vector of length 4\n\n");
-
-  dblpnt = REAL(timePars);
-  cohort_limit  = dblpnt[0];
-  delt_out      = dblpnt[1];
-  state_out     = dblpnt[2];
-  max_time      = dblpnt[3];
-  if (cohort_limit <= 0.0)
-    error("\nCohort cylce time should be positive!\n\n");
-  if (delt_out < cohort_limit)
-    error("\nInterval for data output to .out file should be larger than or equal to cohort cylce time!\n\n");
-  if ((state_out != 0) && (state_out < cohort_limit))
-    error("\nInterval for complete state output to .csb file should either be 0 or larger than or equal to cohort cylce time!\n\n");
-  if (max_time < cohort_limit)
-    error("\nMaximum integration time should be larger than cohort or equal to cylce time!\n\n");
-  strcpy(timestring, "c(");
-  for (ii = 0; ii < ncols; ii++)
-    {
-      if (ii) strcat(timestring, ", ");
-      sprintf(tmpstr, "%.6G", dblpnt[ii]);
-      strcat(timestring, tmpstr);
-    }
-  strcat(timestring, ")");
 
   //============================== Process the initial state argument ================================================================
 

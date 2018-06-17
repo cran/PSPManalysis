@@ -26,7 +26,7 @@
     You should have received a copy of the GNU General Public License
     along with PSPManalysis. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Dec 05, 2017
+    Last modification: AMdR - May 03, 2018
 ***/
 
 #define PSPMIND                   1
@@ -292,7 +292,7 @@ int Equation()
           STDOUT("\nPop. #%2d - Bstate %2d - (Final):", p, b);
           for (i = 0; i < IStateDim; i++) STDOUT("%15.6G", FinalIstate(b, p, i));
           STDOUT("%15.6G", exp(FinalIstate(b, p, IStateDim)));
-          STDOUT("%15.6G", ASUM(BirthStateNr[p], FinalIstatePnt(b, p, (IStateDim + 1)), 1));
+          STDOUT("%15.6G", SUM(BirthStateNr[p], FinalIstatePnt(b, p, (IStateDim + 1)), 1));
           for (i = 0; i < InteractDim; i++) STDOUT("%18.6G", FinalIstate(b, p, (IStateDim + 1) + BirthStateNr[p] + i));
         }
       if (BirthStateNr[p] > 1)
@@ -310,12 +310,12 @@ int Equation()
                   STDOUT("%15.6G", NextGenMatrix[b*BirthStateNr[p] + j]);
                 }
               STDOUT(" |");
-              STDOUT("%15.6G", ASUM(BirthStateNr[p], NextGenMatrix + b*BirthStateNr[p], 1));
+              STDOUT("%15.6G", SUM(BirthStateNr[p], NextGenMatrix + b*BirthStateNr[p], 1));
               STDOUT("\n");
             }
           for (j = 0; j < BirthStateNr[p]; j++) STDOUT("  -------------");
           STDOUT("\n");
-          for (j = 0; j < BirthStateNr[p]; j++) STDOUT("%15.6G", ASUM(BirthStateNr[p], NextGenMatrix + j, BirthStateNr[p]));
+          for (j = 0; j < BirthStateNr[p]; j++) STDOUT("%15.6G", SUM(BirthStateNr[p], NextGenMatrix + j, BirthStateNr[p]));
 
           STDOUT("\n\n\nEig(M) : %12.6E", R0[p]);
 
@@ -405,6 +405,10 @@ void InitialiseVars(void)
   // Initialize some variables
   strcpy(runname, "");
 
+#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE) || defined(R_PACKAGE)
+  CtrlCPressed = 0;
+#endif
+
   // Get the machine precisions
   epsMach = dlamch("Epsilon");
 
@@ -430,6 +434,8 @@ void InitialiseVars(void)
   Odesolve_Abs_Err    = ODESOLVE_ABS_ERR;
   Odesolve_Rel_Err    = ODESOLVE_REL_ERR;
   Odesolve_Func_Tol   = ODESOLVE_FUNC_TOL;
+
+  Time                = 0;
 
   return;
 }

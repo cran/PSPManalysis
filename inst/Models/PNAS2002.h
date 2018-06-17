@@ -28,7 +28,7 @@
     I[0][2]       : Total biomass of non-vulnerable juveniles
     I[0][3]       : Total adult biomass
 
-  Last modification: AMdR - Jun 07, 2017
+  Last modification: AMdR - Apr 18, 2018
 */
 
 /*
@@ -56,7 +56,7 @@
 
 
 // Descriptive names of parameters in parameter array (at least two parameters are required)
-char *parameternames[PARAMETER_NR] = {"Rho", "Rmax",  "Lb", "Lv",  "Lj", "Lm", "Beta",    "Imax",
+char *parameternames[PARAMETER_NR] = {"Rho", "Rmax",  "Lb", "Lv",  "Lj", "Lm", "Omega",   "Imax",
                                       "Rh",  "Gamma", "Rm", "Mub", "A",  "Th", "Epsilon", "Delta"};
 
 // Default values of all parameters

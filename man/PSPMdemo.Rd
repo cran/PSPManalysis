@@ -5,7 +5,8 @@
 \title{Demographic analysis of a structured population model}
 \usage{
 PSPMdemo(modelname = NULL, curvepars = NULL, parameters = NULL,
-  options = NULL, clean = FALSE, force = FALSE, debug = FALSE)
+  options = NULL, clean = FALSE, force = FALSE, debug = FALSE,
+  silent = FALSE)
 }
 \arguments{
 \item{modelname}{(string, required)
@@ -53,6 +54,10 @@ PSPMdemo(modelname = NULL, curvepars = NULL, parameters = NULL,
                      ruling variable for sorting the
                      structured populations
 \preformatted{}
+              \verb{"report", "<value>"}: Interval between consecutive output of 
+                     computed points to the console ( >= 1). Minimum value of 1 
+                     implies output of every point
+\preformatted{}
               \verb{"test"}: Perform only a single integration over
                      the life history, reporting dynamics
                      of survival, R0, i-state and
@@ -72,6 +77,11 @@ PSPMdemo(modelname = NULL, curvepars = NULL, parameters = NULL,
 \preformatted{}
               Specify debug = TRUE as argument to compile the model in verbose
               mode and with debugging flag set}
+
+\item{silent}{(Boolean, optional argument)
+\preformatted{}
+              Specify silent = TRUE as argument to suppress reporting of compilation
+              commands and results on the console}
 }
 \value{
 The output is a list containing the following elements:
@@ -90,7 +100,7 @@ varies one of the parameters over a range of values specified by the user
 }
 \details{
 output <- PSPMdemo(modelname = NULL, curvepars = NULL, parameters = NULL, options = NULL,
-                     clean = FALSE, force = FALSE, debug = FALSE)
+                     clean = FALSE, force = FALSE, debug = FALSE, silent = FALSE)
 }
 \examples{
 PSPMdemo("Medfly", c(2, 11, 0.1, 11, 16))

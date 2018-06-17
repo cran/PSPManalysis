@@ -6,16 +6,17 @@
 #' If starting from an arbitrary state is required, the list specifying the initial state should
 #' have the same layout as produced by \code{\link{PSPMequi}}.
 #'
-#'   output <- PSPMecodyn(modelname = NULL, startstate = NULL, timepars = NULL, bifpars = NULL,
-#'                        parameters = NULL, options = NULL, clean = FALSE, force = FALSE, debug = FALSE)
+#'   output <- PSPMecodyn(modelname = NULL, startstate = NULL, timepars = NULL, 
+#'                        bifpars = NULL, parameters = NULL, options = NULL,
+#'                        clean = FALSE, force = FALSE, debug = FALSE, silent = FALSE)
 #'
 #' @param  modelname  (string, required)
 #' \preformatted{}
-#'               Basename of the file with model specification. The file
-#'               should have extension ".h". For example, the model "PNAS2002"
-#'               is specified in the file "PNAS2002.h". If the model is specified in R
-#'               include the .R extension explicitly, i.e. specify the model name
-#'               as "PNAS2002.R"
+#'               Basename of the file with the model specification. The file
+#'               should have an extension ".h". For example, the model "PNAS2002"
+#'               is specified in the file "PNAS2002.h". If the model is specified 
+#'               in R include the .R extension explicitly, i.e. specify the model
+#'               name as "PNAS2002.R"
 #'
 #' @param  startstate (list, required)
 #' \preformatted{}
@@ -96,6 +97,11 @@
 #'               Specify debug = TRUE as argument to compile the model in verbose
 #'               mode and with debugging flag set
 #'
+#' @param   silent     (Boolean, optional argument)
+#' \preformatted{}
+#'               Specify silent = TRUE as argument to suppress reporting of compilation
+#'               commands and results on the console
+#'
 #' @return  The output is a list containing the following elements:
 #' \preformatted{}
 #'              \verb{curvepoints}: Matrix with output for all computed points along the curve
@@ -104,13 +110,14 @@
 #'              of the computed curve (i.e., initial point, parameter values,
 #'              numerical settings used)
 #' @examples
-#' initstate <- list(Environment = c(1.561276e-04, 1.270327e-04, 4.008016e-06), 
-#'                   Pop00 = matrix(c(0.001, 0, 7.0, 1.0E-5, 300, 111), ncol = 3, byrow = TRUE))
+#' initstate <- list(Environment = c(1.561e-04, 1.270e-04, 4.008e-06), 
+#'                   Pop00 = matrix(c(0.001, 0, 7.0, 1.0E-5, 300, 111),
+#'                   ncol = 3, byrow = TRUE))
 #' PSPMecodyn("PNAS2002", initstate, c(1, 1, 10, 100))
 #'
 #' @import utils
 #' @export
-PSPMecodyn <- function(modelname = NULL, startstate = NULL, timepars = NULL, bifpars = NULL, parameters = NULL, options = NULL, clean = FALSE, force = FALSE, debug = FALSE) {
+PSPMecodyn <- function(modelname = NULL, startstate = NULL, timepars = NULL, bifpars = NULL, parameters = NULL, options = NULL, clean = FALSE, force = FALSE, debug = FALSE, silent = FALSE) {
 
   if ((!length(modelname)) || (!nchar(modelname))) stop("You have to specify a model name")
 
@@ -215,9 +222,11 @@ PSPMecodyn <- function(modelname = NULL, startstate = NULL, timepars = NULL, bif
     inclist <- c("escbox/ebtbifstats.c", "escbox/ebtcohrt.h", "escbox/ebtdopri5.h", "escbox/ebtutils.h", "escbox/ebtmain.h", "escbox/escbox.h")
     objlist <- c("PSPMecodyn.o", "ebtcohrt.o", "ebtdopri5.o", "ebtutils.o")
     if (file.exists(libfile.fullname)) file.remove(libfile.fullname)
+
+    file.remove(Filter(file.exists, c(hfile.basename, "PSPMecodyn.c", "ebtcohrt.c", "ebtdopri5.c", "ebtutils.c")))
     file.remove(Filter(file.exists, objlist))
 
-    cat("\nBuilding executable", libfile.basename, "using sources from", PSPMsrcdir.name, "...\n\n")
+    if (!silent) cat("\nBuilding executable", libfile.basename, "using sources from", PSPMsrcdir.name, "...\n\n")
 
     # Check whether the source files are to be found and copy them to the temporary directory
     for (i in srclist) {
@@ -361,20 +370,16 @@ PSPMecodyn <- function(modelname = NULL, startstate = NULL, timepars = NULL, bif
     # }
     # else {
     # Compilation steps using the older R package 'devtools'
-    result <- devtools::RCMD("SHLIB", options=buildargs, path = tmpdir, env_vars=buildenv)
-    if ((is.integer(result) && (result != 0)) || (is.logical(result) && (!result))) {
-      setwd(oldwd)
+    setwd(oldwd)
+    result <- devtools::RCMD("SHLIB", options=buildargs, path = tmpdir, env_vars=buildenv, quiet = silent)
+    if ((is.integer(result) && (result != 0)) || (is.logical(result) && (!result)) || (!file.exists(libfile.fullname))) {
       stop(paste0("\nCompilation of ", libfile.basename, " failed!\n"))
     }
     # }
 
-    if (!file.exists(libfile.fullname)) {
-        setwd(oldwd)
-        stop(paste0("\nCompilation succeeded, but file ", libfile.basename, " not found!\n"))
-      }
-    else cat("\nCompilation of ", libfile.basename, " succeeded!\n\n")
+    if (!silent) cat("\nCompilation of ", libfile.basename, " succeeded!\n\n")
   }
-  else cat("Dynamic library file", libfile.basename, "is up-to-date\n\n");
+  else if (!silent) cat("Dynamic library file", libfile.basename, "is up-to-date\n\n");
 
   setwd(oldwd)
   dyn.load(libfile.fullname)
@@ -393,7 +398,12 @@ PSPMecodyn <- function(modelname = NULL, startstate = NULL, timepars = NULL, bif
       desc <- readLines(outfile.name)
       data <- as.matrix(read.table(text=desc, blank.lines.skip = TRUE, fill=TRUE))
       desc <- desc[grepl("^#", desc)]
-      cat(desc, sep='\n')
+      lbls <- strsplit(desc[length(desc)], ":")[[1]]
+      cnames <- gsub("[ ]+[0-9]+$", "", lbls[2:length(lbls)])
+      colnames(data) <- gsub("\\[[ ]+", "[", cnames)
+#      cat(desc, sep='\n')
+      desc[-length(desc)] <- paste0(desc[-length(desc)], '\n')
+      desc[1] <- ' #\n'
     }
   }
 

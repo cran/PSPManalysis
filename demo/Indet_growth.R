@@ -33,7 +33,7 @@ points(output1$bifpoints[,1], output1$bifpoints[,5]+output1$bifpoints[,6], col="
 text(output1$bifpoints[,1], output1$bifpoints[,5]+output1$bifpoints[,6], output1$biftype, pos=1, offset=0.35)
 
 cat("\n\n\nContinuation of the ESS value of the ingestion exponent of the structured population as a function of the first bifurcation parameter (maintenance exponent)\n\n")
-cmd = c(paste0('output2a <- PSPMequi("', modelname, '", "ESS", c(1.0, output1$bifpoints[c(2, 3, 1)]), -0.1, c(9, 0.5, 2.0, 6, 0.5, 2.0), options=c("popEVO", "0"))'), paste0('output2b <- PSPMequi("', modelname, '", "ESS", c(1.0, output1$bifpoints[c(2, 3, 1)]), 0.1, c(9, 0.5, 2.0, 6, 0.5, 2.0), options=c("popEVO", "0"))'))
+cmd = c(paste0('output2a <- PSPMequi("', modelname, '", "ESS", c(1.0, output1$bifpoints[c(2, 3, 1)]), -0.1, c(9, 0.5, 2.0, 0, 6, 0.5, 2.0))'), paste0('output2b <- PSPMequi("', modelname, '", "ESS", c(1.0, output1$bifpoints[c(2, 3, 1)]), 0.1, c(9, 0.5, 2.0, 0, 6, 0.5, 2.0))'))
 
 str = readline(paste0("\n> ", cmd, "\n\nPress any key to continue....\n"))
 eval(parse(text=cmd))
@@ -62,7 +62,7 @@ lines(output4$curvepoints[,1], output4$curvepoints[,4], type='l', col=rgb(0.6,0,
 lines(c(0.5,1.5), c(0.5,1.5), type='l', col="black", lwd=1)
 
 cat("\n\n\nSimulating the evolution in the ingestion exponent over evolutionary time\n\n")
-cmd = paste0('output6 <- PSPMevodyn("', modelname, '", c(0.22, 0.03554, 1.0), c(0.05, 10), c(6, 0.5, 1.5), options=c("popEVO", "0"))')
+cmd = paste0('output6 <- PSPMevodyn("', modelname, '", c(0.22, 0.03554, 1.0), c(0.05, 10), c(0, 6, 0.5, 1.5))')
 
 str = readline(paste0("\n> ", cmd, "\n\nPress any key to continue....\n"))
 eval(parse(text=cmd))
@@ -73,7 +73,7 @@ mtext("Evolutionary time", 1, line=2.5, cex=1.3)
 mtext("Ingestion exponent", 2, line=3.5, cex=1.3)
 
 cat("\n\n\nSimulating the simultaneous evolution of the ingestion and maintenance exponent over evolutionary time\n\n")
-cmd = paste0('output7 <- PSPMevodyn("', modelname, '", c(0.22, 0.03554, 1.0, 1.0), c(0.05, 100), c(6, 0.5, 1.5, 9, 0.5, 1.5), options=c("popEVO", "0"))')
+cmd = paste0('output7 <- PSPMevodyn("', modelname, '", c(0.22, 0.03554, 1.0, 1.0), c(0.05, 100), c(0, 6, 0.5, 1.5, 0, 9, 0.5, 1.5))')
 
 str = readline(paste0("\n> ", cmd, "\n\nPress any key to continue....\n"))
 eval(parse(text=cmd))

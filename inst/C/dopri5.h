@@ -23,7 +23,7 @@
     You should have received a copy of the GNU General Public License
     along with this software. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Dec 15, 2017
+    Last modification: AMdR - May 02, 2018
 ***/
 
 static double LocateSwitch(const int totalOdeDim, const int *birthStateNr, const int curBirthState, int populationStart[PopulationNr],
@@ -298,11 +298,11 @@ int LifeHistory(const int *birthStateNr, const int curBirthState, const int maxC
           STDOUT("\nPop. #%2d - Bstate %2d - Stage %2d (Start):", p, curBirthState, LifeStage[p]);
           for (i = 0; i < IStateDim; i++) STDOUT("%15.6G", Istate(p, i));
           STDOUT("%15.6G", exp(Istate(p, IStateDim)));
-          STDOUT("%15.6G", ASUM(birthStateNr[p], IstatePnt(p, (IStateDim + 1)), 1));
+          STDOUT("%15.6G", SUM(birthStateNr[p], IstatePnt(p, (IStateDim + 1)), 1));
 
 #if (PSPMDEMO == 1)
-          if (ASUM(birthStateNr[p], IstatePnt(p, (IStateDim + 1)), 1) > 0)
-            STDOUT("%15.6G", Istate(p, (IStateDim + 1) + birthStateNr[p])/ASUM(birthStateNr[p], IstatePnt(p, (IStateDim + 1)), 1));
+          if (fabs(SUM(birthStateNr[p], IstatePnt(p, (IStateDim + 1)), 1)) > 0)
+            STDOUT("%15.6G", Istate(p, (IStateDim + 1) + birthStateNr[p])/SUM(birthStateNr[p], IstatePnt(p, (IStateDim + 1)), 1));
           else
             STDOUT("%15s", "Undefined");
 #else
@@ -572,9 +572,9 @@ int LifeHistory(const int *birthStateNr, const int curBirthState, const int maxC
                   STDOUT("\nPop. #%2d - Bstate %2d - Repro. t = %5.1f:", p, curBirthState, tval);
                   for (i = 0; i < IStateDim; i++) STDOUT("%15.6G", Istate(p, i));
                   STDOUT("%15.6G", exp(Istate(p, IStateDim)));
-                  STDOUT("%15.6G", ASUM(birthStateNr[p], IstatePnt(p, (IStateDim + 1)), 1));
-                  if (ASUM(birthStateNr[p], IstatePnt(p, (IStateDim + 1)), 1) > 0)
-                    STDOUT("%15.6G", Istate(p, (IStateDim + 1) + birthStateNr[p])/ASUM(birthStateNr[p], IstatePnt(p, (IStateDim + 1)), 1));
+                  STDOUT("%15.6G", SUM(birthStateNr[p], IstatePnt(p, (IStateDim + 1)), 1));
+                  if (fabs(SUM(birthStateNr[p], IstatePnt(p, (IStateDim + 1)), 1)) > 0)
+                    STDOUT("%15.6G", Istate(p, (IStateDim + 1) + birthStateNr[p])/SUM(birthStateNr[p], IstatePnt(p, (IStateDim + 1)), 1));
                   else
                     STDOUT("%15s", "Undefined");
 #if (defined(R_PACKAGE))
@@ -603,11 +603,11 @@ int LifeHistory(const int *birthStateNr, const int curBirthState, const int maxC
           STDOUT("\n===> Pop. #%2d - Bstate %2d (End of life):", p, curBirthState);
           for (i = 0; i < IStateDim; i++) STDOUT("%15.6G", Istate(p, i));
           STDOUT("%15.6G", exp(Istate(p, IStateDim)));
-          STDOUT("%15.6G", ASUM(birthStateNr[p], IstatePnt(p, (IStateDim + 1)), 1));
+          STDOUT("%15.6G", SUM(birthStateNr[p], IstatePnt(p, (IStateDim + 1)), 1));
 
 #if (PSPMDEMO == 1)
-          if (ASUM(birthStateNr[p], IstatePnt(p, (IStateDim + 1)), 1) > 0)
-            STDOUT("%15.6G", Istate(p, (IStateDim + 1) + birthStateNr[p])/ASUM(birthStateNr[p], IstatePnt(p, (IStateDim + 1)), 1));
+          if (fabs(SUM(birthStateNr[p], IstatePnt(p, (IStateDim + 1)), 1)) > 0)
+            STDOUT("%15.6G", Istate(p, (IStateDim + 1) + birthStateNr[p])/SUM(birthStateNr[p], IstatePnt(p, (IStateDim + 1)), 1));
           else
             STDOUT("%15s", "Undefined");
 #else

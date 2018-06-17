@@ -1,4 +1,4 @@
-buildSO <- function(PSPMmodule = NULL, modelname = NULL, debug = FALSE, force = FALSE) {
+buildSO <- function(PSPMmodule = NULL, modelname = NULL, debug = FALSE, force = FALSE, silent = FALSE) {
 
   oldwd <- getwd()
   eval.parent(substitute(Oldwd<-oldwd))
@@ -90,11 +90,13 @@ buildSO <- function(PSPMmodule = NULL, modelname = NULL, debug = FALSE, force = 
 
     if (file.exists(libfile.fullname)) file.remove(libfile.fullname)
     if (file.exists(libfile.basename)) file.remove(libfile.basename)
+    if (file.exists(hfile.basename)) file.remove(hfile.basename)
     if (file.exists(paste0(PSPMmodule, ".o"))) file.remove(paste0(PSPMmodule, ".o"));
 
+    if (force) file.remove(Filter(file.exists, srclist))
     if (force) file.remove(Filter(file.exists, objlist))
 
-    cat("\nBuilding executable", libfile.basename, "using sources from", PSPMsrcdir.name, "...\n\n")
+    if (!silent) cat("\nBuilding executable", libfile.basename, "using sources from", PSPMsrcdir.name, "...\n\n")
 
     # Check whether the source files are to be found and copy them to the temporary directory
     for (i in srclist) {
@@ -166,20 +168,16 @@ buildSO <- function(PSPMmodule = NULL, modelname = NULL, debug = FALSE, force = 
     # }
     # else {
     # Compilation steps using the older R package 'devtools'
-    result <- devtools::RCMD("SHLIB", options=buildargs, path = tmpdir, env_vars=buildenv)
-    if ((is.integer(result) && (result != 0)) || (is.logical(result) && (!result))) {
-      setwd(oldwd)
+    setwd(oldwd)
+    result <- devtools::RCMD("SHLIB", options=buildargs, path = tmpdir, env_vars=buildenv, quiet = silent)
+    if ((is.integer(result) && (result != 0)) || (is.logical(result) && (!result)) || (!file.exists(libfile.fullname))) {
       stop(paste0("\nCompilation of ", libfile.basename, " failed!\n"))
     }
     # }
 
-    if (!file.exists(libfile.fullname)) {
-        setwd(oldwd)
-        stop(paste0("\nCompilation succeeded, but file ", libfile.basename, " not found!\n"))
-      }
-    cat("\n")
+    if (!silent) cat("\nCompilation of ", libfile.basename, " succeeded!\n\n")
   }
-  else cat("\nDynamic library file", libfile.basename, "is up-to-date\n");
+  else if (!silent) cat("\nDynamic library file", libfile.basename, "is up-to-date\n");
 
   setwd(oldwd)
 

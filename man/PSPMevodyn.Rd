@@ -6,16 +6,16 @@
 \usage{
 PSPMevodyn(modelname = NULL, startpoint = NULL, curvepars = NULL,
   evopars = NULL, covars = NULL, parameters = NULL, options = NULL,
-  clean = FALSE, force = FALSE, debug = FALSE)
+  clean = FALSE, force = FALSE, debug = FALSE, silent = FALSE)
 }
 \arguments{
 \item{modelname}{(string, required)
 \preformatted{}
-              Basename of the file with model specification. The file
-              should have extension ".h". For example, the model "PNAS2002"
-              is specified in the file "PNAS2002.h". If the model is specified in R
-              include the .R extension explicitly, i.e. specify the model name
-              as "PNAS2002.R"}
+              Basename of the file with the model specification. The file
+              should have an extension ".h". For example, the model "PNAS2002"
+              is specified in the file "PNAS2002.h". If the model is specified 
+              in R include the .R extension explicitly, i.e. specify the model
+              name as "PNAS2002.R"}
 
 \item{startpoint}{(row vector, required)
 \preformatted{}
@@ -33,35 +33,42 @@ PSPMevodyn(modelname = NULL, startpoint = NULL, curvepars = NULL,
               \verb{curvepars[2]}: the maximum evolutionary time at which to stop
                             the integration of the canonical equation}
 
-\item{evopars}{(row vector of length n*3, required)
+\item{evopars}{(row vector of length n*4, required)
 \preformatted{}
-              Vector of length n*3 specifying:
+              Vector of length n*4 specifying:
 
 \preformatted{}
-              \verb{evopars[1]}: the index of the first evolution parameter
-                          (in case the model is specified in R, this can be
+              \verb{evopars[1]}: the index of the structured population whose
+                           life history is influenced by the first evolving
+                           parameter
+\preformatted{}
+              \verb{evopars[2]}: the index of the first evolution parameter
+                           (in case the model is specified in R, this can be
                            a string with the name of the parameter as specified
                            in the variable 'DefaultParameters')
 \preformatted{}
-              \verb{evopars[2]}: lower threshold, below which value of the
+              \verb{evopars[3]}: lower threshold, below which value of the
                           first evolution parameter the computation stops
 \preformatted{}
-              \verb{evopars[3]}: upper threshold, above which value of the
+              \verb{evopars[4]}: upper threshold, above which value of the
                           first evolution parameter the computation stops
 \preformatted{}
               ......
 \preformatted{}
-
-              \verb{evopars[n*3-2]}: the index of the last evolution parameter
-                              (in case the model is specified in R, this can be
+              \verb{evopars[n*4-3]}: the index of the structured population whose
+                               life history is influenced by the last evolving
+                               parameter
+\preformatted{}
+              \verb{evopars[n*4-2]}: the index of the last evolution parameter
+                               (in case the model is specified in R, this can be
                                a string with the name of the parameter as specified
                                in the variable 'DefaultParameters')
 \preformatted{}
-              \verb{evopars[n*3-1]}: lower threshold, below which value of the
-                              last evolution parameter the computation stops
+              \verb{evopars[n*4-1]}: lower threshold, below which value of the
+                               last evolution parameter the computation stops
 \preformatted{}
-              \verb{evopars[n*3]}:   upper threshold, above which value of the
-                              last evolution parameter the computation stops}
+              \verb{evopars[n*4]}:   upper threshold, above which value of the
+                               last evolution parameter the computation stops}
 
 \item{covars}{(row vector or matrix, optional, can be left equal to its default NULL)
 \preformatted{}
@@ -80,13 +87,9 @@ PSPMevodyn(modelname = NULL, startpoint = NULL, curvepars = NULL,
 \item{options}{(row vector of strings, optional, can be left equal to its default NULL)
 \preformatted{}
               Vector with pairs of strings, consisting of an option name and a value (for
-              example c("popEVO", "1")) or single options (i.e. c("test")).
+              example c("popZE", "1")) or single options (i.e. c("test")).
               Possible option names and their values are:
 
-\preformatted{}
-              \verb{"popEVO", "<index>"}: Index of structured population, for
-                                   which to compute the selection gradient or
-                                   perform ESS or PIP continuation
 \preformatted{}
               \verb{"envZE", "<index>"}: Index of environment variable in
                                    trivial equilibrium (can be used
@@ -99,6 +102,11 @@ PSPMevodyn(modelname = NULL, startpoint = NULL, curvepars = NULL,
               \verb{"isort", "<index>"}: Index of i-state variable to use as
                                    ruling variable for sorting the
                                    structured populations
+\preformatted{}
+              \verb{"report", "<value>"}: Interval between consecutive output of 
+                                   computed points to the console ( >= 1). 
+                                   Minimum value of 1 implies output of every 
+                                   point
 \preformatted{}
               \verb{"test"}: Perform only a single integration over
                                    the life history, reporting dynamics
@@ -119,6 +127,11 @@ PSPMevodyn(modelname = NULL, startpoint = NULL, curvepars = NULL,
 \preformatted{}
               Specify debug = TRUE as argument to compile the model in verbose
               mode and with debugging flag set}
+
+\item{silent}{(Boolean, optional argument)
+\preformatted{}
+              Specify silent = TRUE as argument to suppress reporting of compilation
+              commands and results on the console}
 }
 \value{
 The output is a list containing the following elements:
@@ -139,11 +152,13 @@ canonical equation of Adaptive Dynamics, which is solved using a simple
 Euler integration scheme.
 }
 \details{
-output <- PSPMevodyn(modelname = NULL, startpoint = NULL, curvepars = NULL, evopars = NULL, covars = NULL,
-                       parameters = NULL, options = NULL, clean = FALSE, force = FALSE, debug = FALSE)
+output <- PSPMevodyn(modelname = NULL, startpoint = NULL, curvepars = NULL,
+                       evopars = NULL, covars = NULL, parameters = NULL,
+                       options = NULL, clean = FALSE, force = FALSE,
+                       debug = FALSE, silent = FALSE)
 }
 \examples{
-PSPMevodyn("Indet_growth", c(0.22, 0.03554, 1.0), c(0.05, 2), c(6, 0.5, 1.5), 
-           options = c("popEVO", "0"))
+PSPMevodyn("Indet_growth", c(0.22, 0.03554, 1.0), c(0.05, 2), 
+            c(0, 6, 0.5, 1.5))
 
 }

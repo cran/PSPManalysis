@@ -6,16 +6,16 @@
 \usage{
 PSPMequi(modelname = NULL, biftype = NULL, startpoint = NULL,
   stepsize = NULL, parbnds = NULL, parameters = NULL, options = NULL,
-  clean = FALSE, force = FALSE, debug = FALSE)
+  clean = FALSE, force = FALSE, debug = FALSE, silent = FALSE)
 }
 \arguments{
 \item{modelname}{(string, required)
 \preformatted{}
-              Basename of the file with model specification. The file
-              should have extension ".h". For example, the model "PNAS2002"
-              is specified in the file "PNAS2002.h". If the model is specified in R
-              include the .R extension explicitly, i.e. specify the model name
-              as "PNAS2002.R"}
+              Basename of the file with the model specification. The file
+              should have an extension ".h". For example, the model "PNAS2002"
+              is specified in the file "PNAS2002.h". If the model is specified 
+              in R include the .R extension explicitly, i.e. specify the model
+              name as "PNAS2002.R"}
 
 \item{biftype}{(string, required)
 \preformatted{}
@@ -30,10 +30,11 @@ PSPMequi(modelname = NULL, biftype = NULL, startpoint = NULL,
 \preformatted{}
               Value of the step size in the first bifurcation parameter}
 
-\item{parbnds}{(row vector of length n*3, required)
+\item{parbnds}{(row vector, required)
 \preformatted{}
-              Vector of length n*3 with n=1 for EQ continuation, n=2 for
-              "BP", "BPE", "LP" and "PIP" continuation and n>=2 for "ESS" continuation.
+              Vector of length 3 for EQ continuation, length 6 for BP, BPE, 
+              LP and PIP continuation and 3+4*N for ESS continuation.
+              The first triplet specifies:
               Each triples specifies:
 
 \preformatted{}
@@ -48,7 +49,7 @@ PSPMequi(modelname = NULL, biftype = NULL, startpoint = NULL,
               \verb{parbnds[3]}: upper threshold, above which value of the
                           first bifurcation parameter the computation stops
 \preformatted{}
-              In case of two-parameter bifurcations:
+              In case of two-parameter bifurcations, the second triplet specifies:
 \preformatted{}
               \verb{parbnds[4]}: the index of the second bifurcation parameter
                           (in case the model is specified in R, this can be
@@ -59,7 +60,20 @@ PSPMequi(modelname = NULL, biftype = NULL, startpoint = NULL,
                           second bifurcation parameter the computation stops
 \preformatted{}
               \verb{parbnds[6]}: upper threshold, above which value of the
-                          second bifurcation parameter the computation stops}
+                          second bifurcation parameter the computation stops
+
+              In case of ESS continuation, consecutive sets of 4 values specify:
+
+              \verb{parbnds[4*n]}:   the index of population that is impacted by the
+                          parameter at its ESS value
+                          (in case the model is specified in R, this can be
+                           a string with the name of the parameter as specified
+                           in the variable 'DefaultParameters')
+              \verb{parbnds[4*n+1]}: the index of the parameter at its ESS value
+              \verb{parbnds[4*n+2]}: lower threshold, below which value of this ESS
+                          parameter the computation stops
+              \verb{parbnds[4*n+3]}: upper threshold, above which value of this ESS
+                          parameter the computation stops}
 
 \item{parameters}{(row vector, optional, can be left equal to its default NULL)
 \preformatted{}
@@ -83,10 +97,10 @@ PSPMequi(modelname = NULL, biftype = NULL, startpoint = NULL,
 \preformatted{}
               \verb{"popEVO", "<index>"}: Index of structured population, for
                                    which to compute the selection gradient or
-                                   perform ESS or PIP continuation
+                                   perform PIP continuation
 \preformatted{}
-              \verb{"parEVO", "<index>"}: Index of parameter, for which to compute
-                                   which to compute the selection gradient
+              \verb{"parEVO", "<index>"}: Index of parameter, for which to
+                                   compute the selection gradient
 \preformatted{}
               \verb{"envZE", "<index>"}: Index of environment variable in
                                    trivial equilibrium (can be used
@@ -99,6 +113,11 @@ PSPMequi(modelname = NULL, biftype = NULL, startpoint = NULL,
               \verb{"isort", "<index>"}: Index of i-state variable to use as
                                    ruling variable for sorting the
                                    structured populations
+\preformatted{}
+              \verb{"report", "<value>"}: Interval between consecutive output of 
+                                   computed points to the console ( >= 1). 
+                                   Minimum value of 1 implies output of every 
+                                   point
 \preformatted{}
               \verb{"noBP"}: Do not check for branching points while
                                    computing equilibrium curves
@@ -128,6 +147,11 @@ PSPMequi(modelname = NULL, biftype = NULL, startpoint = NULL,
 \preformatted{}
               Specify debug = TRUE as argument to compile the model in verbose
               mode and with debugging flag set}
+
+\item{silent}{(Boolean, optional argument)
+\preformatted{}
+              Specify silent = TRUE as argument to suppress reporting of compilation
+              commands and results on the console}
 }
 \value{
 The output is a list containing the following elements:
@@ -157,11 +181,13 @@ In addition \code{PSPMequi} can compute the pairwise invasion plot (PIP) as a
 function of the resident and a mutant value for one evolving parameter.
 }
 \details{
-output <- PSPMequi(modelname = NULL, biftype = NULL, startpoint = NULL, stepsize = NULL, parbnds = NULL,
-                     parameters = NULL, options = NULL, clean = FALSE, force  = FALSE, debug  = FALSE)
+output <- PSPMequi(modelname = NULL, biftype = NULL, startpoint = NULL,
+                     stepsize = NULL, parbnds = NULL, parameters = NULL,
+                     options = NULL, clean = FALSE, force  = FALSE,
+                     debug  = FALSE, silent = FALSE)
 }
 \examples{
-PSPMequi("Indet_growth", "EQ", c(1, 0.22, 0), -0.1, c(6, 0.7, 1.5),
-         options = c("popEVO", "0"))
+PSPMequi("Indet_growth", "EQ", c(1, 0.22, 0), -0.1, c(6, 0.7, 1.0),
+         options = c("popEVO", "0"), silent = TRUE)
 
 }

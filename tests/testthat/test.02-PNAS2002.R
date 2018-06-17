@@ -24,9 +24,15 @@ eval(parse(text=cmd))
 cmd = paste0('output6 <- PSPMequi("', modelname, '", "LP", c(output3$bifpoints[1:5], 0.01), 0.05, c(1, 0, 4E-4, 11, 0, 0.1), NULL, NULL)')
 eval(parse(text=cmd))
 
-# Do the numerical integration using the EBT
+# Do the numerical integration using the original EBT
 initstate <- list(Environment = c(1.561276e-04, 1.270327e-04, 4.008016e-06), Pop00 = matrix(c(0.001, 0, 7.0, 1.0E-5, 300, 111), ncol = 3, byrow = TRUE))
 PSPMecodyn(modelname, initstate, c(1, 1, 10, 500), options = c("report", "50"), force = TRUE)
+
+# Do the numerical integration using the simplified EBT
+CFLAGS="-DEBTMETHOD=0 "
+initstate <- list(Environment = c(1.561276e-04, 1.270327e-04, 4.008016e-06), Pop00 = matrix(c(0.001, 0, 7.0, 1.0E-5, 300, 111), ncol = 3, byrow = TRUE))
+PSPMecodyn(modelname, initstate, c(1, 1, 10, 500), options = c("report", "50"), force = TRUE)
+if (exists("CFLAGS")) rm("CFLAGS")
 
 # Stop the clock
 tt <- proc.time() - ptm

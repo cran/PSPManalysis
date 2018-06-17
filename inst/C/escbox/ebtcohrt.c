@@ -6,7 +6,7 @@
      it to keep the set of population cohorts organized and to deal with
      their increasing and decreasing number. 
 
-  Last modification: AMdR - Dec 15, 2017
+  Last modification: AMdR - Mar 07, 2018
 */
 
 #define EBTCOHRT_C				                                                          // Identification of file
@@ -322,6 +322,7 @@ void	    CohortCycle(double next)
   register int i;
   int          all_zero = 1;
   char         pext[80];
+  extern int   EBTMethod;
 
   for (i = 0; i < POPULATION_NR; i++) /* If all populations are   */
     {                                 /* extinct exit	            */
@@ -384,7 +385,7 @@ void	    CohortCycle(double next)
     }
 
   // Transform boundary	cohorts
-  TransBcohorts();
+  if (EBTMethod) TransBcohorts();
 
   // Instantaneous dynamics at the end of cycle
   InstantDynamics(env, pop, ofs);

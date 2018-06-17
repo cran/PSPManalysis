@@ -22,7 +22,7 @@
     You should have received a copy of the GNU General Public License
     along with this software. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Jan 12, 2018
+    Last modification: AMdR - Jun 01, 2018
 ***/
 #ifndef BIFTEST
 #define BIFTEST
@@ -410,7 +410,7 @@ int LocateBPE(int *dimpntr, double *y, int (*fnc)(double *, double *), double dy
 
 /*==================================================================================================================================*/
 
-int LocateESS(const int pntdim, double *y, int (*fnc)(double *, double *), double dytol, double rhstol, const int R0index)
+int LocateESS(const int pntdim, double *y, int (*fnc)(double *, double *), double dytol, double rhstol, const int popindex, const int R0index)
 
 /*
  * LocateESS -  Routine locates an ESS point in an equilibrium bifurcation curve.
@@ -470,18 +470,18 @@ int LocateESS(const int pntdim, double *y, int (*fnc)(double *, double *), doubl
       if (retval == SUCCES)
         {
           if (evJ > 0)
-            STDOUT("  ****   ERP #%d  ****", PopEVOIndex);
+            STDOUT("  ****   ERP #%d  ****", popindex);
           else if ((evJ < 0) && (evH < 0))
-            STDOUT("  ****   CSS #%d  ****", PopEVOIndex);
+            STDOUT("  ****   CSS #%d  ****", popindex);
           else if ((evJ < 0) && (!evoParsDim || (zCz < 0)))
-            STDOUT("  ****   EBP #%d  ****", PopEVOIndex);
+            STDOUT("  ****   EBP #%d  ****", popindex);
           else if (evJ < 0)
-            STDOUT("  ****  ENBP #%d  ****", PopEVOIndex);
+            STDOUT("  ****  ENBP #%d  ****", popindex);
           else
-            STDOUT("  ****   ESS #%d  ****", PopEVOIndex);
+            STDOUT("  ****   ESS #%d  ****", popindex);
         }
       else
-        STDOUT("  ****  ESS #%d  ****", PopEVOIndex);
+        STDOUT("  ****  ESS #%d  ****", popindex);
       STDOUT("\n");
       fflush(NULL);
 
@@ -492,18 +492,18 @@ int LocateESS(const int pntdim, double *y, int (*fnc)(double *, double *), doubl
           if (retval == SUCCES)
             {
               if (evJ > 0)
-                fprintf(biffile, "  ****   ERP #%d  ****", PopEVOIndex);
+                fprintf(biffile, "  ****   ERP #%d  ****", popindex);
               else if ((evJ < 0) && (evH < 0))
-                fprintf(biffile, "  ****   CSS #%d  ****", PopEVOIndex);
+                fprintf(biffile, "  ****   CSS #%d  ****", popindex);
               else if ((evJ < 0) && (!evoParsDim || (zCz < 0)))
-                fprintf(biffile, "  ****   EBP #%d  ****", PopEVOIndex);
+                fprintf(biffile, "  ****   EBP #%d  ****", popindex);
               else if (evJ < 0)
-                fprintf(biffile, "  ****  ENBP #%d  ****", PopEVOIndex);
+                fprintf(biffile, "  ****  ENBP #%d  ****", popindex);
               else
-                fprintf(biffile, "  ****   ESS #%d  ****", PopEVOIndex);
+                fprintf(biffile, "  ****   ESS #%d  ****", popindex);
             }
           else
-            fprintf(biffile, "  ****  ESS #%d  ****", PopEVOIndex);
+            fprintf(biffile, "  ****  ESS #%d  ****", popindex);
           fprintf(biffile, "\n");
         }
       if (outfile && outmax) PrettyPrintArray(outfile, outmax, Output);

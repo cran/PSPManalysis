@@ -6,7 +6,7 @@
      converted, or just the single state indicated by the time value that is
      passed to the program as command-line
 
-   Last modification: AMdR - Dec 15, 2017
+   Last modification: AMdR - Jun 17, 2018
 ***/
 #ifndef CSB2RLIST
 #define CSB2RLIST
@@ -45,7 +45,7 @@ typedef struct popdim
 SEXP csb2rlist(SEXP filename, SEXP command, SEXP stateindex, SEXP statetime)
 
 {
-  char      tmpstr[256], fname[MAXPATHLEN], cmd[128], *cp;
+  char      tmpstr[MAXPATHLEN], fname[MAXPATHLEN], cmd[128], *cp;
   int       parDim, file_ok = 1, popinfile = 0, popindex;
   double    timeval = -1.0, closest_time = HUGE_VAL;
   FILE      *   fp      = NULL;
@@ -136,10 +136,11 @@ SEXP csb2rlist(SEXP filename, SEXP command, SEXP stateindex, SEXP statetime)
       int           npops = 0, nprotect = 0, nsexpel = 0, num, indx, IStateDim;
       int           changedParsDim;
       int           demo = 0, ecodyn = 0, evodyn = 0, lifedyn = 0, evopars = 0, bifpar1 = 0, bifpar2 = 0;
-      short int     mag;
+      unsigned char mag;
       SEXP          tvalvec, parvec, bifparvec, envvec, *popmat;
       SEXP *        popcolnames, *dimnames;
       SEXP          result, ret_names;
+      char          fmtstr[MAXPATHLEN];
 
       fseek(fp, closest_fpos, SEEK_SET);
       if (fread(&cur_env, sizeof(Envdim), 1, fp) != 1) error("\nFailed to read values from file: %s!\n\n", fname);
@@ -286,7 +287,8 @@ SEXP csb2rlist(SEXP filename, SEXP command, SEXP stateindex, SEXP statetime)
             {
               for (k = 0; k < cpop->columns; k++)
                 {
-                  sprintf(tmpstr, "Bstate%0*d", mag, k);
+                  sprintf(fmtstr, "Bstate%%0%dd", mag);
+                  sprintf(tmpstr, fmtstr, k);
                   SET_STRING_ELT(popcolnames[n], k, mkChar(tmpstr));
                 }
             }
@@ -294,7 +296,8 @@ SEXP csb2rlist(SEXP filename, SEXP command, SEXP stateindex, SEXP statetime)
             {
               for (k = 0; k < cpop->columns; k++)
                 {
-                  sprintf(tmpstr, "Istate%0*d", mag, k);
+                  sprintf(fmtstr, "Istate%%0%dd", mag);
+                  sprintf(tmpstr, fmtstr, k);
                   SET_STRING_ELT(popcolnames[n], k, mkChar(tmpstr));
                 }
             }
@@ -314,9 +317,15 @@ SEXP csb2rlist(SEXP filename, SEXP command, SEXP stateindex, SEXP statetime)
                       else
                         {
                           if ((k - 1) < IStateDim)
-                            sprintf(tmpstr, "Istate%0*d", mag, k - 1);
+                            {
+                              sprintf(fmtstr, "Istate%%0%dd", mag);
+                              sprintf(tmpstr, fmtstr, k - 1);
+                            }
                           else
-                            sprintf(tmpstr, "Impact%0*d", mag, k - 1 - IStateDim);
+                            {
+                              sprintf(fmtstr, "Impact%%0%dd", mag);
+                              sprintf(tmpstr, fmtstr, k - 1  - IStateDim);
+                            }
                           SET_STRING_ELT(popcolnames[n], k, mkChar(tmpstr));
                         }
                     }
@@ -324,7 +333,8 @@ SEXP csb2rlist(SEXP filename, SEXP command, SEXP stateindex, SEXP statetime)
                     SET_STRING_ELT(popcolnames[n], k, mkChar("Density"));
                   else
                     {
-                      sprintf(tmpstr, "Istate%0*d", mag, k - 1);
+                      sprintf(fmtstr, "Istate%%0%dd", mag);
+                      sprintf(tmpstr, fmtstr, k - 1);
                       SET_STRING_ELT(popcolnames[n], k, mkChar(tmpstr));
                     }
                 }
