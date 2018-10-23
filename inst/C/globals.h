@@ -22,7 +22,7 @@
     You should have received a copy of the GNU General Public License
     along with this software. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Jun 01, 2018
+    Last modification: AMdR - Aug 27, 2018
 ***/
 #ifndef GLOBALS
 #define GLOBALS
@@ -288,7 +288,7 @@ int                               LocateBP(int *dimpntr, double *y, int (*fnc)(d
 int                               LocateBPE(int *dimpntr, double *y, int (*fnc)(double *, double *), double dytol, double rhstol, int nr, int indx);
 int                               LocateESS(const int pntdim, double *y, int (*fnc)(double *, double *), double dytol, double rhstol, const int popindex, const int R0index);
 int                               ESSclassify(const int pntdim, double *pnt, int (*fnc)(double *, double *), double dytol, double rhstol,
-                                              const int R0index, double *EVmaxJ, double *EVmaxH, double *zC01z, const int detecting);
+                                              const int R0index, double *EVmaxJ, double *EVmaxJs, double *EVmaxH, double *zC01z, const int detecting);
 
 
 /*

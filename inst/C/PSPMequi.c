@@ -26,7 +26,7 @@
     You should have received a copy of the GNU General Public License
     along with PSPManalysis. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Jun 04, 2018
+    Last modification: AMdR - Aug 30, 2018
 ***/
 
 #define PSPMEQUI                  1
@@ -615,7 +615,7 @@ int DefineOutput(double *x, double *output)
 {
   int     outnr = 0, i, j, retval;
   double  result[MaxPntDim];
-  double  evJ, evH, zCz;
+  double  evJ, evJs, evH, zCz;
 
 #if (FULLSTATEOUTPUT > 0)
   DoStateOutput = 1;
@@ -666,18 +666,26 @@ int DefineOutput(double *x, double *output)
 
   if ((CurveType == ESS) && classifyESS)
     {
-      retval = ESSclassify(pntdim, x, Equation, DYTOL, RHSTOL, R0ResIndex[essPopsIndex[0]], &evJ, &evH, &zCz, 0);
+      retval = ESSclassify(pntdim, x, Equation, DYTOL, RHSTOL, R0ResIndex[essPopsIndex[0]], &evJ, &evJs, &evH, &zCz, 0);
       if (retval == SUCCES)
         {
-          output[outnr++]                     = evJ;
-          output[outnr++]                     = evH;
-          if (essParsDim > 1) output[outnr++] = zCz;
+          output[outnr++]     = evJ;
+          output[outnr++]     = evH;
+          if (essParsDim > 1)
+            {
+              output[outnr++] = evJs;
+              output[outnr++] = zCz;
+            }
         }
       else
         {
-          output[outnr++]                     = INFINITY;
-          output[outnr++]                     = INFINITY;
-          if (essParsDim > 1) output[outnr++] = INFINITY;
+          output[outnr++]     = INFINITY;
+          output[outnr++]     = INFINITY;
+          if (essParsDim > 1)
+            {
+              output[outnr++] = INFINITY;
+              output[outnr++] = INFINITY;
+            }
         }
     }
   // Should we indeed add how accurate the solution was?
@@ -929,9 +937,11 @@ void ComputeCurve(const int argc, char **argv)
             }
           else
             {
-              sprintf(tmpstr, "%d:Max. EigVal J", colnr++);
+              sprintf(tmpstr, "%d:eig J", colnr++);
               fprintf(outfile, "%16s", tmpstr);
-              sprintf(tmpstr, "%d:Max. EigVal H", colnr++);
+              sprintf(tmpstr, "%d:eig H", colnr++);
+              fprintf(outfile, "%16s", tmpstr);
+              sprintf(tmpstr, "%d:eig (J+J')/2", colnr++);
               fprintf(outfile, "%16s", tmpstr);
               sprintf(tmpstr, "%d:Z^T C01 Z", colnr++);
               fprintf(outfile, "%16s", tmpstr);
@@ -1107,7 +1117,8 @@ void ComputeCurve(const int argc, char **argv)
           if ((CurveType == PIP) && (fabs(point[0] - point[pntdim - 1]) < DYTOL))
             {
               // By definition during a PIP continuation no other parameter are at their ESS value, hence essParsDim = 0
-              retval = ESSclassify(pntdim, point, Equation, DYTOL, RHSTOL, R0ResIndex[PIPEVOIndex], &R0_xx, &R0_yy, &zCz, 1);
+              // The NULL argument is only used to determine strongly convergence stability in the multi-dimensional CSS case.
+              retval = ESSclassify(pntdim, point, Equation, DYTOL, RHSTOL, R0ResIndex[PIPEVOIndex], &R0_xx, NULL, &R0_yy, &zCz, 1);
               /*
                * Notice that R0(E(x),y) with x and y the resident and mutant trait, respectively, can locally be approximated as:
                *

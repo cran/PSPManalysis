@@ -22,7 +22,7 @@
     You should have received a copy of the GNU General Public License
     along with this software. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Dec 12, 2017
+    Last modification: AMdR - Aug 30, 2018
 ***/
 #ifndef CURVE
 #define CURVE
@@ -1179,7 +1179,7 @@ int Eigenval(const int N, double *X, const int symmetric, double *eigval, const 
             else
               {
                 eigvalindx = -1;
-                for (i                                                           = 0; i < N; i++)
+                for (i = 0; i < N; i++)
                   if ((eigvalindx == -1) || (wr[i] > wr[eigvalindx])) eigvalindx = i;
                 if ((epsMach*abnrm/rconde[eigvalindx]) > tol)
                   {

@@ -112,7 +112,7 @@ buildSO <- function(PSPMmodule = NULL, modelname = NULL, debug = FALSE, force = 
     file.copy(hfile.abspath, tmpdir, overwrite = TRUE)
 
     # Construct the command line
-    buildargs <- paste0("--output=\"", libfile.basename, "\"")
+    buildargs <- paste0("--output=\'", libfile.basename, "\'")
     for (i in srclist) buildargs <- paste(buildargs, i, sep=" ")
 
     # Define the basic compilation flags
@@ -146,9 +146,10 @@ buildSO <- function(PSPMmodule = NULL, modelname = NULL, debug = FALSE, force = 
     buildenv <- c(PKG_CPPFLAGS = paste(cppflags, modelflags), PKG_LIBS = "$(LAPACK_LIBS) $(BLAS_LIBS)")
 
     if (debug) {
-      cat("Command                :  R CMD SHLIB\n")
-      cat(paste0("Arguments              :  ", paste(buildargs, sep=" ", collapse=" "), "\n"))
-      cat("Environment variables  :  \n")
+      cat("Current working directory: ", getwd(), "\n")
+      cat("Command                  :  R CMD SHLIB\n")
+      cat(paste0("Arguments                :  ", paste(buildargs, sep=" ", collapse=" "), "\n"))
+      cat("Environment variables    :  \n")
       for (i in 1:length(buildenv)) {
           cat(sprintf("\t%14s = %s\n", names(buildenv)[i], buildenv[i]))
         }
@@ -156,24 +157,16 @@ buildSO <- function(PSPMmodule = NULL, modelname = NULL, debug = FALSE, force = 
     }
 
     # Compilation steps using the newer R package 'pkgbuild'
-    # result <- try(pkgbuild::rcmd_build_tools("SHLIB", cmdargs=buildargs, env=buildenv, wd=tmpdir), silent = TRUE)
-    # if (is.list(result) && ('status' %in% names(result))) {
-    #   if (result$status != 0) {
-    #     setwd(oldwd)
-    #     cat(result$stdout)
-    #     cat(result$stderr)
-    #     stop(paste0("\nCompilation of ", libfile.basename, " failed!\n"))
-    #   }
-    #   else cat(result$stderr)
-    # }
-    # else {
-    # Compilation steps using the older R package 'devtools'
-    setwd(oldwd)
-    result <- devtools::RCMD("SHLIB", options=buildargs, path = tmpdir, env_vars=buildenv, quiet = silent)
-    if ((is.integer(result) && (result != 0)) || (is.logical(result) && (!result)) || (!file.exists(libfile.fullname))) {
-      stop(paste0("\nCompilation of ", libfile.basename, " failed!\n"))
+    result <- try(pkgbuild::rcmd_build_tools("SHLIB", cmdargs=buildargs, env=buildenv, wd=tmpdir), silent = TRUE)
+    if (is.list(result) && ('status' %in% names(result))) {
+      if (result$status != 0) {
+        setwd(oldwd)
+        cat(result$stdout)
+        cat(result$stderr)
+        stop(paste0("\nCompilation of ", libfile.basename, " failed!\n"))
+      }
+      else cat(result$stderr)
     }
-    # }
 
     if (!silent) cat("\nCompilation of ", libfile.basename, " succeeded!\n\n")
   }

@@ -22,7 +22,7 @@
     You should have received a copy of the GNU General Public License
     along with this software. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Jun 01, 2018
+    Last modification: AMdR - Aug 30, 2018
 ***/
 #ifndef BIFTEST
 #define BIFTEST
@@ -433,7 +433,7 @@ int LocateESS(const int pntdim, double *y, int (*fnc)(double *, double *), doubl
 {
   int     i, retval, outmax;
   double  *basemem, *esspoint;
-  double  evJ, evH, zCz;
+  double  evJ, evJs, evH, zCz;
 
   esspoint = basemem = calloc(pntdim, sizeof(double));
   if (!basemem) return ReportMemError("LocateESS");
@@ -466,7 +466,7 @@ int LocateESS(const int pntdim, double *y, int (*fnc)(double *, double *), doubl
             STDOUT("%16.8E",  esspoint[i]*pnt_scale[i]);          
         }
       // ESS located w.r.t. the bifurcation parameter
-      retval = ESSclassify(pntdim, esspoint, fnc, dytol, rhstol, R0index, &evJ, &evH, &zCz, 1);
+      retval = ESSclassify(pntdim, esspoint, fnc, dytol, rhstol, R0index, &evJ, &evJs, &evH, &zCz, 1);
       if (retval == SUCCES)
         {
           if (evJ > 0)
@@ -537,7 +537,7 @@ int LocateESS(const int pntdim, double *y, int (*fnc)(double *, double *), doubl
 /*==================================================================================================================================*/
 // Computing the Hessian instead of C01 seems numerically less stable
 #ifndef COMPUTEHESSIAN
-#define COMPUTEHESSIAN 1
+#define COMPUTEHESSIAN            1
 #else
 #if (COMPUTEHESSIAN == 0)
 #warning COMPUTEHESSIAN overruled and set to 0
@@ -548,7 +548,7 @@ int LocateESS(const int pntdim, double *y, int (*fnc)(double *, double *), doubl
 #endif
 #endif
 #ifndef COMPUTEJACOBIAN
-#define COMPUTEJACOBIAN       0
+#define COMPUTEJACOBIAN           0
 #else
 #if (COMPUTEJACOBIAN == 0)
 #warning COMPUTEJACOBIAN overruled and set to 0
@@ -560,19 +560,19 @@ int LocateESS(const int pntdim, double *y, int (*fnc)(double *, double *), doubl
 #endif
 
 #if (COMPUTEJACOBIAN == 1) && (COMPUTEHESSIAN == 1)
-#define COMPUTECROSS          0
+#define COMPUTECROSS              0
 #else
-#define COMPUTECROSS          1
+#define COMPUTECROSS              1
 #if (COMPUTEJACOBIAN == 0) && (COMPUTEHESSIAN == 0)
 #warning COMPUTEJACOBIAN set to 1 as both COMPUTEJACOBIAN and COMPUTEHESSIAN are defined equal to 0
 #undef COMPUTEJACOBIAN
-#define COMPUTEJACOBIAN       1
+#define COMPUTEJACOBIAN           1
 #endif
 #endif
 
 
 int ESSclassify(const int pntdim, double *pnt, int (*fnc)(double *, double *), double dytol, double rhstol, const int R0index, double *EVmaxJ,
-                double *EVmaxH, double *zC01z, const int detecting)
+                double *EVmaxJs, double *EVmaxH, double *zC01z, const int detecting)
 
 /*
  * ESSclassify -  Routine assess the stability properties of an ESS point by computing
@@ -637,14 +637,14 @@ int ESSclassify(const int pntdim, double *pnt, int (*fnc)(double *, double *), d
   int     i, j, ii, jj, indx1, indx2, evoparsdim;
   int     retval, OldCurveType;
   double  oldvalue1, oldvalue2;
-  double  *basemem, *y, *tv, *rhs0, *rhs, *Jac, *pardif, *eigvecH, *eigvecJ, *CEhes, *CEjac, *CEC01;
+  double  *basemem, *y, *tv, *rhs0, *rhs, *Jac, *pardif, *eigvecH, *eigvecJ, *CEhes, *CEjac, *CEjacS, *CEC01;
 
 /* Allocate the necessary memory:
  * local copy of solution point, tangent vector, right-hand side and new environment
  * Jacobian, Hessian and C_01 matrices of the canonical equation
  */
   evoparsdim = evoParsDim + detecting;                                              // Include Bifparone in the evolving parameter list if detecting
-  y = basemem = calloc(4*pntdim + pntdim*pntdim + 3*evoparsdim + 3*evoparsdim*evoparsdim, sizeof(double));
+  y = basemem = calloc(4*pntdim + pntdim*pntdim + 3*evoparsdim + 4*evoparsdim*evoparsdim, sizeof(double));
   if (!basemem) return ReportMemError("ESSclassify");
 
   ReportMsg("\nClassifying ESS point:\t");
@@ -659,14 +659,16 @@ int ESSclassify(const int pntdim, double *pnt, int (*fnc)(double *, double *), d
   eigvecH = pardif + evoparsdim;
   eigvecJ = eigvecH + evoparsdim;
   CEhes   = eigvecJ + evoparsdim;
-  CEjac   = CEhes + evoparsdim*evoparsdim;
-  CEC01   = CEjac + evoparsdim*evoparsdim;
+  CEjac   = CEhes  + evoparsdim*evoparsdim;
+  CEjacS  = CEjac  + evoparsdim*evoparsdim;
+  CEC01   = CEjacS + evoparsdim*evoparsdim;
 
   // Initialize
   COPY(pntdim, pnt, 1, y, 1);
-  memset((void *)CEhes, 0, evoparsdim*evoparsdim*sizeof(double));
-  memset((void *)CEjac, 0, evoparsdim*evoparsdim*sizeof(double));
-  memset((void *)CEC01, 0, evoparsdim*evoparsdim*sizeof(double));
+  memset((void *)CEhes,  0, evoparsdim*evoparsdim*sizeof(double));
+  memset((void *)CEjac,  0, evoparsdim*evoparsdim*sizeof(double));
+  memset((void *)CEjacS, 0, evoparsdim*evoparsdim*sizeof(double));
+  memset((void *)CEC01,  0, evoparsdim*evoparsdim*sizeof(double));
   memset((void *)Jac, 0, pntdim*pntdim*sizeof(double));
   memset((void *)tv, 0, pntdim*sizeof(double));
 
@@ -678,6 +680,9 @@ int ESSclassify(const int pntdim, double *pnt, int (*fnc)(double *, double *), d
   // memmove() used instead of memcpy() because src and dest overlap (undefined behavior in memcpy)
   for (i = 1; i < (pntdim - evoParsDim); i++)
     memmove(Jac + i*(pntdim - evoParsDim - 1), Jac + i*(pntdim - 1), (pntdim - evoParsDim - 1)*sizeof(double));
+
+  // Zero-out the remaining entries of the Jacobian
+  memset((void *)(Jac + (pntdim - evoParsDim)*(pntdim - evoParsDim - 1)), 0, (pntdim*(pntdim - 1) - (pntdim - evoParsDim)*(pntdim - evoParsDim - 1))*sizeof(double));
 
   // Function call to set all parameters to their appropriate values, preserve these values in rhs0
   if ((*fnc)(y, rhs0) == FAILURE)
@@ -791,7 +796,8 @@ int ESSclassify(const int pntdim, double *pnt, int (*fnc)(double *, double *), d
         }
       parPntr[indx1] = oldvalue1;                                                   // Reset parameter
 
-      // Scale all elements
+      // Scale all elements. Diagonal elements are computed using step sizes eps_h/2,
+      // while off-diagonal elements are computed using step sizes eps_h and eps_p, respectively
       CEhes[i*evoparsdim + i] /= pardif[i]*pardif[i];                               // This like in the 1-dimensional case
       for (j = 0; j < i; j++)
         {
@@ -829,6 +835,10 @@ int ESSclassify(const int pntdim, double *pnt, int (*fnc)(double *, double *), d
               free(basemem);
               return FAILURE;
             }
+          for (j = 1; j < (pntdim - evoParsDim); j++)
+            if (y[j] != pnt[j]) break;
+          if (j == (pntdim - evoParsDim))
+            ErrorMsg(__FILE__, __LINE__, "ESS classification possibly inaccurate. Derivative of environment undetermined (E(x*+dx)=E(x*))\n");
           /*
            *  y now contains the correct environment E(x*+dpi) or E(x*-dpi), which hence satisfies the condition
            *
@@ -923,11 +933,6 @@ int ESSclassify(const int pntdim, double *pnt, int (*fnc)(double *, double *), d
       // Scale the elements
       for (j = 0; j < evoparsdim; j++)
         {
-          if (detecting && !j)
-            indx2 = Bifparone;                                                      // Classification after detecting an ESS in parameter[Bifparone]
-          else
-            indx2 = evoParsIndexPntr[j - detecting];                                // Runs to i=0..evoParsDim in detecting and non-detecting case
-
 #if (COMPUTEJACOBIAN == 1)
           CEjac[i*evoparsdim + j] /= 4*pardif[i]*pardif[j];
 #endif
@@ -950,9 +955,9 @@ int ESSclassify(const int pntdim, double *pnt, int (*fnc)(double *, double *), d
 
   if ((evoparsdim == 1) && !detecting)
     {
-      *EVmaxH = CEhes[0];                                                          // Returns R0_yy
-#if (COMPUTEHESSIAN == 1)                                                          // Returns R0_xx = C11 = -(C00 + C01 + C10) = -(J + C01) =
-      *EVmaxJ = CEhes[0] - 2*CEjac[0];                                             //                       -(J + (J - H)) = -(2*J - H) = (H - 2*J)
+      *EVmaxH = CEhes[0];                                                           // Returns R0_yy
+#if (COMPUTEHESSIAN == 1)                                                           // Returns R0_xx = C11 = -(C00 + C01 + C10) = -(J + C01) =
+      *EVmaxJ = CEhes[0] - 2*CEjac[0];                                              //                       -(J + (J - H)) = -(2*J - H) = (H - 2*J)
 #else
       *EVmaxJ = -(CEjac[0] + CEC01[0]);
 #endif
@@ -960,29 +965,40 @@ int ESSclassify(const int pntdim, double *pnt, int (*fnc)(double *, double *), d
     }
   else if (evoparsdim == 1)
     {
-      *EVmaxH = CEhes[0];                                                          // Returns R0_yy
+      *EVmaxH = CEhes[0];                                                           // Returns R0_yy
       *EVmaxJ = CEjac[0];
 #if (COMPUTEHESSIAN == 1)
-      *zC01z = (CEhes[0] - 2*CEjac[0])/CEhes[0];                                   // Returns R0_xx/R0_yy, the direction of the curve in the PIP
+      *zC01z = (CEhes[0] - 2*CEjac[0])/CEhes[0];                                    // Returns R0_xx/R0_yy, the direction of the curve in the PIP
 #else
-      *zC01z = -(CEjac[0] + CEC01[0])/(CEjac[0] - CEC01[0]);                       // Returns R0_xx/R0_yy, the direction of the curve in the PIP
+      *zC01z = -(CEjac[0] + CEC01[0])/(CEjac[0] - CEC01[0]);                        // Returns R0_xx/R0_yy, the direction of the curve in the PIP
 #endif
     }
   else
     {
       Eigenval(evoparsdim, CEhes, 1, EVmaxH, DOMINANT, eigvecH, NULL, rhstol);
       Eigenval(evoparsdim, CEjac, 0, EVmaxJ, DOMINANT, eigvecJ, NULL, rhstol);
+
+      // Compute the symmetric part of the Jacobian of the canonical equation Js = (J + J')/2
+      // An ESS is strongly convergence stable if all eigenvalues of Js are negative 
+      // See Geritz et al. (2016; pg. 1083) and Leimar (2009)
+      if (EVmaxJs)
+        {
+          for (i = 0; i < evoparsdim; i++)
+            for (j = 0; j < evoparsdim; j++) CEjacS[i*evoparsdim + j] = (CEjac[i*evoparsdim + j] + CEjac[j*evoparsdim + i])/2;
+              Eigenval(evoparsdim, CEjacS, 1, EVmaxJs, DOMINANT, eigvecJ, NULL, rhstol);    // We do not need the eigenvector of the Jacobiaan, re-use it
+        }
+
       for (i = 0; i < evoparsdim; i++)
         {
           /*
           * To check whether branches can coexist near an EBP we have to check Z^T C_01 Z,
           * C_01 the matrix of cross-derivatives to mutant and resident,
-          * Z the dominant eigenvector of the Hessiaan. Only when the resulting expression
+          * Z the dominant eigenvector of the Hessian. Only when the resulting expression
           * is negative coexistence is possible
           */
 
           // Compute C_00 Z
-          eigvecJ[i] = 0;                                                           // We do not need the eigenvector of the Jacobiaan, use it store the result
+          eigvecJ[i] = 0;                                                           // We do not need the eigenvector of the Jacobiaan, re-use it
           for (j = 0; j < evoparsdim; j++) eigvecJ[i] += CEC01[i*evoparsdim + j]*eigvecH[j];
         }
       // Compute Z^T C_01 Z
