@@ -6,7 +6,7 @@
      converted, or just the single state indicated by the time value that is
      passed to the program as command-line
 
-   Last modification: AMdR - Jun 17, 2018
+   Last modification: AMdR - Mar 19, 2019
 ***/
 #ifndef CSB2RLIST
 #define CSB2RLIST
@@ -124,7 +124,19 @@ SEXP csb2rlist(SEXP filename, SEXP command, SEXP stateindex, SEXP statetime)
     }
 
   if (!strcmp(cmd, "list"))
-    Rprintf("\n");
+    {
+      SEXP         csbdim;
+    
+      PROTECT(csbdim = allocVector(INTSXP, 1));
+      INTEGER(csbdim)[0] = popinfile;
+      UNPROTECT(1);
+      
+      if (mem_base) free(mem_base);
+      fclose(fp);
+      Rprintf("\n");
+
+      return (csbdim);
+    }
   else if ((!strcmp(cmd, "read")) && (popindex > popinfile))
     error("No such population state in file %s: index out of bounds. Index should be in the range 1-%d\n\n", fname, popinfile);
   else if ((!strcmp(cmd, "read")) && (closest_fpos > (uint32_t)0))

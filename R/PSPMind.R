@@ -67,8 +67,10 @@
 #' \code{\link{PSPMevodyn}}.
 #'
 #' @examples
+#' \dontrun{
 #' PSPMind("PNAS2002_5bs", c(1.30341E-05, 3.84655E-05, 4.00802E-06), 
 #'         options = c("isort", "1"), clean=TRUE, force=TRUE)
+#' }
 #'
 #' @export
 PSPMind <- function(modelname = NULL, environment = NULL, parameters = NULL, options = NULL, clean = FALSE, force = FALSE, debug = FALSE, silent = FALSE) {

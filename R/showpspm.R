@@ -11,7 +11,9 @@
 #'               Name of the example model to be displayed.
 #'
 #' @examples
+#' \dontrun{
 #' showpspm("Medfly.R")
+#' }
 #'
 #' @export
 showpspm <- function(modelname = NULL) {

@@ -19,6 +19,8 @@ population models that is provided as an example.
 showpspm(modelname = NULL)
 }
 \examples{
+\dontrun{
 showpspm("Medfly.R")
+}
 
 }

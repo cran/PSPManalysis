@@ -175,8 +175,10 @@
 #'                type of bifurcation for each of the located bifurcation points
 #'
 #' @examples
-#' PSPMequi("Indet_growth", "EQ", c(1, 0.22, 0), -0.1, c(6, 0.7, 1.0),
+#' \dontrun{
+#' PSPMequi("Indet_growth", "EQ", c(1, 0.22, 0), -0.1, c(6, 0.8, 1.0),
 #'          options = c("popEVO", "0"), silent = TRUE)
+#' }
 #'
 #' @import utils
 #' @export

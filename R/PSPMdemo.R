@@ -92,7 +92,9 @@
 #'              numerical settings used).
 #'
 #' @examples
+#' \dontrun{
 #' PSPMdemo("Medfly", c(2, 11, 0.1, 11, 16))
+#' }
 #'
 #' @import utils
 #' @export

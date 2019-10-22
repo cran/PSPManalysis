@@ -22,7 +22,7 @@ PSPMecodyn(modelname = NULL, startstate = NULL, timepars = NULL,
               The initial environmental and population state from which to start the
               simulation of the dynamics. This list should have the identical layout
               as a list returned by the function csbread().
-              As a minimum, the list should contain a vecgtor 'Environment' specifying
+              As a minimum, the list should contain a vector 'Environment' specifying
               the initial values of the environmental variables, and a matrix 'Pop00'
               (assuming there is only a single population in the model), which specifies
               on each row the number and individual state variables of a cohort of
@@ -122,9 +122,11 @@ output <- PSPMecodyn(modelname = NULL, startstate = NULL, timepars = NULL,
                        clean = FALSE, force = FALSE, debug = FALSE, silent = FALSE)
 }
 \examples{
+\dontrun{
 initstate <- list(Environment = c(1.561e-04, 1.270e-04, 4.008e-06), 
                   Pop00 = matrix(c(0.001, 0, 7.0, 1.0E-5, 300, 111),
                   ncol = 3, byrow = TRUE))
 PSPMecodyn("PNAS2002", initstate, c(1, 1, 10, 100))
+}
 
 }

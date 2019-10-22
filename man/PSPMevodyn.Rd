@@ -158,7 +158,9 @@ output <- PSPMevodyn(modelname = NULL, startpoint = NULL, curvepars = NULL,
                        debug = FALSE, silent = FALSE)
 }
 \examples{
-PSPMevodyn("Indet_growth", c(0.22, 0.03554, 1.0), c(0.05, 2), 
+\dontrun{
+PSPMevodyn("Indet_growth", c(0.22, 0.03554, 1.0), c(0.05, 1), 
             c(0, 6, 0.5, 1.5))
+}
 
 }

@@ -22,10 +22,12 @@
 #' returned as a list.
 #'
 #' @examples
+#' \dontrun{
 #' PSPMdemo("Medfly", c(2, 11, 0.1, 11, 15), clean = TRUE)
 #' csbread("Medfly-PGR-0000")
 #'
 #' csbread("Medfly-PGR-0000", 1)
+#' }
 #'
 #' @import utils
 #' @useDynLib PSPManalysis, csb2rlist

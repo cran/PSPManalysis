@@ -16,8 +16,10 @@ None.
 \code{PSPMhelp} opens the manual of the the PSPManalysis package in either html or pdf format.
 }
 \examples{
+\dontrun{
 PSPMhelp()
 
 PSPMhelp("pdf")
+}
 
 }

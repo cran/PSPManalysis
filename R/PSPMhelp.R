@@ -7,9 +7,11 @@
 #' @return None.
 #'
 #' @examples
+#' \dontrun{
 #' PSPMhelp()
 #'
 #' PSPMhelp("pdf")
+#' }
 #'
 #' @export
 PSPMhelp <- function (type = c("html", "pdf"))

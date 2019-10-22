@@ -23,3 +23,7 @@ eval(parse(text=cmd))
 cat("\n\n\nSimulating the simultaneous evolution of the ingestion and maintenance exponent over evolutionary time\n\n")
 cmd = paste0('output4 <- PSPMevodyn("', modelname, '", c(0.22, 0.03554, 1.0, 1.0), c(0.05, 100), c(0, 6, 0.5, 1.5, 0, 9, 0.5, 1.5), options=c("report", "5"))')
 eval(parse(text=cmd))
+
+
+PSPMclean("F")
+

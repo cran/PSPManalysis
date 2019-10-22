@@ -19,8 +19,10 @@ None.
 all executables (hit 'F') in the current directory.
 }
 \examples{
+\dontrun{
 PSPMclean()
 
 PSPMclean("F")
+}
 
 }

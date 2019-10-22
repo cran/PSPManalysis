@@ -103,6 +103,8 @@ output <- PSPMdemo(modelname = NULL, curvepars = NULL, parameters = NULL, option
                      clean = FALSE, force = FALSE, debug = FALSE, silent = FALSE)
 }
 \examples{
+\dontrun{
 PSPMdemo("Medfly", c(2, 11, 0.1, 11, 16))
+}
 
 }

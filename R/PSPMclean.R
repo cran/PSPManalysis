@@ -10,9 +10,11 @@
 #' @return None.
 #'
 #' @examples
+#' \dontrun{
 #' PSPMclean()
 #'
 #' PSPMclean("F")
+#' }
 #'
 #' @export
 PSPMclean <- function(str = NULL) {

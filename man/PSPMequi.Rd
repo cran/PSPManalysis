@@ -5,8 +5,9 @@
 \title{Bifurcation analysis of a structured population model}
 \usage{
 PSPMequi(modelname = NULL, biftype = NULL, startpoint = NULL,
-  stepsize = NULL, parbnds = NULL, parameters = NULL, options = NULL,
-  clean = FALSE, force = FALSE, debug = FALSE, silent = FALSE)
+  stepsize = NULL, parbnds = NULL, parameters = NULL,
+  options = NULL, clean = FALSE, force = FALSE, debug = FALSE,
+  silent = FALSE)
 }
 \arguments{
 \item{modelname}{(string, required)
@@ -187,7 +188,9 @@ output <- PSPMequi(modelname = NULL, biftype = NULL, startpoint = NULL,
                      debug  = FALSE, silent = FALSE)
 }
 \examples{
-PSPMequi("Indet_growth", "EQ", c(1, 0.22, 0), -0.1, c(6, 0.7, 1.0),
+\dontrun{
+PSPMequi("Indet_growth", "EQ", c(1, 0.22, 0), -0.1, c(6, 0.8, 1.0),
          options = c("popEVO", "0"), silent = TRUE)
+}
 
 }
