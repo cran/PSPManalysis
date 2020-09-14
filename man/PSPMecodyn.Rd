@@ -4,9 +4,18 @@
 \alias{PSPMecodyn}
 \title{Ecological dynamics of a structured population model computed using the Escalator Boxcar Train}
 \usage{
-PSPMecodyn(modelname = NULL, startstate = NULL, timepars = NULL,
-  bifpars = NULL, parameters = NULL, options = NULL, clean = FALSE,
-  force = FALSE, debug = FALSE, silent = FALSE)
+PSPMecodyn(
+  modelname = NULL,
+  startstate = NULL,
+  timepars = NULL,
+  bifpars = NULL,
+  parameters = NULL,
+  options = NULL,
+  clean = FALSE,
+  force = FALSE,
+  debug = FALSE,
+  silent = FALSE
+)
 }
 \arguments{
 \item{modelname}{(string, required)

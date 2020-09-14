@@ -4,9 +4,19 @@
 \alias{PSPMevodyn}
 \title{Evolutionary dynamics for a structured population model computed following the canonical equation}
 \usage{
-PSPMevodyn(modelname = NULL, startpoint = NULL, curvepars = NULL,
-  evopars = NULL, covars = NULL, parameters = NULL, options = NULL,
-  clean = FALSE, force = FALSE, debug = FALSE, silent = FALSE)
+PSPMevodyn(
+  modelname = NULL,
+  startpoint = NULL,
+  curvepars = NULL,
+  evopars = NULL,
+  covars = NULL,
+  parameters = NULL,
+  options = NULL,
+  clean = FALSE,
+  force = FALSE,
+  debug = FALSE,
+  silent = FALSE
+)
 }
 \arguments{
 \item{modelname}{(string, required)

@@ -4,9 +4,16 @@
 \alias{PSPMind}
 \title{Computes the individual life history of a physiologically structured population model in a given environment}
 \usage{
-PSPMind(modelname = NULL, environment = NULL, parameters = NULL,
-  options = NULL, clean = FALSE, force = FALSE, debug = FALSE,
-  silent = FALSE)
+PSPMind(
+  modelname = NULL,
+  environment = NULL,
+  parameters = NULL,
+  options = NULL,
+  clean = FALSE,
+  force = FALSE,
+  debug = FALSE,
+  silent = FALSE
+)
 }
 \arguments{
 \item{modelname}{(string, required)

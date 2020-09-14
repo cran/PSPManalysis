@@ -7,37 +7,39 @@ buildSO <- function(PSPMmodule = NULL, modelname = NULL, debug = FALSE, force = 
 
   pkgmodeldir <- system.file("Models", package="PSPManalysis")
   modelfound <- 0
-  for (modeldir in c(".", pkgmodeldir))
+  modeldname <- dirname(modelname)
+  modelbname <- basename(modelname)
+  for (modeldir in c(modeldname, pkgmodeldir))
     {
       if (modeldir == pkgmodeldir)
         {
           str = readline(paste0("\nModel file not found in current directory\nContinue searching for model file in package directory? [y(es)/q(uit)] : "))
           if ((str != '') && (str != 'y') && (str != 'Y')) break
         }
-      if ((regexpr("\\.h", modelname) == (nchar(modelname)-1)) && file.exists(paste0(modeldir, "/", modelname)))
+      if ((regexpr("\\.h", modelbname) == (nchar(modelbname)-1)) && file.exists(paste0(modeldir, "/", modelbname)))
         {
-          hfile.fullname <- paste0(modeldir, "/", modelname)
+          hfile.fullname <- paste0(modeldir, "/", modelbname)
           rmodel <- 0
           modelfound <- 1
           break
         }
-      if ((regexpr("\\.R", modelname) == (nchar(modelname)-1)) && file.exists(paste0(modeldir, "/", modelname)))
+      if ((regexpr("\\.R", modelbname) == (nchar(modelbname)-1)) && file.exists(paste0(modeldir, "/", modelbname)))
         {
-          hfile.fullname <- paste0(modeldir, "/", modelname)
+          hfile.fullname <- paste0(modeldir, "/", modelbname)
           rmodel <- 1
           modelfound <- 1
           break
         }
-      if (file.exists(paste0(modeldir, "/", modelname, ".h")))
+      if (file.exists(paste0(modeldir, "/", modelbname, ".h")))
         {
-          hfile.fullname <- paste0(modeldir, "/", modelname, ".h")
+          hfile.fullname <- paste0(modeldir, "/", modelbname, ".h")
           rmodel <- 0
           modelfound <- 1
           break
         }
-      if (file.exists(paste0(modeldir, "/", modelname, ".R")))
+      if (file.exists(paste0(modeldir, "/", modelbname, ".R")))
         {
-          hfile.fullname <- paste0(modeldir, "/", modelname, ".R")
+          hfile.fullname <- paste0(modeldir, "/", modelbname, ".R")
           rmodel <- 1
           modelfound <- 1
           break
@@ -112,13 +114,13 @@ buildSO <- function(PSPMmodule = NULL, modelname = NULL, debug = FALSE, force = 
     file.copy(hfile.abspath, tmpdir, overwrite = TRUE)
 
     # Construct the command line
-    buildargs <- paste0("--output=\'", libfile.basename, "\'")
-    for (i in srclist) buildargs <- paste(buildargs, i, sep=" ")
+    buildargs <- c(paste0("--output=\'", libfile.basename, "\'"), srclist)
 
     # Define the basic compilation flags
     cppflags <- "-DR_PACKAGE"
     if (exists("CFLAGS")) cppflags <- paste0(cppflags, " ", get("CFLAGS"))
     if (debug) cppflags <- paste0(cppflags, " -DDEBUG=1 -g -Wall")
+    else cppflags <- paste0(cppflags, " -Wno-format-overflow")
     cppflags <- paste0(cppflags, " -I.", " -I\"", PSPMsrcdir.name, "\"")
 
     # Define the model-specific flags
@@ -143,7 +145,7 @@ buildSO <- function(PSPMmodule = NULL, modelname = NULL, debug = FALSE, force = 
     }
 
     # Define the environment variables to be set
-    buildenv <- c(PKG_CPPFLAGS = paste(cppflags, modelflags), PKG_LIBS = "$(LAPACK_LIBS) $(BLAS_LIBS)")
+    buildenv <- c(PKG_CFLAGS = paste(cppflags, modelflags), PKG_LIBS = "$(LAPACK_LIBS) $(BLAS_LIBS)")
 
     if (debug) {
       cat("Current working directory: ", getwd(), "\n")

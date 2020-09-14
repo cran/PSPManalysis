@@ -1,22 +1,29 @@
 #' Opens the PSPManalysis manual
 #'
-#' \code{PSPMhelp} opens the manual of the the PSPManalysis package in either html or pdf format.
+#' \code{PSPMhelp} opens the manual of the the PSPManalysis package in html format.
 #'
-#' @param type String (optional). Either "pdf" or "html". Default if "html"
-#'
+#' The manual is created in bookdown format. A PDF version can be downloaded via the 
+#' PDF icon in the menu bar.
+#' 
 #' @return None.
 #'
 #' @examples
 #' \dontrun{
 #' PSPMhelp()
-#'
-#' PSPMhelp("pdf")
 #' }
 #'
+#' @importFrom rstudioapi viewer
+#' @importFrom utils unzip
 #' @export
-PSPMhelp <- function (type = c("html", "pdf"))
+PSPMhelp <- function ()
 {
-  if (!missing(type) && ((type == "pdf") || (type == "PDF"))) vignette("PSPManalysis-pdf")
-  else vignette("PSPManalysis")
+  oldwd <- getwd()
+  tempDir <- tempdir()
+  unlink(paste0(tempDir, "/manual"), recursive = TRUE)
+  dir.create(paste0(tempDir, "/manual"))
+  setwd(paste0(tempDir, "/manual"))
+  unzip(paste0(system.file("manual", package = "PSPManalysis"), "/PSPManalysis-manual.zip"))
+  setwd(oldwd)
+  htmlFile <- file.path(tempDir, "manual/index.html")
+  rstudioapi::viewer(htmlFile, height="maximize")
 }
-

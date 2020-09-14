@@ -4,22 +4,21 @@
 \alias{PSPMhelp}
 \title{Opens the PSPManalysis manual}
 \usage{
-PSPMhelp(type = c("html", "pdf"))
-}
-\arguments{
-\item{type}{String (optional). Either "pdf" or "html". Default if "html"}
+PSPMhelp()
 }
 \value{
 None.
 }
 \description{
-\code{PSPMhelp} opens the manual of the the PSPManalysis package in either html or pdf format.
+\code{PSPMhelp} opens the manual of the the PSPManalysis package in html format.
+}
+\details{
+The manual is created in bookdown format. A PDF version can be downloaded via the 
+PDF icon in the menu bar.
 }
 \examples{
 \dontrun{
 PSPMhelp()
-
-PSPMhelp("pdf")
 }
 
 }

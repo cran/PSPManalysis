@@ -4,9 +4,16 @@
 \alias{PSPMdemo}
 \title{Demographic analysis of a structured population model}
 \usage{
-PSPMdemo(modelname = NULL, curvepars = NULL, parameters = NULL,
-  options = NULL, clean = FALSE, force = FALSE, debug = FALSE,
-  silent = FALSE)
+PSPMdemo(
+  modelname = NULL,
+  curvepars = NULL,
+  parameters = NULL,
+  options = NULL,
+  clean = FALSE,
+  force = FALSE,
+  debug = FALSE,
+  silent = FALSE
+)
 }
 \arguments{
 \item{modelname}{(string, required)

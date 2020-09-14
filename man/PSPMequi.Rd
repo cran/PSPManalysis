@@ -4,10 +4,19 @@
 \alias{PSPMequi}
 \title{Bifurcation analysis of a structured population model}
 \usage{
-PSPMequi(modelname = NULL, biftype = NULL, startpoint = NULL,
-  stepsize = NULL, parbnds = NULL, parameters = NULL,
-  options = NULL, clean = FALSE, force = FALSE, debug = FALSE,
-  silent = FALSE)
+PSPMequi(
+  modelname = NULL,
+  biftype = NULL,
+  startpoint = NULL,
+  stepsize = NULL,
+  parbnds = NULL,
+  parameters = NULL,
+  options = NULL,
+  clean = FALSE,
+  force = FALSE,
+  debug = FALSE,
+  silent = FALSE
+)
 }
 \arguments{
 \item{modelname}{(string, required)
