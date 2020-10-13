@@ -35,13 +35,13 @@
 csbread <- function(csbfile = NULL, state = -1) {
   if ((!length(csbfile)) || (!nchar(csbfile))) stop("You have to specify a file name")
 
-  if (regexpr("\\.csb", csbfile) == (nchar(csbfile)-3)) csb.fullname = csbfile else csb.fullname = paste0(csbfile, ".csb")
+  if (regexpr("\\.csb", csbfile) == (nchar(csbfile)-3)) csb.fullname <- csbfile else csb.fullname <- paste0(csbfile, ".csb")
   if (!file.exists(csb.fullname)) stop(paste('Data file', csb.fullname, 'does not exist', sep=' '))
 
-  csb.dirname=dirname(normalizePath(csb.fullname))
-  csb.basename=basename(normalizePath(csb.fullname))
+  csb.dirname <- dirname(normalizePath(csb.fullname))
+  csb.basename <- basename(normalizePath(csb.fullname))
 
-  oldwd = getwd()
+  oldwd <- getwd()
   setwd(csb.dirname)
 
   if (state == -1) {
@@ -50,25 +50,44 @@ csbread <- function(csbfile = NULL, state = -1) {
   else
   {
     # if ((!length(state)) || (regexpr("State-", state) != 1)) stop("You have to specify a valid state name of the form 'State-XXXXXXXX'")
-    selectedstate = 0
-    tval = 0.0
     if (length(state)) {
       if ((is.integer(state) || is.double(state)) &&  (abs(state - round(state)) < .Machine$double.eps^0.5)) {
-        selectedstate = state
+        selectedstate <- state
+        tval <- 0.0
         if (selectedstate < 1) {
           warning("Negative index! Result shown for index set to its default value 1")
-          selectedstate = 1
+          selectedstate <- 1
         }
+        cout <- .Call("csb2rlist", csb.basename, "read", as.integer(selectedstate), as.double(tval))
       }
       else if ( is.character(state) && (regexpr("State-", state) == 1))
       {
-        selectedstate = -1
-        tval = type.convert(sub("State-", "", state))
+        selectedstate <- -1
+        tval <- type.convert(sub("State-", "", state))
+        statelist <- capture.output(.Call("csb2rlist", csb.basename, "list", as.integer(0), as.double(0.0)))
+        statevals <- sub("[ ]*[0-9]*:[ ]*State-", "", statelist)
+        statevals <- type.convert(statevals[4:(length(statevals)-2)])
+        stateindx <- ((statevals[1:(length(statevals)-1)] - tval) * (statevals[2:length(statevals)] - tval) < (-.Machine$double.eps^0.5))
+        stateindx <- (1:length(stateindx))[stateindx]
+        if (length(stateindx) > 1) {
+          cout <- lapply(stateindx, function(indx) {selectedstate <- indx;
+                                                    if (abs(statevals[indx + 1] - tval) < abs(statevals[indx] - tval)) selectedstate <- indx + 1;
+                                                    .Call("csb2rlist", csb.basename, "read", as.integer(selectedstate), as.double(tval))})
+        } else if (length(stateindx) == 1) {
+          selectedstate <- stateindx
+          cout <- .Call("csb2rlist", csb.basename, "read", as.integer(selectedstate), as.double(tval))
+        } else {
+          selectedstate <- which.min(abs(statevals - tval))
+          cout <- .Call("csb2rlist", csb.basename, "read", as.integer(selectedstate), as.double(tval))
+        }
       }
       else stop('You have to specify a valid state name of the form "State-XXXXXXXX" or its corresponding index from a call to csblist()')
     }
-
-    cout <- .Call("csb2rlist", csb.basename, "read", as.integer(selectedstate), as.double(tval))
+    else {
+      selectedstate <- 0
+      tval <- 0.0
+      cout <- .Call("csb2rlist", csb.basename, "read", as.integer(selectedstate), as.double(tval))
+    }
   }
 
   setwd(oldwd)

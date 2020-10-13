@@ -6,7 +6,7 @@
      Train software of a physiologically structured population model that is specificied in the type of
      header file used for the PSPManalysis package.
 
-  Last modification: AMdR - May 05, 2018
+  Last modification: AMdR - Oct 13, 2020
 */
 
 #define PSPMECODYN                1                                                 // File identification
@@ -1131,10 +1131,16 @@ static void InitVars()
  int ComputeCurve(int argc, char **argv)
 {
   int             i, j, colnr;
-  char            csbname[MAXFILENAMELEN], dbgname[MAXFILENAMELEN], outname[MAXFILENAMELEN];
+  char            csbname[3*MAXFILENAMELEN], dbgname[3*MAXFILENAMELEN], outname[3*MAXFILENAMELEN];
   double          oldBifParVal = 0;
   struct stat     buffer;
   char            tmpstr[MAX_STR_LEN];
+  
+#if defined(R_PACKAGE)
+  STDOUT("\n");
+#else
+  fprintf(stderr, "\n");
+#endif
   
   i = 0;
   while (1)

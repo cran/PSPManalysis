@@ -303,9 +303,12 @@ PSPMequi <- function(modelname = NULL, biftype = NULL, startpoint = NULL, stepsi
   if (length(desc) || length(data) || length(bifpoints) || length(biftypes)) {
     if (length(bifpoints) || length(biftypes)) {
       output = list(curvedesc = desc, curvepoints = data, bifpoints = bifpoints, biftypes = biftypes)
+    } 
+    else {
+      if ((biftype == "EQ") || (biftype == "ESS")) cat("\nNo bifurcations points detected during computations with ", modelname, "\n")
+      output = list(curvedesc = desc, curvepoints = data, bifpoints = NULL, biftypes = NULL)
     }
-    else output = list(curvedesc = desc, curvepoints = data)
     return(output)
-  }
+  } else cat("\nComputations with ", modelname, " produced no output\n")
 }
 

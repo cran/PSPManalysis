@@ -230,6 +230,9 @@ PSPMevodyn <- function(modelname = NULL, startpoint = NULL, curvepars = NULL, ev
     output = list(curvedesc = desc, curvepoints = data)
     return(output)
   }
-  else return()
+  else {
+    cat("\nComputations with ", modelname, " produced no output\n")
+    return()
+  }
 }
 

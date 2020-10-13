@@ -8,4 +8,5 @@ deRoosPersson5                    Bifurcation analysis of the model from de Roos
 deRoosPerssonDynamics             Simulation of the ecological dynamics of the tri-trophic size-structured model analyzed in de Roos & Persson (PNAS 99(20), 12907-12912, 2002) from 3 different initial states
 Indet_growth                      Evolutionary analysis of a size-structured consumer-resource model with indeterminate growth in body size
 Indet_growth5                     Evolutionary analysis of a size-structured consumer-resource model with indeterminate growth in body size with individuals born with one of 5 different states at birth
+Salmon                            Equilibrium and evolutionary analysis of a size-structured predator-consumer-resource model in which consumers exhibit an ontogenetic niche shift during life (model implementation available in both C and R)
 StageStructuredBiomass            Equilibrium analysis of the size-structured consumer-resource model on which the stage-structured biomass model is based (this model is implemented in R)

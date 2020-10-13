@@ -25,7 +25,7 @@
     You should have received a copy of the GNU General Public License
     along with PSPManalysis. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - May 05, 2018
+    Last modification: AMdR - Oct 13, 2020
 ***/
 
 #define PSPMDEMO                  1
@@ -561,7 +561,7 @@ void ComputeCurve(const int argc, char **argv)
   double        point[MaxPntDim], oldpoint[MaxPntDim], *savedpntr;
   double        rhs[MaxPntDim];
   double        tanvec[MaxPntDim], Jacmat[MaxPntDim*MaxPntDim];
-  char          csbname[MAX_STR_LEN], errname[MAX_STR_LEN], outname[MAX_STR_LEN];
+  char          csbname[3*MAX_STR_LEN], errname[3*MAX_STR_LEN], outname[3*MAX_STR_LEN];
   char          tmpstr[MAX_STR_LEN];
   struct stat   buffer;
 

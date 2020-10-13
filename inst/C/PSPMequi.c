@@ -26,7 +26,7 @@
     You should have received a copy of the GNU General Public License
     along with PSPManalysis. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Aug 30, 2018
+    Last modification: AMdR - Oct 13, 2020
 ***/
 
 #define PSPMEQUI                  1
@@ -157,7 +157,7 @@ static int                        classifyESS = 0;
 // Global variables for other purposes
 static char                       progname[MAXPATHLEN];
 static double                     LogMinSurvival;
-static char                       ContinuationString[MAX_STR_LEN];
+static char                       ContinuationString[10];
 static double                     initpnt[ENVIRON_DIM + POPULATION_NR + 1 + PARAMETER_NR];
 static double                     pntmin[ENVIRON_DIM + POPULATION_NR + 1 + PARAMETER_NR];
 static double                     pntmax[ENVIRON_DIM + POPULATION_NR + 1 + PARAMETER_NR];
@@ -712,7 +712,7 @@ void ComputeCurve(const int argc, char **argv)
   double        newR0[PopulationNr + 1], oldR0[PopulationNr + 1];
   double        newdR0dp[ParameterNr][PopulationNr + 1], olddR0dp[ParameterNr][PopulationNr + 1];
   double        R0_xx, R0_yy, zCz;
-  char          bifname[MAX_STR_LEN], csbname[MAX_STR_LEN], errname[MAX_STR_LEN], outname[MAX_STR_LEN];
+  char          bifname[3*MAX_STR_LEN], csbname[3*MAX_STR_LEN], errname[3*MAX_STR_LEN], outname[3*MAX_STR_LEN];
   char          tmpstr[MAX_STR_LEN];
   struct stat   buffer;
 
@@ -2511,7 +2511,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 SEXP PSPMequi(SEXP moduleName, SEXP bifType, SEXP initVals, SEXP stepsize, SEXP curveVals, SEXP parVals, SEXP optVals)
 
 {
-  int     i, j, k, ncols, popint, tmpint, pind, rind;
+  int     i, j, k, ncols, popint = 0, tmpint, pind, rind;
   char    optname[MAX_STR_LEN], optval[MAX_STR_LEN], tmpstr[MAX_STR_LEN], varstr[MAX_STR_LEN];
   double  minval, maxval;
   SEXP    resfil;

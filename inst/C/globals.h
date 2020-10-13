@@ -22,7 +22,7 @@
     You should have received a copy of the GNU General Public License
     along with this software. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Aug 27, 2018
+    Last modification: AMdR - Oct 13, 2020
 ***/
 #ifndef GLOBALS
 #define GLOBALS
@@ -260,7 +260,7 @@ EXTERN int                        Bifpartwo;
 EXTERN double                     MutantParVal;
 EXTERN int                        EnvBPIndex;
 EXTERN int                        PopBPIndex;
-EXTERN char                       runname[MAXPATHLEN];
+EXTERN char                       runname[2*MAXPATHLEN];
 
 
 /*

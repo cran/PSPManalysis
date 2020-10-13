@@ -107,7 +107,7 @@ PSPMind <- function(modelname = NULL, environment = NULL, parameters = NULL, opt
     if (file.exists(outfile.name)) {
       state <- csbread(outfile.name, 1)
     }
-  }
+  } else cat("\nComputations with ", modelname, " produced no output\n")
 
   setwd(Oldwd)
   return (state)

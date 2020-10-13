@@ -4,7 +4,7 @@
 
      Interface header file to the functions defined in ebtmain.c
 
-  Last modification: AMdR - Oct 25, 2017
+  Last modification: AMdR - Oct 13, 2020
 */
 
 #ifndef EBTMAIN_H
@@ -102,7 +102,7 @@ EXTERN double                     BifParBase;                                   
 EXTERN double                     BifPeriod;                                        // Parameter change period during bifurcation run
 EXTERN char                       progname[MAXFILENAMELEN];                         // Name of the program
 
-EXTERN char                       runname[MAXFILENAMELEN];                          // Name of the current run
+EXTERN char                       runname[2*MAXFILENAMELEN];                        // Name of the current run
 
 EXTERN int                        debug_level;                                      // Level of debug info
 EXTERN int                        report_level;                                     // Interval of reporting data to console

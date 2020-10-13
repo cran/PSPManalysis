@@ -26,7 +26,7 @@
     You should have received a copy of the GNU General Public License
     along with PSPManalysis. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - May 03, 2018
+    Last modification: AMdR - Oct 13, 2020
 ***/
 
 #define PSPMIND                   1
@@ -356,7 +356,7 @@ int DefineOutput(double *x, double *output)
 void ComputeLifeHistory(const int argc, char **argv)
 {
   register int  i;
-  char          csbname[MAX_STR_LEN];
+  char          csbname[3*MAX_STR_LEN];
   struct stat   buffer;
 
 #if defined(R_PACKAGE)

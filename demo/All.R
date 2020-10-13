@@ -19,6 +19,8 @@ source("deRoosPersson5.R")
 
 source("Indet_growth5.R")
 
+source("Salmon.R")
+
 par(par.defaults)
 PSPMclean('F')
 setwd(oldwd)

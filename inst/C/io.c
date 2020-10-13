@@ -21,7 +21,7 @@
     You should have received a copy of the GNU General Public License
     along with this software. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Dec 15, 2017
+    Last modification: AMdR - Oct 13, 2020
 ***/
 #ifndef IO
 #define IO
@@ -887,13 +887,13 @@ void WriteStateToFile(const int fullstateoutput)
   double        zero = 0.0, tmpval;
   uint32_t      tmpuint32;
   int           tmpint, num;
-  char          input[MAX_STR_LEN], tmpstr[MAX_STR_LEN];
+  char          input[MAX_STR_LEN], tmpstr[2*MAX_STR_LEN];
   char          *statelblmem;
   char          envlabel[MAX_LBL_LEN*sizeof(double)];
   FILE          *fp;
   struct stat   st;
   static int    skip = 0;
-  short int     pmag, bmag;
+  unsigned char pmag, bmag;
 
   if (skip || !fullstateoutput) return;
 

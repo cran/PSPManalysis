@@ -120,7 +120,6 @@ buildSO <- function(PSPMmodule = NULL, modelname = NULL, debug = FALSE, force = 
     cppflags <- "-DR_PACKAGE"
     if (exists("CFLAGS")) cppflags <- paste0(cppflags, " ", get("CFLAGS"))
     if (debug) cppflags <- paste0(cppflags, " -DDEBUG=1 -g -Wall")
-    else cppflags <- paste0(cppflags, " -Wno-format-overflow")
     cppflags <- paste0(cppflags, " -I.", " -I\"", PSPMsrcdir.name, "\"")
 
     # Define the model-specific flags
