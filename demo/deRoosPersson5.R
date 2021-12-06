@@ -82,7 +82,7 @@ bifplot <- function(stage = 1) {
 modelname="PNAS2002_5bs.h"
 
 cat("\n\n\nStarting from the (known) trivial equilibrium with only resource\n\n")
-cmd = paste0('output1 <- PSPMequi("', modelname, '", "EQ", c(1.0E-06, 1.0E-06), 0.5, c(1, 0, 4E-4), NULL, c("popZE", "0", "envZE", "1", "envZE", "2"), clean = TRUE)')
+cmd = paste0('output1 <- PSPMequi("', modelname, '", "EQ", c(1.0E-06, 1.0E-06), 0.5, c(1, 0, 4E-4), NULL, options = c("popZE", "0", "envZE", "1", "envZE", "2"), clean = TRUE)')
 
 str = readline(paste0("\n> ", cmd, "\n\nPress any key to continue....\n"))
 eval(parse(text=cmd))
@@ -91,7 +91,7 @@ cat('', '> output1$bifpoints', sep='\n'); print(output1$bifpoints); cat('', '> o
 bifplot(1)
 
 cat("\n\n\nStart from the detected branching point to compute the consumer-resource equilibrium\n\n")
-cmd = paste0('output2 <- PSPMequi("', modelname, '", "EQ", output1$bifpoints[c(1, 2, 5)], 0.2, c(1, 0, 4E-4), NULL, c("envZE", "1", "envZE", "2"))')
+cmd = paste0('output2 <- PSPMequi("', modelname, '", "EQ", output1$bifpoints[c(1, 2, 5)], 0.2, c(1, 0, 4E-4), NULL, options = c("envZE", "1", "envZE", "2"))')
 
 str = readline(paste0("\n> ", cmd, "\n\nPress any key to continue....\n"))
 eval(parse(text=cmd))
@@ -109,7 +109,7 @@ cat('', '> output3$bifpoints', sep='\n'); print(output3$bifpoints); cat('', '> o
 bifplot(3)
 
 cat("\n\n\nContinuation of the transcritical bifurcation curve of the structured population in 2 parameters (maximum resource density and background mortality)\n\n")
-cmd = paste0('output4 <- PSPMequi("', modelname, '", "BP", c(output1$bifpoints[1:2], 0.01), 0.05, c(1, 0, 4E-4, 11, 0, 0.1), NULL, c("envZE", "1", "envZE", "2", "popBP", "0"))')
+cmd = paste0('output4 <- PSPMequi("', modelname, '", "BP", c(output1$bifpoints[1:2], 0.01), 0.05, c(1, 0, 4E-4, 11, 0, 0.1), NULL, options = c("envZE", "1", "envZE", "2", "popBP", "0"))')
 
 str = readline(paste0("\n> ", cmd, "\n\nPress any key to continue....\n"))
 eval(parse(text=cmd))
@@ -127,7 +127,7 @@ axis(2, at=c(1,3,5,7,9)*0.01, labels=TRUE, las=2)
 mtext("Consumer mortality", 2, line=3.0, cex=1.3)
 
 cat("\n\n\nContinuation of the transcritical bifurcation curve of the predator in 2 parameters (maximum resource density and background mortality)\n\n")
-cmd = paste0('output5 <- PSPMequi("', modelname, '", "BPE", c(output2$bifpoints[c(1, 2, 5)], 0.01), -0.1, c(1, 0, 4E-4, 11, 0, 0.1), NULL, c("envZE", "2", "envBP", "1"))')
+cmd = paste0('output5 <- PSPMequi("', modelname, '", "BPE", c(output2$bifpoints[c(1, 2, 5)], 0.01), -0.1, c(1, 0, 4E-4, 11, 0, 0.1), NULL, options = c("envZE", "2", "envBP", "1"))')
 
 str = readline(paste0("\n> ", cmd, "\n\nPress any key to continue....\n"))
 eval(parse(text=cmd))

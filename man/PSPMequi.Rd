@@ -11,6 +11,8 @@ PSPMequi(
   stepsize = NULL,
   parbnds = NULL,
   parameters = NULL,
+  minvals = NULL,
+  maxvals = NULL,
   options = NULL,
   clean = FALSE,
   force = FALSE,
@@ -92,6 +94,20 @@ PSPMequi(
               model is specified in R), specifying the values for the model
               parameters to use in the computation. Vectors of other lengths,
               including an empty vector will be ignored.}
+
+\item{minvals}{(row vector, optional, can be left equal to its default NULL)
+\preformatted{}
+              Vector of length (ENVIRON_DIM + POPULATION_NR), specifying minimum 
+              values for the environmental variables and the population birth rates,
+              at which computations will stop.  Vectors of other lengths, including
+              an empty vector will be ignored.}
+
+\item{maxvals}{(row vector, optional, can be left equal to its default NULL)
+\preformatted{}
+              Vector of length (ENVIRON_DIM + POPULATION_NR), specifying maximum 
+              values for the environmental variables and the population birth rates,
+              at which computations will stop. Vectors of other lengths, including 
+              an empty vector will be ignored.}
 
 \item{options}{(row vector of strings, optional, can be left equal to its default NULL)
 \preformatted{}
@@ -192,7 +208,8 @@ function of the resident and a mutant value for one evolving parameter.
 }
 \details{
 output <- PSPMequi(modelname = NULL, biftype = NULL, startpoint = NULL,
-                     stepsize = NULL, parbnds = NULL, parameters = NULL,
+                     stepsize = NULL, parbnds = NULL, parameters = NULL, 
+                     minvals = NULL, maxvals = NULL,
                      options = NULL, clean = FALSE, force  = FALSE,
                      debug  = FALSE, silent = FALSE)
 }

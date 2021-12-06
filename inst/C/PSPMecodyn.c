@@ -6,7 +6,7 @@
      Train software of a physiologically structured population model that is specificied in the type of
      header file used for the PSPManalysis package.
 
-  Last modification: AMdR - Oct 13, 2020
+  Last modification: AMdR - Oct 14, 2020
 */
 
 #define PSPMECODYN                1                                                 // File identification
@@ -873,7 +873,7 @@ void	DefineOutput(double *env, population *pop, double *output)
 #define DECEPENDENCYLEVEL         1
 #endif
 
-static void setCurrentEnvironmentValues(double *env, population *pop, population *ofs, double  popImpacts[POPULATION_NR][INTERACT_DIM])
+static void setCurrentEnvironmentValues(double *env, population *pop, population *ofs, double popImpacts[POPULATION_NR][INTERACT_DIM])
 
 {
   int     dd, ii, jj, j, pp;
@@ -972,7 +972,11 @@ static void setCurrentEnvironmentValues(double *env, population *pop, population
     }
 
   if (popImpacts)
-    memcpy(popImpacts, curPopIntegrals, POPULATION_NR*INTERACT_DIM*sizeof(double));
+    {
+      for (pp = 0; pp < POPULATION_NR; pp++)
+        for (jj = 0; jj < INTERACT_DIM; jj++)
+          popImpacts[pp][jj] = curPopIntegrals[pp][jj];
+    }
   
   return;
 }

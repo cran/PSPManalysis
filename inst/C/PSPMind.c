@@ -26,7 +26,7 @@
     You should have received a copy of the GNU General Public License
     along with PSPManalysis. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Oct 13, 2020
+    Last modification: AMdR - Dec 06, 2021
 ***/
 
 #define PSPMIND                   1
@@ -398,7 +398,7 @@ void InitialiseVars(void)
 
 {
   int ii;
-#if (defined(_MSC_VER) && (_MSC_VER < 1500)) || (defined(R_PACKAGE) && defined(_WIN32))
+#if (defined(_MSC_VER) && (_MSC_VER < 1500)) || (defined(R_PACKAGE) && defined(_WIN32) && !(defined(_UCRT) || ((__MSVCRT_VERSION__ >= 0x1400) || (__MSVCRT_VERSION__ >= 0xE00 && __MSVCRT_VERSION__ < 0x1000))))
   (void)_set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
 

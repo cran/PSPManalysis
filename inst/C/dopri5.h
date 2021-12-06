@@ -23,11 +23,13 @@
     You should have received a copy of the GNU General Public License
     along with this software. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - May 02, 2018
+    Last modification: AMdR - Oct 14, 2020
 ***/
 
+// Some array dimensions have to be explicitly defined as POPULATION_NR to avoid errors with access attributes when using gcc11
+
 static double LocateSwitch(const int totalOdeDim, const int *birthStateNr, const int curBirthState, int populationStart[PopulationNr],
-                           int lifeStage[PopulationNr], double *bState[PopulationNr], double cohortBound[PopulationNr], double *ystart,
+                           int lifeStage[PopulationNr], double *bState[POPULATION_NR], double cohortBound[POPULATION_NR], double *ystart,
                            double *yend, double *ymid, double *rc)
 
 {
@@ -223,7 +225,9 @@ int LifeHistory(const int *birthStateNr, const int curBirthState, const int maxC
   rcontpnt = k6 + TotalOdeDim;
   scratch  = rcontpnt + 5*TotalOdeDim;
 
-  for (p = 0; p < PopulationNr; p++)
+  // To avoid "maybe uninitialized" warnings for the i-state in StateAtBirth, here
+  // PopulationNr has to be replaced by POPULATION_NR
+  for (p = 0; p < POPULATION_NR; p++)
     {
       BstatePnt[p] = Bstates[p];
       memset(BstatePnt[p], 0, IStateDim*sizeof(double));

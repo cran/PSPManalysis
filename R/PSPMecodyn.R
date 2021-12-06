@@ -321,7 +321,7 @@ PSPMecodyn <- function(modelname = NULL, startstate = NULL, timepars = NULL, bif
     cppflags <- "-DR_PACKAGE"
     if (exists("CFLAGS")) cppflags <- paste0(cppflags, " ", get("CFLAGS"))
     if (debug) cppflags <- paste0(cppflags, " -DDEBUG=1 -g -Wall")
-    cppflags <- paste0(cppflags, " -I.", " -I\"", PSPMsrcdir.name, "\" -I\"", PSPMsrcdir.name, "/escbox\" ")
+    cppflags <- paste0(cppflags, " -Wno-array-bounds -I.", " -I\"", PSPMsrcdir.name, "\" -I\"", PSPMsrcdir.name, "/escbox\" ")
 
     hasfftw <- FALSE
     if (hasfftw) cppflags <- paste0(cppflags, " -DHAS_FFTW3=1")
@@ -387,31 +387,35 @@ PSPMecodyn <- function(modelname = NULL, startstate = NULL, timepars = NULL, bif
     rm(list = Filter( exists, funlist ), envir = .GlobalEnv )
   }
 
-  desc <- data <- NULL
-  if (exists("cout")) {
-    outfile.name <- paste0(cout, ".out")
-    if (file.exists(outfile.name) && (file.info(outfile.name)$size > 0)) {
-      desc <- readLines(outfile.name)
-      data <- as.matrix(read.table(text=desc, blank.lines.skip = TRUE, fill=TRUE))
-      desc <- desc[grepl("^#", desc)]
-      lbls <- strsplit(desc[length(desc)], ":")[[1]]
-      cnames <- gsub("[ ]+[0-9]+$", "", lbls[2:length(lbls)])
-      colnames(data) <- gsub("\\[[ ]+", "[", cnames)
-#      cat(desc, sep='\n')
-      desc[-length(desc)] <- paste0(desc[-length(desc)], '\n')
-      desc[1] <- ' #\n'
+  suspendInterrupts(
+    {
+      desc <- data <- NULL
+      if (exists("cout")) {
+        outfile.name <- paste0(cout, ".out")
+        if (file.exists(outfile.name) && (file.info(outfile.name)$size > 0)) {
+          desc <- readLines(outfile.name)
+          data <- as.matrix(read.table(text=desc, blank.lines.skip = TRUE, fill=TRUE))
+          desc <- desc[grepl("^#", desc)]
+          lbls <- strsplit(desc[length(desc)], ":")[[1]]
+          cnames <- gsub("[ ]+[0-9]+$", "", lbls[2:length(lbls)])
+          colnames(data) <- gsub("\\[[ ]+", "[", cnames)
+          #      cat(desc, sep='\n')
+          desc[-length(desc)] <- paste0(desc[-length(desc)], '\n')
+          desc[1] <- ' #\n'
+        }
+      }
+      
+      setwd(oldwd)
+      if (length(desc) || length(data)) {
+        output <- list(curvedesc = desc, curvepoints = data)
+        return(output)
+      }
+      else {
+        cat("\nComputations with ", modelname, " produced no output\n")
+        return()
+      }
     }
-  }
-
-  setwd(oldwd)
-  if (length(desc) || length(data)) {
-    output <- list(curvedesc = desc, curvepoints = data)
-    return(output)
-  }
-  else {
-    cat("\nComputations with ", modelname, " produced no output\n")
-    return()
-  }
+  )
 }
 
 

@@ -1,3 +1,17 @@
+# PSPManalysis 0.3.7
+
+* Corrected implementation issues that arose from the use of the new Windows UCRT toolchain.
+
+# PSPManalysis 0.3.6
+
+* Wrapped the last parts of PSPMequi.R, PSPMecodyn.R and PSPMdemo.R that read in the data from file in a call to suspendInterrupts({}), such that these routines return data even when the user hits Ctrl-C
+
+* Added command-line arguments 'minvals' and 'maxvals' to PSPMequi to provide bounds to the solution variables at which computations should stop
+
+# PSPManalysis 0.3.5
+
+* Corrected access issues that occurred using gcc11
+
 # PSPManalysis 0.3.4
 
 * Corrected all "Format overflow" and "may be uninitialized" error messages in the code that showed up using gcc (from Rtools) on Windows

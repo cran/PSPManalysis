@@ -140,27 +140,31 @@ PSPMdemo <- function(modelname = NULL, curvepars = NULL, parameters = NULL, opti
     rm(list = Filter( exists, Funlist ), envir = .GlobalEnv )
   }
 
-  desc = data = NULL
-  if (exists("cout")) {
-    outfile.name = paste0(cout, ".out")
-    if (file.exists(outfile.name)) {
-      desc <- readLines(outfile.name)
-      data <- as.matrix(read.table(text=desc, blank.lines.skip = TRUE, fill=TRUE))
-      desc <- desc[grepl("^#", desc)]
-      lbls <- strsplit(desc[length(desc)], ":")[[1]]
-      cnames <- gsub("[ ]+[0-9]+$", "", lbls[2:length(lbls)])
-      colnames(data) <- gsub("\\[[ ]+", "[", cnames)
-#      cat(desc, sep='\n')
-      desc[-length(desc)] <- paste0(desc[-length(desc)], '\n')
-      desc[1] <- ' #\n'
+  suspendInterrupts(
+    {
+      desc = data = NULL
+      if (exists("cout")) {
+        outfile.name = paste0(cout, ".out")
+        if (file.exists(outfile.name)) {
+          desc <- readLines(outfile.name)
+          data <- as.matrix(read.table(text=desc, blank.lines.skip = TRUE, fill=TRUE))
+          desc <- desc[grepl("^#", desc)]
+          lbls <- strsplit(desc[length(desc)], ":")[[1]]
+          cnames <- gsub("[ ]+[0-9]+$", "", lbls[2:length(lbls)])
+          colnames(data) <- gsub("\\[[ ]+", "[", cnames)
+          #      cat(desc, sep='\n')
+          desc[-length(desc)] <- paste0(desc[-length(desc)], '\n')
+          desc[1] <- ' #\n'
+        }
+      }
+      
+      setwd(Oldwd)
+      if (length(desc) || length(data)) {
+        output = list(curvedesc = desc, curvepoints = data)
+        return(output)
+      }
     }
-  }
-
-  setwd(Oldwd)
-  if (length(desc) || length(data)) {
-    output = list(curvedesc = desc, curvepoints = data)
-    return(output)
-  }
+  )
 }
 
 

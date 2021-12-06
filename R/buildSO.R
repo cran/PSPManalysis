@@ -120,7 +120,7 @@ buildSO <- function(PSPMmodule = NULL, modelname = NULL, debug = FALSE, force = 
     cppflags <- "-DR_PACKAGE"
     if (exists("CFLAGS")) cppflags <- paste0(cppflags, " ", get("CFLAGS"))
     if (debug) cppflags <- paste0(cppflags, " -DDEBUG=1 -g -Wall")
-    cppflags <- paste0(cppflags, " -I.", " -I\"", PSPMsrcdir.name, "\"")
+    cppflags <- paste0(cppflags, " -Wno-array-bounds -I.", " -I\"", PSPMsrcdir.name, "\"")
 
     # Define the model-specific flags
     modelflags <- paste0(" -DRFUNCTIONS=", rmodel)

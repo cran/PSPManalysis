@@ -2,7 +2,7 @@
   PSPMRinterface.h -  Header file containing all the function that take care of interacting with R,
                       in case the life history model is specified by R functions.
 
-  Last modification: AMdR - Dec 12, 2017
+  Last modification: AMdR - Oct 14, 2020
 */
 
 #include <R.h>
@@ -376,8 +376,10 @@ void StateAtBirth(double *istate[PopulationNr], int BirthStateNr, double E[])
  * is up to the user.
  */
 
-void IntervalLimit(int lifestage[PopulationNr], double *istate[PopulationNr], double *bstate[PopulationNr], int BirthStateNr, double E[],
-                   double limit[PopulationNr])
+// Some array dimensions have to be explicitly defined as POPULATION_NR to avoid errors with access attributes when using gcc11
+
+void IntervalLimit(int lifestage[PopulationNr], double *istate[PopulationNr], double *bstate[POPULATION_NR], int BirthStateNr, double E[],
+                   double limit[POPULATION_NR])
 {
   int  ii, pp;
   SEXP R_limit;                                                                     // Protected
@@ -445,12 +447,14 @@ void IntervalLimit(int lifestage[PopulationNr], double *istate[PopulationNr], do
 
 #if (defined(PSPMECODYN))
 
+// Some array dimensions have to be explicitly defined as POPULATION_NR to avoid errors with access attributes when using gcc11
+
 void SetLifeHistoryRates(int lifestage[PopulationNr], double *istate[PopulationNr],
-                         double *bstate[PopulationNr], int BirthStateNr, double E[],
-                         double development[PopulationNr][IStateDim],
-                         double *fecundity[PopulationNr],
-                         double mortality[PopulationNr],
-                         double impact[PopulationNr][InteractDim])
+                         double *bstate[POPULATION_NR], int BirthStateNr, double E[],
+                         double development[POPULATION_NR][I_STATE_DIM],
+                         double *fecundity[POPULATION_NR],
+                         double mortality[POPULATION_NR],
+                         double impact[POPULATION_NR][INTERACT_DIM])
 {
   int     bb, ii, jj, pp, nprotect = 0;
   SEXP    Result, names, R_pnt, R_dev, R_fec, R_mort, R_imp;                                             // Protected
@@ -579,8 +583,10 @@ void SetLifeHistoryRates(int lifestage[PopulationNr], double *istate[PopulationN
  * Also assign these rates to the appropriate ODEs (not used in EBT simulations)
  */
 
+// Some array dimensions have to be explicitly defined as POPULATION_NR to avoid errors with access attributes when using gcc11
+
 void SetDerivatives(const int totalOdeDim, const int *birthStateNr, const int BirthStateNr, int populationStart[PopulationNr],
-                    int lifeStage[PopulationNr], double *bstate[PopulationNr], double age, double *y, double *dyda, double *discard)
+                    int lifeStage[PopulationNr], double *bstate[POPULATION_NR], double age, double *y, double *dyda, double *discard)
 {
   int     ii, pp;
   double  *iStatePnt[PopulationNr];
@@ -786,7 +792,9 @@ void SetDerivatives(const int totalOdeDim, const int *birthStateNr, const int Bi
  * is up to the user.
  */
 
-void DiscreteChanges(int lifestage[PopulationNr], double *istate[PopulationNr], double *bstate[PopulationNr], int BirthStateNr, double E[])
+// Some array dimensions have to be explicitly defined as POPULATION_NR to avoid errors with access attributes when using gcc11
+
+void DiscreteChanges(int lifestage[PopulationNr], double *istate[PopulationNr], double *bstate[POPULATION_NR], int BirthStateNr, double E[])
 {
 #if (DISCRETECHANGES == 1)
   int   ii, pp;

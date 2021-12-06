@@ -13,7 +13,8 @@
 #' function of the resident and a mutant value for one evolving parameter.
 #'
 #'   output <- PSPMequi(modelname = NULL, biftype = NULL, startpoint = NULL,
-#'                      stepsize = NULL, parbnds = NULL, parameters = NULL,
+#'                      stepsize = NULL, parbnds = NULL, parameters = NULL, 
+#'                      minvals = NULL, maxvals = NULL,
 #'                      options = NULL, clean = FALSE, force  = FALSE,
 #'                      debug  = FALSE, silent = FALSE)
 #'
@@ -141,6 +142,20 @@
 #'                                    of survival, R0, i-state and
 #'                                    interaction variables
 #'
+#' @param   minvals (row vector, optional, can be left equal to its default NULL)
+#' \preformatted{}
+#'               Vector of length (ENVIRON_DIM + POPULATION_NR), specifying minimum 
+#'               values for the environmental variables and the population birth rates,
+#'               at which computations will stop.  Vectors of other lengths, including
+#'               an empty vector will be ignored.
+#'
+#' @param   maxvals (row vector, optional, can be left equal to its default NULL)
+#' \preformatted{}
+#'               Vector of length (ENVIRON_DIM + POPULATION_NR), specifying maximum 
+#'               values for the environmental variables and the population birth rates,
+#'               at which computations will stop. Vectors of other lengths, including 
+#'               an empty vector will be ignored.
+#'
 #' @param   clean      (Boolean, optional argument)
 #' \preformatted{}
 #'               Specify clean = TRUE as argument to remove all the result files
@@ -182,7 +197,8 @@
 #'
 #' @import utils
 #' @export
-PSPMequi <- function(modelname = NULL, biftype = NULL, startpoint = NULL, stepsize = NULL, parbnds = NULL, parameters = NULL,
+PSPMequi <- function(modelname = NULL, biftype = NULL, startpoint = NULL, stepsize = NULL, 
+                     parbnds = NULL, parameters = NULL, minvals = NULL, maxvals = NULL,
                      options = NULL, clean = FALSE, force = FALSE, debug = FALSE, silent = FALSE) {
 
   Oldwd = model.Name = Rmodel = Varlist = Funlist = libfile.Basename = DefaultParameters = NULL;
@@ -258,6 +274,8 @@ PSPMequi <- function(modelname = NULL, biftype = NULL, startpoint = NULL, stepsi
   if ((!is.double(parbnds)) || (!((length(parbnds) == 3) || (length(parbnds) == 6) || (((length(parbnds)-3) %% 4) == 0)))) 
     stop('Parameter bounds values should be a vector of length 3, 6 or 3+4*N (in case of ESS continuation)')
   if ((length(parameters)) && (!is.double(parameters))) stop('If specified parameter values should be a vector with double values')
+  if ((length(minvals)) && (!is.double(minvals))) stop('If specified minimum values of variables should be a vector with double values')
+  if ((length(maxvals)) && (!is.double(maxvals))) stop('If specified maximum values of variables should be a vector with double values')
   if ((length(options)) && (!is.character(options))) stop('If specified options should be an array with strings')
 
   if (clean) {
@@ -267,7 +285,7 @@ PSPMequi <- function(modelname = NULL, biftype = NULL, startpoint = NULL, stepsi
   }
 
   dyn.load(libfile.Fullname)
-  cout <- .Call("PSPMequi", model.Name, biftype, startpoint, stepsize, parbnds, parameters, options, PACKAGE=paste0(model.Name, "equi"))
+  cout <- .Call("PSPMequi", model.Name, biftype, startpoint, stepsize, parbnds, parameters, options, minvals, maxvals, PACKAGE=paste0(model.Name, "equi"))
   dyn.unload(libfile.Fullname)
 
   if (Rmodel == 1) {
@@ -275,40 +293,44 @@ PSPMequi <- function(modelname = NULL, biftype = NULL, startpoint = NULL, stepsi
     rm(list = Filter( exists, Funlist ), envir = .GlobalEnv )
   }
 
-  desc = data = bifpoints = biftypes = NULL
-  if (exists("cout")) {
-    outfile.name = paste0(cout, ".out")
-    if (file.exists(outfile.name) && (file.info(outfile.name)$size > 0)) {
-      desc <- readLines(outfile.name)
-      data <- as.matrix(read.table(text=desc, blank.lines.skip = TRUE, fill=TRUE))
-      desc <- desc[grepl("^#", desc)]
-      lbls <- strsplit(desc[length(desc)], ":")[[1]]
-      cnames <- gsub("[ ]+[0-9]+$", "", lbls[2:length(lbls)])
-      colnames(data) <- gsub("\\[[ ]+", "[", cnames)
-#      cat(desc, sep='\n')
-      desc[-length(desc)] <- paste0(desc[-length(desc)], '\n')
-      desc[1] <- ' #\n'
+  suspendInterrupts(
+    {
+      desc = data = bifpoints = biftypes = NULL
+      if (exists("cout")) {
+        outfile.name = paste0(cout, ".out")
+        if (file.exists(outfile.name) && (file.info(outfile.name)$size > 0)) {
+          desc <- readLines(outfile.name)
+          data <- as.matrix(read.table(text=desc, blank.lines.skip = TRUE, fill=TRUE))
+          desc <- desc[grepl("^#", desc)]
+          lbls <- strsplit(desc[length(desc)], ":")[[1]]
+          cnames <- gsub("[ ]+[0-9]+$", "", lbls[2:length(lbls)])
+          colnames(data) <- gsub("\\[[ ]+", "[", cnames)
+          #      cat(desc, sep='\n')
+          desc[-length(desc)] <- paste0(desc[-length(desc)], '\n')
+          desc[1] <- ' #\n'
+        }
+        
+        biffile.name = paste0(cout, ".bif")
+        if (file.exists(biffile.name) && (file.info(biffile.name)$size > 0)) {
+          bifinput <- readLines(biffile.name)
+          bifpoints <- as.matrix(read.table(text=bifinput, blank.lines.skip = TRUE, comment.char='*', fill=TRUE))
+          colnames(bifpoints) <- gsub("\\[[ ]+", "[", cnames)
+          biftypes = gsub("^.*\\*\\*\\*\\*\\s+|\\s+\\*\\*\\*\\*.*$", "", bifinput)
+        }
+      }
+      
+      setwd(Oldwd)
+      if (length(desc) || length(data) || length(bifpoints) || length(biftypes)) {
+        if (length(bifpoints) || length(biftypes)) {
+          output = list(curvedesc = desc, curvepoints = data, bifpoints = bifpoints, biftypes = biftypes)
+        } 
+        else {
+          if ((biftype == "EQ") || (biftype == "ESS")) cat("\nNo bifurcations points detected during computations with ", modelname, "\n")
+          output = list(curvedesc = desc, curvepoints = data, bifpoints = NULL, biftypes = NULL)
+        }
+        return(output)
+      } else cat("\nComputations with ", modelname, " produced no output\n")
     }
-
-    biffile.name = paste0(cout, ".bif")
-    if (file.exists(biffile.name) && (file.info(biffile.name)$size > 0)) {
-      bifinput <- readLines(biffile.name)
-      bifpoints <- as.matrix(read.table(text=bifinput, blank.lines.skip = TRUE, comment.char='*', fill=TRUE))
-      colnames(bifpoints) <- gsub("\\[[ ]+", "[", cnames)
-      biftypes = gsub("^.*\\*\\*\\*\\*\\s+|\\s+\\*\\*\\*\\*.*$", "", bifinput)
-    }
-  }
-
-  setwd(Oldwd)
-  if (length(desc) || length(data) || length(bifpoints) || length(biftypes)) {
-    if (length(bifpoints) || length(biftypes)) {
-      output = list(curvedesc = desc, curvepoints = data, bifpoints = bifpoints, biftypes = biftypes)
-    } 
-    else {
-      if ((biftype == "EQ") || (biftype == "ESS")) cat("\nNo bifurcations points detected during computations with ", modelname, "\n")
-      output = list(curvedesc = desc, curvepoints = data, bifpoints = NULL, biftypes = NULL)
-    }
-    return(output)
-  } else cat("\nComputations with ", modelname, " produced no output\n")
+  )
 }
 

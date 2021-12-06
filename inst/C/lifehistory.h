@@ -24,7 +24,7 @@
     You should have received a copy of the GNU General Public License
     along with this software. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - May 02, 2018
+    Last modification: AMdR - Oct 14, 2020
 ***/
 /*
  *====================================================================================================================================
@@ -41,8 +41,10 @@
 #include "Minterface.h"
 
 #else
+// Some array dimensions have to be explicitly defined as POPULATION_NR to avoid errors with access attributes when using gcc11
+
 void SetDerivatives(const int totalOdeDim, const int *birthStateNr, const int curBirthState, int populationStart[PopulationNr],
-                    int lifeStage[PopulationNr], double *bState[PopulationNr], double age, double *y, double *dyda, double *discard)
+                    int lifeStage[PopulationNr], double *bState[POPULATION_NR], double age, double *y, double *dyda, double *discard)
 {
   int     p;
   double  *iStatePnt[PopulationNr];
@@ -126,8 +128,10 @@ void SetDerivatives(const int totalOdeDim, const int *birthStateNr, const int cu
 
 /*==================================================================================================================================*/
 
+// Some array dimensions have to be explicitly defined as POPULATION_NR to avoid errors with access attributes when using gcc11
+
 double SetMaxLimit(const int *birthStateNr, const int curBirthState, int populationStart[PopulationNr], int lifeStage[PopulationNr],
-                   double *bState[PopulationNr], double cohortBound[PopulationNr], double *y)
+                   double *bState[POPULATION_NR], double cohortBound[POPULATION_NR], double *y)
 {
   int     p;
   double  maxlimit = -1.0;
@@ -158,8 +162,10 @@ double SetMaxLimit(const int *birthStateNr, const int curBirthState, int populat
 
 /*==================================================================================================================================*/
 
+// Some array dimensions have to be explicitly defined as POPULATION_NR to avoid errors with access attributes when using gcc11
+
 int SwitchLifeStage(const int *birthStateNr, const int curBirthState, int populationStart[PopulationNr], int lifeStage[PopulationNr],
-                    double *bState[PopulationNr], double *y, double cohortBound[PopulationNr], double cohortLims[PopulationNr], const int initial)
+                    double *bState[POPULATION_NR], double *y, double cohortBound[POPULATION_NR], double cohortLims[POPULATION_NR], const int initial)
 {
   int     i, j, p, s;
   int     newstage[PopulationNr];

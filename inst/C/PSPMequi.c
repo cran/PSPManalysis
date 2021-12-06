@@ -26,7 +26,7 @@
     You should have received a copy of the GNU General Public License
     along with PSPManalysis. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Oct 13, 2020
+    Last modification: AMdR - Dec 06, 2021
 ***/
 
 #define PSPMEQUI                  1
@@ -164,6 +164,8 @@ static double                     pntmax[ENVIRON_DIM + POPULATION_NR + 1 + PARAM
 
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE) || defined(R_PACKAGE)
 static char                       parstring[MAX_STR_LEN];
+static char                       minstring[MAX_STR_LEN];
+static char                       maxstring[MAX_STR_LEN];
 static char                       optstring[MAX_STR_LEN];
 static char                       curvestring[MAX_STR_LEN];
 static char                       pntstring[MAX_STR_LEN];
@@ -738,7 +740,8 @@ void ComputeCurve(const int argc, char **argv)
 
 #if defined(R_PACKAGE)
       STDOUT("\n\nExecuting : ");
-      STDOUT("PSPMequi(\"%s\", '%s', %s, %s, %s, %s)", progname, ContinuationString, pntstring, curvestring, parstring, optstring);
+      STDOUT("PSPMequi(\"%s\", '%s', %s, %s, %s, %s, %s, %s)", progname, ContinuationString, pntstring, 
+             curvestring, parstring, optstring, minstring, maxstring);
 #elif defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
       STDOUT("\n\nExecuting : ");
       STDOUT("PSPMequi('%s', '%s', %s, %s, %s, %s)", progname, ContinuationString, pntstring, curvestring, parstring, optstring);
@@ -821,8 +824,8 @@ void ComputeCurve(const int argc, char **argv)
       fprintf(outfile, "#\n# Executing : ");
 
 #if defined(R_PACKAGE)
-      fprintf(outfile, "PSPMequi(\"%s\", \"%s\", %s, %G, %s, %s, %s)", progname, ContinuationString, pntstring, Maxcurvestep, curvestring, parstring,
-              optstring);
+      fprintf(outfile, "PSPMequi(\"%s\", \"%s\", %s, %G, %s, %s, %s, %s, %s)", progname, ContinuationString, pntstring, Maxcurvestep, 
+              curvestring, parstring, optstring, minstring, maxstring);
 #elif defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
       fprintf(outfile, "PSPMequi('%s', '%s', %s, %G, %s, %s, %s)", progname, ContinuationString, pntstring, Maxcurvestep, curvestring, parstring,
               optstring);
@@ -1279,7 +1282,7 @@ void InitialiseVars(void)
 {
   int         i;
 
-#if (defined(_MSC_VER) && (_MSC_VER < 1500)) || (defined(R_PACKAGE) && defined(_WIN32))
+#if (defined(_MSC_VER) && (_MSC_VER < 1500)) || (defined(R_PACKAGE) && defined(_WIN32) && !(defined(_UCRT) || ((__MSVCRT_VERSION__ >= 0x1400) || (__MSVCRT_VERSION__ >= 0xE00 && __MSVCRT_VERSION__ < 0x1000))))
   (void)_set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
 
@@ -2508,7 +2511,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 #elif defined(R_PACKAGE)
 
-SEXP PSPMequi(SEXP moduleName, SEXP bifType, SEXP initVals, SEXP stepsize, SEXP curveVals, SEXP parVals, SEXP optVals)
+SEXP PSPMequi(SEXP moduleName, SEXP bifType, SEXP initVals, SEXP stepsize, SEXP curveVals, SEXP parVals, SEXP optVals,
+              SEXP minVals, SEXP maxVals)
 
 {
   int     i, j, k, ncols, popint = 0, tmpint, pind, rind;
@@ -2769,6 +2773,50 @@ SEXP PSPMequi(SEXP moduleName, SEXP bifType, SEXP initVals, SEXP stepsize, SEXP 
     }
   else
     strcpy(parstring, "NULL");
+
+  //============================== Process the minimum value argument ================================================================
+
+  ncols = length(minVals);
+  if (isReal(minVals) && (ncols == (ENVIRON_DIM + POPULATION_NR)))
+    memcpy(pntmin + 1, REAL(minVals), ncols*sizeof(double));
+  else if (ncols)
+    warning("\nMinimum value argument ignored as it is not a row vector of appropriate length\n\n");
+
+  if (ncols)
+    {
+      strcpy(minstring, "c(");
+      for (i = 0; i < ncols; i++)
+        {
+          if (i) strcat(minstring, ", ");
+          sprintf(tmpstr, "%.6G", REAL(minVals)[i]);
+          strcat(minstring, tmpstr);
+        }
+      strcat(minstring, ")");
+    }
+  else
+    strcpy(minstring, "NULL");
+
+  //============================== Process the maximum value argument ================================================================
+
+  ncols = length(maxVals);
+  if (isReal(maxVals) && (ncols == (ENVIRON_DIM + POPULATION_NR)))
+    memcpy(pntmax + 1, REAL(maxVals), ncols*sizeof(double));
+  else if (ncols)
+    warning("\nMinimum value argument ignored as it is not a row vector of appropriate length\n\n");
+
+  if (ncols)
+    {
+      strcpy(maxstring, "c(");
+      for (i = 0; i < ncols; i++)
+        {
+          if (i) strcat(maxstring, ", ");
+          sprintf(tmpstr, "%.6G", REAL(maxVals)[i]);
+          strcat(maxstring, tmpstr);
+        }
+      strcat(maxstring, ")");
+    }
+  else
+    strcpy(maxstring, "NULL");
 
   //============================== Process the step size argument ====================================================================
 
