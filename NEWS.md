@@ -1,3 +1,7 @@
+# PSPManalysis 0.3.8
+
+* Changed the calls to the Lapack routines dgetrf, dgecon and dgesvx to correctly pass string from C to Fortran following ‘Writing R Extensions’ §6.6.1
+
 # PSPManalysis 0.3.7
 
 * Corrected implementation issues that arose from the use of the new Windows UCRT toolchain.

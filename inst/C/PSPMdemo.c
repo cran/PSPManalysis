@@ -25,7 +25,7 @@
     You should have received a copy of the GNU General Public License
     along with PSPManalysis. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Dec 06, 2021
+    Last modification: AMdR - Apr 08, 2022
 ***/
 
 #define PSPMDEMO                  1
@@ -959,7 +959,7 @@ void InitialiseVars(void)
 #endif
 
   // Get the machine precisions
-  epsMach = dlamch("Epsilon");
+  epsMach = dlamch("Epsilon" FCONE);
 
   MaxPntDim         = PopulationNr + 1;
   CurPopulationNr   = PopulationNr;

@@ -22,7 +22,7 @@
     You should have received a copy of the GNU General Public License
     along with this software. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Aug 30, 2018
+    Last modification: AMdR - Apr 08, 2022
 ***/
 #ifndef CURVE
 #define CURVE
@@ -935,7 +935,7 @@ int Determinant(const int N, double *M, double *det, double *cond)
     {
       norm      = anorm(N, N, M);
       whichnorm = '1';
-      dgecon(&whichnorm, &nc, A, &nc, &norm, cond, work, iwork, &info);
+      dgecon(&whichnorm, &nc, A, &nc, &norm, cond, work, iwork, &info FCONE);
       if (info < 0)
         {
           ErrorMsg(__FILE__, __LINE__, "Illegal value for parameter %d in DGECON", abs((int)info));
@@ -1061,7 +1061,7 @@ int Eigenval(const int N, double *X, const int symmetric, double *eigval, const 
   isuppz = iwork + liwork;                                                          // Only used in case of symmetric matrix
 
   // Get the machine precisions
-  abstol = dlamch("Safe minimum");
+  abstol = dlamch("Safe minimum" FCONE);
 
   // Rewrite C-style row vector format to Fortran-style column vector format
   for (i = 0; i < N; i++)
@@ -1073,7 +1073,7 @@ int Eigenval(const int N, double *X, const int symmetric, double *eigval, const 
     {
       lwork = liwork = -1;
       dsyevr(&jobz, &range, &uplo, &nc, Xc, &nc, &ddummy, &ddummy, &ilo, &ihi, &abstol, &nfound, wr, vr, &nc, isuppz, work, &lwork, iwork, &liwork,
-             &info);
+             &info FCONE FCONE FCONE);
       lwork  = (int)work[0];
       liwork = (int)iwork[0];
     }
@@ -1081,7 +1081,7 @@ int Eigenval(const int N, double *X, const int symmetric, double *eigval, const 
     {
       lwork = -1;
       dgeevx(&balanc, &jobvl, &jobvr, &sense, &nc, Xc, &nc, wr, wi, vl, &nc, vr, &nc, &ilo, &ihi, scale, &abnrm, rconde, rcondv, work, &lwork, iwork,
-             &info);
+             &info FCONE FCONE FCONE FCONE);
       lwork = (int)work[0];
     }
 
@@ -1149,10 +1149,10 @@ int Eigenval(const int N, double *X, const int symmetric, double *eigval, const 
   // Now calculate the eigenvalues and vectors using optimal workspaces
   if (symmetric)
     dsyevr(&jobz, &range, &uplo, &nc, Xc, &nc, &ddummy, &ddummy, &ilo, &ihi, &abstol, &nfound, wr, vr, &nc, isuppz, work, &lwork, iwork, &liwork,
-           &info);
+           &info FCONE FCONE FCONE);
   else
     dgeevx(&balanc, &jobvl, &jobvr, &sense, &nc, Xc, &nc, wr, wi, vl, &nc, vr, &nc, &ilo, &ihi, scale, &abnrm, rconde, rcondv, work, &lwork, iwork,
-           &info);
+           &info FCONE FCONE FCONE FCONE);
 
   // Check for convergence
   if (info < 0)
@@ -1301,7 +1301,7 @@ int SolveLinearSystem(const int N, double *A, double *B, double tol)
   COPY(N*N, A, 1, Ac, 1);
   COPY(N, B, 1, Bc, 1);
 
-  dgesvx(&fact, &trans, &nc, &nrhs, Ac, &nc, Af, &nc, ipiv, &equed, r, c, Bc, &nc, x, &nc, &rcond, &ferr, &berr, work, iwork, &info);
+  dgesvx(&fact, &trans, &nc, &nrhs, Ac, &nc, Af, &nc, ipiv, &equed, r, c, Bc, &nc, x, &nc, &rcond, &ferr, &berr, work, iwork, &info FCONE FCONE FCONE);
 
   // Check for singularity of the matrix
   if (info < 0)

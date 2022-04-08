@@ -59,14 +59,12 @@ csbread <- function(csbfile = NULL, state = -1) {
           selectedstate <- 1
         }
         cout <- .Call("csb2rlist", csb.basename, "read", as.integer(selectedstate), as.double(tval))
-      }
-      else if ( is.character(state) && (regexpr("State-", state) == 1))
-      {
+      } else if ( is.character(state) && (regexpr("State-", state) == 1)) {
         selectedstate <- -1
-        tval <- type.convert(sub("State-", "", state))
+        tval <- as.numeric(sub("^State-", "", state))
         statelist <- capture.output(.Call("csb2rlist", csb.basename, "list", as.integer(0), as.double(0.0)))
         statevals <- sub("[ ]*[0-9]*:[ ]*State-", "", statelist)
-        statevals <- type.convert(statevals[4:(length(statevals)-2)])
+        statevals <- as.numeric(statevals[4:(length(statevals)-2)])
         stateindx <- ((statevals[1:(length(statevals)-1)] - tval) * (statevals[2:length(statevals)] - tval) < (-.Machine$double.eps^0.5))
         stateindx <- (1:length(stateindx))[stateindx]
         if (length(stateindx) > 1) {
@@ -80,6 +78,12 @@ csbread <- function(csbfile = NULL, state = -1) {
           selectedstate <- which.min(abs(statevals - tval))
           cout <- .Call("csb2rlist", csb.basename, "read", as.integer(selectedstate), as.double(tval))
         }
+      } else if (is.double(state)) {
+        statelist <- capture.output(.Call("csb2rlist", csb.basename, "list", as.integer(0), as.double(0.0)))
+        statelist <- statelist[grep("State-", statelist)]
+        statevals <- as.numeric(gsub("^[ ]*[0-9]*: State-", "", statelist))
+        selectedstate <- which.min(abs(statevals - as.double(state)))
+        cout <- .Call("csb2rlist", csb.basename, "read", as.integer(selectedstate), as.double(0.0))
       }
       else stop('You have to specify a valid state name of the form "State-XXXXXXXX" or its corresponding index from a call to csblist()')
     }

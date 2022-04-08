@@ -22,7 +22,7 @@
     You should have received a copy of the GNU General Public License
     along with this software. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Oct 13, 2020
+    Last modification: AMdR - Apr 08, 2022
 ***/
 #ifndef GLOBALS
 #define GLOBALS
@@ -130,6 +130,8 @@
 #define STDOUT                    mexPrintf
 #elif defined(R_PACKAGE)
 #define R_USE_C99_IN_CXX
+// See https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#Fortran-character-strings
+#define USE_FC_LEN_T
 #include "R.h"
 #include <Rinternals.h>
 
@@ -394,12 +396,12 @@ void                              WriteStateToFile(const int fullstateoutput);
 
 // Normalise BLAS Level 1 function names
 
-#define dasum                     dasum_
-#define daxpy                     daxpy_
-#define dcopy                     dcopy_
-#define ddot                      ddot_
-#define dnrm2                     dnrm2_
-#define dscal                     dscal_
+#define dasum                     F77_CALL(dasum)
+#define daxpy                     F77_CALL(daxpy)
+#define dcopy                     F77_CALL(dcopy)
+#define ddot                      F77_CALL(ddot)
+#define dnrm2                     F77_CALL(dnrm2)
+#define dscal                     F77_CALL(dscal)
 
 #endif
 
@@ -465,12 +467,26 @@ INLINE void SCAL(int a, double b, double *c, int d)
 
 #if !defined(MATLAB_MEX_FILE)
 
+// See https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#Fortran-character-strings
+#ifndef FCONE
+#define FCONE
+#endif
+
+#if defined(R_PACKAGE)
+#define dgetrf                    F77_CALL(dgetrf)                                  // Used in: Determinant()
+#define dgecon                    F77_CALL(dgecon)                                  // Used in: Determinant()
+#define dgeevx                    F77_CALL(dgeevx)                                  // Used in: Eigenval()
+#define dgesvx                    F77_CALL(dgesvx)                                  // Used in: SolveLinearSystem()
+#define dlamch                    F77_CALL(dlamch)                                  // Used in: Eigenval()
+#define dsyevr                    F77_CALL(dsyevr)                                  // Used in: Eigenval()
+#else
 #define dgetrf                    dgetrf_                                           // Used in: Determinant()
 #define dgecon                    dgecon_                                           // Used in: Determinant()
 #define dgeevx                    dgeevx_                                           // Used in: Eigenval()
 #define dgesvx                    dgesvx_                                           // Used in: SolveLinearSystem()
 #define dlamch                    dlamch_                                           // Used in: Eigenval()
 #define dsyevr                    dsyevr_                                           // Used in: Eigenval()
+#endif
 
 #if defined(__linux__) && !defined(R_PACKAGE)
 extern void                       dgetrf(LAPACK_SIZE_T *m, LAPACK_SIZE_T *n, double *a, LAPACK_SIZE_T *lda, LAPACK_SIZE_T *ipiv, LAPACK_SIZE_T *info);
