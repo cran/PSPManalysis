@@ -6,7 +6,7 @@
      it to keep the set of population cohorts organized and to deal with
      their increasing and decreasing number. 
 
-  Last modification: AMdR - Mar 07, 2018
+  Last modification: AMdR - Jan 19, 2023
 */
 
 #define EBTCOHRT_C				                                                          // Identification of file
@@ -103,7 +103,7 @@ int	  InsCohort(cohort newcoh, cohortID id, int pop_nr)
 
 /*==================================================================================================================================*/
 
-static void	CreateBcohorts()
+static void	CreateBcohorts(void)
 
   /* 
    * CreateBcohorts - Routine sets up the boundary cohorts and the fixed
@@ -177,7 +177,7 @@ static void	CreateBcohorts()
 
 /*==================================================================================================================================*/
 
-void		TransBcohorts()
+void		TransBcohorts(void)
 
   /* 
    * TransBcohorts - Routine transforms the boundary cohorts into internal 
@@ -213,7 +213,7 @@ void		TransBcohorts()
 
 /*==================================================================================================================================*/
 
-static void	InsertBcohorts()
+static void	InsertBcohorts(void)
 
   /* 
    * InsertBcohorts - Routine inserts the boundary cohorts into the 
@@ -262,7 +262,7 @@ static void	InsertBcohorts()
 
 /*==================================================================================================================================*/
 
-void	SievePop()
+void	SievePop(void)
 
   /* 
    * SievePop - Routine that scans all the cohorts, removing the ones that 
@@ -328,7 +328,7 @@ void	    CohortCycle(double next)
     {                                 /* extinct exit	            */
       if ((!CohortNo[i]) && (!pop_extinct[i]))
         {
-          sprintf(pext, "Population %d is extinct at time %.2f", i, env[0]);
+          snprintf(pext, sizeof(pext), "Population %d is extinct at time %.2f", i, env[0]);
           Warning(pext);
           pop_extinct[i] = 1;
         }

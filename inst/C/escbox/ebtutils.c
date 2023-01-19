@@ -5,7 +5,7 @@
      This file contains all routines that are part of the original Escalator Boxcar
      Train software package.
 
-  Last modification: AMdR - Feb 06, 2018
+  Last modification: AMdR - Jan 19, 2023
 */
 #define EBTUTILS_C
 #define EBTLIB
@@ -48,7 +48,7 @@ double max(double a, double b) { return (a > b) ? a : b; }
 
 int	  ismissing(double a) { return (fabs(a) > 0.95*MISSING_VALUE); }
 
-int iszero(double a){ return (fabs(a) < identical_zero); }
+int isequal2zero(double a){ return (fabs(a) < identical_zero); }
 
 int isequal(double a, double b)
 {
@@ -335,7 +335,7 @@ void WriteStateToFile(FILE *fp, double *data)
 
 /*==================================================================================================================================*/
 
-void FileOut()
+void FileOut(void)
 
 /*
    * FileOut - Routine sends output to file. All output statistics are
@@ -387,7 +387,7 @@ void FileOut()
 MATFile                           *pmat = NULL;
 #endif
 
-void FileState()
+void FileState(void)
 
 /*
  * FileState - Routine writes the entire state of the environment and all populations in binary format to the '.csb' file.
@@ -511,7 +511,7 @@ void FileState()
       for (i = 0; i < I_CONST_DIM; i++)
         for (j = CohortNo[p] - 1; j >= 0; j--, dblptr++) *dblptr = popIDcard[p][j][i];
         
-      sprintf(tmpstr, "Pop%0*d", pmag, p);
+      snprintf(tmpstr, sizeof(tmpstr), "Pop%0*d", pmag, p);
       memcpy((void *)fieldnames[nalloc], tmpstr, strlen(tmpstr)*sizeof(char));
       nalloc++;
     }
@@ -522,7 +522,7 @@ void FileState()
     {
       for (j = 0; j < nalloc; j++) mxSetFieldByNumber(mystruct, 0, j, mydata[j]);
 
-      sprintf(tmpstr, "State_%.6E", env[0]);
+      snprintf(tmpstr, sizeof(tmpstr), "State_%.6E", env[0]);
       for (i = 0, j = 0; i < strlen(tmpstr); i++)
         {
           if (tmpstr[i] == '.')
@@ -535,7 +535,7 @@ void FileState()
             tmpstr2[j++] = tmpstr[i];
         }
       tmpstr2[j] = '\0';
-      sprintf(matfname, "%s.mat", runname);
+      snprintf(matfname, sizeof(matfname), "%s.mat", runname);
 
 #if defined(MATLAB_MEX_FILE)
       if (pmat == NULL) pmat = matOpen(matfname, "wz");
@@ -635,7 +635,7 @@ const uint32_t                    CSB_MAGIC_KEY = 20030509;
 
 #define MAX_LBL_LEN               32                                                // Measured in sizeof(double)
 
-void FileState()
+void FileState(void)
 
 /*
  * FileState - Routine writes the entire state of the environment and all populations in binary format to the '.csb' file.
@@ -680,7 +680,7 @@ void FileState()
 
   cenv->timeval       = env[0];
   cenv->columns       = ENVIRON_DIM;
-  sprintf(envlabel,   "Environment: Environment variables at time %G", env[0]);
+  snprintf(envlabel, sizeof(envlabel), "Environment: Environment variables at time %G", env[0]);
   cenv->data_offset   = hdrdbls + MAX_LBL_LEN;
   cenv->data_offset   = hdrdbls + MAX_LBL_LEN;
   
@@ -706,7 +706,7 @@ void FileState()
     {
       hdrdbls = (sizeof(Popdim)/sizeof(double)) + 1;
       (void)memset((void *)cpop, 0, hdrdbls*sizeof(double));
-      sprintf(statelabels[i], "Pop%0*d: State of population #%d at time %G", pmag, i, i, env[0]);
+      snprintf(statelabels[i], MAX_LBL_LEN * sizeof(double), "Pop%0*d: State of population #%d at time %G", pmag, i, i, env[0]);
       cpop->timeval     = env[0];
       cpop->population  = i;
       cpop->columns     = (COHORT_SIZE + I_CONST_DIM);
@@ -816,10 +816,10 @@ void SetBifOutputTimes(double *env)
 // Ctrl-C detection
 
 #if defined(MATLAB_MEX_FILE)
-int checkInterrupt()
+int checkInterrupt(void)
 {
   int         pressed;
-  extern bool utIsInterruptPending();
+  extern bool utIsInterruptPending(void);
   extern void utSetInterruptPending(bool);
 
   // check for a Ctrl-C event
@@ -836,7 +836,7 @@ int checkInterrupt()
 
 #elif defined(OCTAVE_MEX_FILE)
 
-int checkInterrupt()
+int checkInterrupt(void)
 {
   int pressed = 0;
 
@@ -850,7 +850,7 @@ int checkInterrupt()
 static void chkIntFn(void *dummy) { R_CheckUserInterrupt(); }
 
 // this will call the above in a top-level context so it won't longjmp-out of your context
-int checkInterrupt()
+int checkInterrupt(void)
 {
   Rboolean R_ToplevelExec(void (*fun)(void *), void *data);
 

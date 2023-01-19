@@ -25,7 +25,7 @@
     You should have received a copy of the GNU General Public License
     along with PSPManalysis. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Apr 08, 2022
+    Last modification: AMdR - Jan 19, 2023
 ***/
 
 #define PSPMDEMO                  1
@@ -635,8 +635,8 @@ void ComputeCurve(const int argc, char **argv)
 
   if (strlen(runname))
     {
-      sprintf(errname, "%s.err", runname);
-      sprintf(outname, "%s.out", runname);
+      snprintf(errname, sizeof(errname), "%s.err", runname);
+      snprintf(outname, sizeof(outname), "%s.out", runname);
     }
   else
     {
@@ -648,16 +648,16 @@ void ComputeCurve(const int argc, char **argv)
       while (1)
         {
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
-          sprintf(csbname, "%s-%s-%04d.mat", progname, "PGR", i);
+          snprintf(csbname, sizeof(csbname), "%s-%s-%04d.mat", progname, "PGR", i);
 #else
-          sprintf(csbname, "%s-%s-%04d.csb", progname, "PGR", i);
+          snprintf(csbname, sizeof(csbname), "%s-%s-%04d.csb", progname, "PGR", i);
 #endif
-          sprintf(errname, "%s-%s-%04d.err", progname, "PGR", i);
-          sprintf(outname, "%s-%s-%04d.out", progname, "PGR", i);
+          snprintf(errname, sizeof(errname), "%s-%s-%04d.err", progname, "PGR", i);
+          snprintf(outname, sizeof(outname), "%s-%s-%04d.out", progname, "PGR", i);
           if (stat(csbname, &buffer) && stat(errname, &buffer) && stat(outname, &buffer)) break;
           i++;
         }
-      sprintf(runname, "%s-%s-%04d", progname, "PGR", i);
+      snprintf(runname, sizeof(runname), "%s-%s-%04d", progname, "PGR", i);
     }
 
   errfile                      = fopen(errname, "w");
@@ -691,20 +691,20 @@ void ComputeCurve(const int argc, char **argv)
 #else
       colnr = 1;
 #endif
-      sprintf(tmpstr, "%2d:%s", colnr++, parameternames[Bifparone]);
+      snprintf(tmpstr, sizeof(tmpstr), "%2d:%s", colnr++, parameternames[Bifparone]);
       fprintf(outfile, "#%15s", tmpstr);
       for (i = 0; i < PopulationNr; i++)
         {
-          sprintf(tmpstr, "%d:PGR[%d]", colnr++, i);
+          snprintf(tmpstr, sizeof(tmpstr), "%d:PGR[%d]", colnr++, i);
           fprintf(outfile, "%16s", tmpstr);
         }
       for (i = 0; i < PopulationNr; i++)
         {
-          sprintf(tmpstr, "%d:Tc[%d]", colnr++, i);
+          snprintf(tmpstr, sizeof(tmpstr), "%d:Tc[%d]", colnr++, i);
           fprintf(outfile, "%16s", tmpstr);
           for (j = 0; j < ParameterNr; j++)
             {
-              sprintf(tmpstr, "%d:S[%d][%d]", colnr++, i, j);
+              snprintf(tmpstr, sizeof(tmpstr), "%d:S[%d][%d]", colnr++, i, j);
               fprintf(outfile, "%16s", tmpstr);
             }
         }
@@ -738,20 +738,20 @@ void ComputeCurve(const int argc, char **argv)
       colnr = 1;
 #endif
       STDOUT("#");
-      sprintf(tmpstr, "%d:PGR[0]", colnr++);
+      snprintf(tmpstr, sizeof(tmpstr), "%d:PGR[0]", colnr++);
       STDOUT("%15s", tmpstr);
       for (i = 1; i < PopulationNr; i++)
         {
-          sprintf(tmpstr, "%d:PGR[%d]", colnr++, i);
+          snprintf(tmpstr, sizeof(tmpstr), "%d:PGR[%d]", colnr++, i);
           STDOUT("%16s", tmpstr);
         }
       for (i = 0; i < PopulationNr; i++)
         {
-          sprintf(tmpstr, "%d:Tc[%d]", colnr++, i);
+          snprintf(tmpstr, sizeof(tmpstr), "%d:Tc[%d]", colnr++, i);
           STDOUT("%16s", tmpstr);
           for (j = 0; j < ParameterNr; j++)
             {
-              sprintf(tmpstr, "%d:S[%d][%d]", colnr++, i, j);
+              snprintf(tmpstr, sizeof(tmpstr), "%d:S[%d][%d]", colnr++, i, j);
               STDOUT("%16s", tmpstr);
             }
         }
@@ -1341,7 +1341,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
       if (i) strcat(parstring, " ");
       memcpy(&tmpdouble, mxGetPr(prhs[1]) + i, mxGetElementSize(prhs[1]));
-      sprintf(tmpstr, "%.6G", tmpdouble);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", tmpdouble);
       strcat(parstring, tmpstr);
     }
   strcat(parstring, "]");
@@ -1375,7 +1375,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
       if (i) strcat(curvestring, " ");
       memcpy(&tmpdouble, mxGetPr(prhs[0]) + i, mxGetElementSize(prhs[0]));
-      sprintf(tmpstr, "%.6G", tmpdouble);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", tmpdouble);
       strcat(curvestring, tmpstr);
     }
   strcat(curvestring, "]");
@@ -1508,7 +1508,7 @@ SEXP PSPMdemo(SEXP moduleName, SEXP curveVals, SEXP parVals, SEXP optVals)
       for (i = 0; i < ncols; i++)
         {
           if (i) strcat(parstring, ", ");
-          sprintf(tmpstr, "%.6G", REAL(parVals)[i]);
+          snprintf(tmpstr, sizeof(tmpstr), "%.6G", REAL(parVals)[i]);
           strcat(parstring, tmpstr);
         }
       strcat(parstring, ")");
@@ -1542,7 +1542,7 @@ SEXP PSPMdemo(SEXP moduleName, SEXP curveVals, SEXP parVals, SEXP optVals)
   for (i = 0; i < ncols; i++)
     {
       if (i) strcat(curvestring, ", ");
-      sprintf(tmpstr, "%.6G", curvepars[i]);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", curvepars[i]);
       strcat(curvestring, tmpstr);
     }
   if (ncols) strcat(curvestring, ")");

@@ -26,7 +26,7 @@
     You should have received a copy of the GNU General Public License
     along with PSPManalysis. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Apr 08, 2022
+    Last modification: AMdR - Jan 19, 2023
 ***/
 
 #define PSPMIND                   1
@@ -133,7 +133,7 @@ static char                       evarstring[MAX_STR_LEN];
 
 /*==================================================================================================================================*/
 
-int Equation()
+int Equation(void)
 
 {
   int     i, j, b = 0, p, retval = SUCCES;
@@ -369,14 +369,14 @@ void ComputeLifeHistory(const int argc, char **argv)
   while (1)
     {
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
-      sprintf(csbname, "%s-%s-%04d.mat", progname, "IND", i);
+      snprintf(csbname, sizeof(csbname), "%s-%s-%04d.mat", progname, "IND", i);
 #else
-      sprintf(csbname, "%s-%s-%04d.csb", progname, "IND", i);
+      snprintf(csbname, sizeof(csbname), "%s-%s-%04d.csb", progname, "IND", i);
 #endif
       if (stat(csbname, &buffer)) break;
       i++;
     }
-  sprintf(runname, "%s-%s-%04d", progname, "IND", i);
+  snprintf(runname, sizeof(runname), "%s-%s-%04d", progname, "IND", i);
 
   Equation();
   WriteStateToFile(2);
@@ -461,13 +461,13 @@ static void Usage(char *progname)
   strcpy(varstr, "");
   for (i = 0; i < EnvironDim; i++)
     {
-      sprintf(tmpstr, " E[%d]", i);
+      snprintf(tmpstr, sizeof(tmpstr), " E[%d]", i);
       strcat(varstr, tmpstr);
     }
   strcat(varstr, " [");
   for (i = 0; i < PopulationNr; i++)
     {
-      sprintf(tmpstr, " b[%d]", i);
+      snprintf(tmpstr, sizeof(tmpstr), " b[%d]", i);
       strcat(varstr, tmpstr);
     }  
   strcat(varstr, "]");
@@ -685,7 +685,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
       if (i) strcat(parstring, " ");
       memcpy(&tmpdouble, mxGetPr(prhs[irhs]) + i, mxGetElementSize(prhs[irhs]));
-      sprintf(tmpstr, "%.6G", tmpdouble);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", tmpdouble);
       strcat(parstring, tmpstr);
     }
   strcat(parstring, "]");
@@ -713,7 +713,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
       if (i) strcat(evarstring, " ");
       memcpy(&tmpdouble, mxGetPr(prhs[irhs]) + i, mxGetElementSize(prhs[irhs]));
-      sprintf(tmpstr, "%.6G", tmpdouble);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", tmpdouble);
       strcat(evarstring, tmpstr);
     }
   strcat(evarstring, "]");
@@ -819,7 +819,7 @@ SEXP PSPMind(SEXP moduleName, SEXP evarVals, SEXP parVals, SEXP optVals)
       for (i = 0; i < ncols; i++)
         {
           if (i) strcat(parstring, ", ");
-          sprintf(tmpstr, "%.6G", REAL(parVals)[i]);
+          snprintf(tmpstr, sizeof(tmpstr), "%.6G", REAL(parVals)[i]);
           strcat(parstring, tmpstr);
         }
       strcat(parstring, ")");
@@ -847,7 +847,7 @@ SEXP PSPMind(SEXP moduleName, SEXP evarVals, SEXP parVals, SEXP optVals)
   for (i = 0; i < ncols; i++)
     {
       if (i) strcat(evarstring, ", ");
-      sprintf(tmpstr, "%.6G", REAL(evarVals)[i]);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", REAL(evarVals)[i]);
       strcat(evarstring, tmpstr);
     }
   if (ncols) strcat(evarstring, ")");

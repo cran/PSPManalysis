@@ -4,7 +4,7 @@
 
      Interface header file to the functions defined in ebtutils.c
 
-  Last modification: AMdR - Sep 06, 2017
+  Last modification: AMdR - Jan 19, 2023
 */
 
 #ifndef EBTUTILS_H
@@ -23,7 +23,7 @@ EXTERN int	                      imax(int, int);
 EXTERN double	                    min(double, double);
 EXTERN double	                    max(double, double);
 EXTERN int	                      ismissing(double);
-EXTERN int	                      iszero(double);
+EXTERN int	                      isequal2zero(double);
 EXTERN int	                      isequal(double, double);
 EXTERN void                       ShutDown(int exitcode);
 EXTERN void	                      ErrorAbort(const char *);

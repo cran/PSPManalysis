@@ -19,7 +19,7 @@
      Solving ordinary differential equations I, nonstiff problems, 2nd edition,
      Springer Series in Computational Mathematics, Springer-Verlag (1993).
      
-   Last modification: AMdR - Dec 15, 2017
+   Last modification: AMdR - Jan 19, 2023
 */
 
 #define EBTDOPRI5_C				                                                          // Identification of file
@@ -112,7 +112,7 @@ static int		                    located[EVENT_NR] = {0};
  */
 /*==================================================================================================================================*/
 
-void	PrepareCycle()
+void	PrepareCycle(void)
 
   /* 
    * PrepareCycle - This routine is called at the beginning of a cohort

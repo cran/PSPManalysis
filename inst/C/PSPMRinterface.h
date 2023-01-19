@@ -2,7 +2,7 @@
   PSPMRinterface.h -  Header file containing all the function that take care of interacting with R,
                       in case the life history model is specified by R functions.
 
-  Last modification: AMdR - Oct 14, 2020
+  Last modification: AMdR - Jan 19, 2023
 */
 
 #include <R.h>
@@ -105,7 +105,7 @@ void my_unprotect(int n)
 }
 
 
-void Rinterface_Init()
+void Rinterface_Init(void)
 {
   int i;
 

@@ -22,7 +22,7 @@
     You should have received a copy of the GNU General Public License
     along with this software. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Apr 08, 2022
+    Last modification: AMdR - Jan 19, 2023
 ***/
 #ifndef CURVE
 #define CURVE
@@ -1331,7 +1331,7 @@ int SolveLinearSystem(const int N, double *A, double *B, double tol)
       if (ferr > tol)
         {
           // Matlab does not handle correctly the direct printing of the double number via ErrorMsg
-          sprintf(errstr, "Warning: The estimated error bound in the solution of the linear system A*x = B (%G) exceeds the tolerance level %G!\n",
+          snprintf(errstr, sizeof(errstr), "Warning: The estimated error bound in the solution of the linear system A*x = B (%G) exceeds the tolerance level %G!\n",
                   ferr, tol);
           ErrorMsg(__FILE__, __LINE__, errstr);
         }

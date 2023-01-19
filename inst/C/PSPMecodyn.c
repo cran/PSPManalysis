@@ -6,7 +6,7 @@
      Train software of a physiologically structured population model that is specificied in the type of
      header file used for the PSPManalysis package.
 
-  Last modification: AMdR - Oct 14, 2020
+  Last modification: AMdR - Jan 19, 2023
 */
 
 #define PSPMECODYN                1                                                 // File identification
@@ -240,7 +240,7 @@ void	UserInit( int argc, char **argv, double *env,  population *pop)
         {
           if ((j >= cohort_no[pp]) || (isdead(pp, jj))) continue;
 
-          while ((limitVals[pp] > 0) || iszero(limitVals[pp]))
+          while ((limitVals[pp] > 0) || isequal2zero(limitVals[pp]))
             {
               popIDlifestage(pp, jj) += 1;
               lifeStage[pp] = getPopIDlifestage(pp, jj);
@@ -638,7 +638,7 @@ int	ForceCohortEnd(double *env, population *pop, population *ofs, population *bp
         {
           if ((j >= cohort_no[pp]) || (isdead(pp, jj))) continue;
 
-          while  ((limitVals[pp] > 0) || iszero(limitVals[pp]))
+          while  ((limitVals[pp] > 0) || isequal2zero(limitVals[pp]))
             {
               popIDlifestage(pp, jj) += 1;
 
@@ -702,7 +702,7 @@ void	InstantDynamics(double *env, population *pop, population *ofs)
         {
           if ((j >= cohort_no[pp]) || (isdead(pp, jj))) continue;
 
-          while ((limitVals[pp] > 0) || iszero(limitVals[pp]))
+          while ((limitVals[pp] > 0) || isequal2zero(limitVals[pp]))
             {
               popIDlifestage(pp, jj) += 1;
 
@@ -1007,7 +1007,7 @@ static void setCurrentEnvironmentValues(double *env, population *pop, population
   */
  
  {
-   char fpe_mes[80];
+   char fpe_mes[MAX_STR_LEN];
  
    if (signl == SIGFPE)
      {
@@ -1048,7 +1048,7 @@ static void setCurrentEnvironmentValues(double *env, population *pop, population
            if (dbgfile)(void)fprintf(dbgfile, "==============================================================\n");
          }
        if (EBTMethod) TransBcohorts();
-       sprintf(fpe_mes, "Floating point error at time %.4f", env[0]);
+       snprintf(fpe_mes, sizeof(fpe_mes), "Floating point error at time %.4f", env[0]);
        ErrorExit(1, fpe_mes);
      }
  
@@ -1059,7 +1059,7 @@ static void setCurrentEnvironmentValues(double *env, population *pop, population
  
 /*==================================================================================================================================*/
 
-static void InitVars()
+static void InitVars(void)
 
 /* 
    * InitVars - Routine initializes all global variables to 0.
@@ -1150,16 +1150,16 @@ static void InitVars()
   while (1)
     {
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
-      sprintf(csbname, "%s-%s-%04d.mat", progname, "ECODYN", i);
+      snprintf(csbname, sizeof(csbname), "%s-%s-%04d.mat", progname, "ECODYN", i);
 #else
-      sprintf(csbname, "%s-%s-%04d.csb", progname, "ECODYN", i);
+      snprintf(csbname, sizeof(csbname), "%s-%s-%04d.csb", progname, "ECODYN", i);
 #endif
-      sprintf(dbgname, "%s-%s-%04d.err", progname, "ECODYN", i);
-      sprintf(outname, "%s-%s-%04d.out", progname, "ECODYN", i);
+      snprintf(dbgname, sizeof(dbgname), "%s-%s-%04d.err", progname, "ECODYN", i);
+      snprintf(outname, sizeof(outname), "%s-%s-%04d.out", progname, "ECODYN", i);
       if (stat(csbname, &buffer) && stat(dbgname, &buffer) && stat(outname, &buffer)) break;
       i++;
     }
-  sprintf(runname, "%s-%s-%04d", progname, "ECODYN", i);
+  snprintf(runname, sizeof(runname), "%s-%s-%04d", progname, "ECODYN", i);
 
   outfile = fopen(outname, "w");
   if (!outfile) ErrorAbort(OUT);
@@ -1227,27 +1227,27 @@ static void InitVars()
 #else
   colnr = 1;
 #endif
-  sprintf(tmpstr, "%d:%s  ", colnr++, "Time");
+  snprintf(tmpstr, sizeof(tmpstr), "%d:%s  ", colnr++, "Time");
   fprintf(outfile, "#%11s", tmpstr);
   for (i = 0; i < ENVIRON_DIM; i++)
     {
-      sprintf(tmpstr, "%d:E[%d]", colnr++, i);
+      snprintf(tmpstr, sizeof(tmpstr), "%d:E[%d]", colnr++, i);
       fprintf(outfile, "%16s", tmpstr);
     }
   for (i = 0; i < POPULATION_NR; i++)
     {
-      sprintf(tmpstr, "%d:b[%d]", colnr++, i);
+      snprintf(tmpstr, sizeof(tmpstr), "%d:b[%d]", colnr++, i);
       fprintf(outfile, "%16s", tmpstr);
     }
   for (i = 0; i < POPULATION_NR; i++)
     for (j = 0; j < INTERACT_DIM; j++)
       {
-        sprintf(tmpstr, "%d:I[%d][%d]", colnr++, i, j);
+        snprintf(tmpstr, sizeof(tmpstr), "%d:I[%d][%d]", colnr++, i, j);
         fprintf(outfile, "%16s", tmpstr);
       }
   if (BifurcationRun)
     {
-      sprintf(tmpstr, "%d:Bif. par.", colnr++);
+      snprintf(tmpstr, sizeof(tmpstr), "%d:Bif. par.", colnr++);
       fprintf(outfile, "%16s", tmpstr);
     }
   fprintf(outfile, "\n");
@@ -1521,7 +1521,7 @@ int main(int argc, char **argv)
     {
       if (i) strcat(parstring, " ");
       memcpy(&tmpdouble, mxGetPr(prhs[irhs]) + i, mxGetElementSize(prhs[irhs]));
-      sprintf(tmpstr, "%.6G", tmpdouble);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", tmpdouble);
       strcat(parstring, tmpstr);
     }
   strcat(parstring, "]");
@@ -1557,7 +1557,7 @@ int main(int argc, char **argv)
   for (i = 0; i < (nrows*ncols); i++)
     {
       if (i) strcat(timestring, " ");
-      sprintf(tmpstr, "%.6G", dblpnt[i]);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", dblpnt[i]);
       strcat(timestring, tmpstr);
     }
   strcat(timestring, "]");
@@ -1610,7 +1610,7 @@ int main(int argc, char **argv)
   for (i = 0; i < (nrows*ncols); i++)
     {
       if (i) strcat(bifstring, " ");
-      sprintf(tmpstr, "%.6G", dblpnt[i]);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", dblpnt[i]);
       strcat(bifstring, tmpstr);
     }
   strcat(bifstring, "]");
@@ -1667,7 +1667,7 @@ int main(int argc, char **argv)
   for (pp = 0; pp < POPULATION_NR; pp++)
     {
       bstatesdefined = 0;
-      sprintf(tmpstr, "Pop%0*d_BirthStates", pmag, pp);
+      snprintf(tmpstr, sizeof(tmpstr), "Pop%0*d_BirthStates", pmag, pp);
       field_num = mxGetFieldNumber(prhs[irhs], tmpstr);
       if (field_num > -1)
         {
@@ -1692,8 +1692,8 @@ int main(int argc, char **argv)
       bmag = 1; num  = maxBstates; while (num > 0) { bmag++; num = num/10; }
       for (bb = 0; bb < maxBstates; bb++)
         {
-          if (maxBstates == 1) sprintf(tmpstr, "Pop%0*d", pmag, pp);
-          else sprintf(tmpstr, "Pop%0*d_Bstate%0*d", pmag, pp, bmag, bb);
+          if (maxBstates == 1) snprintf(tmpstr, sizeof(tmpstr), "Pop%0*d", pmag, pp);
+          else snprintf(tmpstr, sizeof(tmpstr), "Pop%0*d_Bstate%0*d", pmag, pp, bmag, bb);
 
           field_num = mxGetFieldNumber(prhs[irhs], tmpstr);
           if (field_num > -1)
@@ -1903,7 +1903,7 @@ SEXP PSPMecodyn(SEXP moduleName, SEXP initState, SEXP timePars, SEXP bifPars, SE
           for (ii = 0; ii < ncols; ii++)
             {
               if (ii) strcat(parstring, ", ");
-              sprintf(tmpstr, "%.6G", dblpnt[ii]);
+              snprintf(tmpstr, sizeof(tmpstr), "%.6G", dblpnt[ii]);
               strcat(parstring, tmpstr);
             }
           strcat(parstring, ")");
@@ -1938,7 +1938,7 @@ SEXP PSPMecodyn(SEXP moduleName, SEXP initState, SEXP timePars, SEXP bifPars, SE
   for (ii = 0; ii < ncols; ii++)
     {
       if (ii) strcat(timestring, ", ");
-      sprintf(tmpstr, "%.6G", dblpnt[ii]);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", dblpnt[ii]);
       strcat(timestring, tmpstr);
     }
   strcat(timestring, ")");
@@ -1987,7 +1987,7 @@ SEXP PSPMecodyn(SEXP moduleName, SEXP initState, SEXP timePars, SEXP bifPars, SE
       for (ii = 0; ii < ncols; ii++)
         {
           if (ii) strcat(bifstring, ", ");
-          sprintf(tmpstr, "%.6G", dblpnt[ii]);
+          snprintf(tmpstr, sizeof(tmpstr), "%.6G", dblpnt[ii]);
           strcat(bifstring, tmpstr);
         }
       strcat(bifstring, ")");
@@ -2031,7 +2031,7 @@ SEXP PSPMecodyn(SEXP moduleName, SEXP initState, SEXP timePars, SEXP bifPars, SE
     {
       // If birth states not specified, generate them via a call to StateAtBirth()
       bstatesdefined = 0;
-      sprintf(tmpstr, "Pop%0*d_BirthStates", pmag, pp);
+      snprintf(tmpstr, sizeof(tmpstr), "Pop%0*d_BirthStates", pmag, pp);
       PROTECT(R_listel = getListElement(initState, tmpstr));
       if (R_listel != R_NilValue)
         {
@@ -2057,9 +2057,9 @@ SEXP PSPMecodyn(SEXP moduleName, SEXP initState, SEXP timePars, SEXP bifPars, SE
       for (bb = 0; bb < maxBstates; bb++)
         {
           if (maxBstates == 1)
-            sprintf(tmpstr, "Pop%0*d", pmag, pp);
+            snprintf(tmpstr, sizeof(tmpstr), "Pop%0*d", pmag, pp);
           else 
-            sprintf(tmpstr, "Pop%0*d_Bstate%0*d", pmag, pp, bmag, bb);
+            snprintf(tmpstr, sizeof(tmpstr), "Pop%0*d_Bstate%0*d", pmag, pp, bmag, bb);
 
           PROTECT(R_listel = getListElement(initState, tmpstr));
           if (R_listel == R_NilValue)

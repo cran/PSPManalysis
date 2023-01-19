@@ -1,3 +1,9 @@
+# PSPManalysis 0.3.9 (1/19/2023)
+
+* Changed iszero() to isequal2zero() as iszero() is being pre-defined as macro 
+* Changed all calls to sprintf() in the C code to snprintf(), as sprintf() is deprecated
+* Corrected all function declarations and function definitions without prototype, which is deprecated in all versions of C
+
 # PSPManalysis 0.3.8
 
 * Changed the calls to the Lapack routines dgetrf, dgecon and dgesvx to correctly pass string from C to Fortran following ‘Writing R Extensions’ §6.6.1

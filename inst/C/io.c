@@ -21,7 +21,7 @@
     You should have received a copy of the GNU General Public License
     along with this software. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Oct 13, 2020
+    Last modification: AMdR - Jan 19, 2023
 ***/
 #ifndef IO
 #define IO
@@ -196,7 +196,7 @@ void PrettyPrintArray(FILE *fp, const int dim, double *vec)
 // Ctrl-C detection
 
 #if defined(MATLAB_MEX_FILE)
-int checkInterrupt()
+int checkInterrupt(void)
 {
   int         pressed;
   extern bool utIsInterruptPending();
@@ -216,7 +216,7 @@ int checkInterrupt()
 
 #elif defined(OCTAVE_MEX_FILE)
 
-int checkInterrupt()
+int checkInterrupt(void)
 {
   int pressed = 0;
 
@@ -230,7 +230,7 @@ int checkInterrupt()
 static void chkIntFn(void *dummy) { R_CheckUserInterrupt(); }
 
 // this will call the above in a top-level context so it won't longjmp-out of your context
-int checkInterrupt()
+int checkInterrupt(void)
 {
   Rboolean R_ToplevelExec(void (*fun)(void *), void *data);
 
@@ -674,7 +674,7 @@ void WriteStateToFile(const int fullstateoutput)
                 }
               dblptr = mxGetPr(mydata[nalloc]);
               memcpy(dblptr, rightEigenvecMem + p*MaxStatesAtBirth, birthStateNr[p]*sizeof(double));
-              sprintf(tmpstr, "Pop%0*d_StableBirthDist", pmag, p);
+              snprintf(tmpstr, sizeof(tmpstr), "Pop%0*d_StableBirthDist", pmag, p);
               memcpy((void *)fieldnames[nalloc], tmpstr, strlen(tmpstr)*sizeof(char));
               nalloc++;
             }
@@ -698,7 +698,7 @@ void WriteStateToFile(const int fullstateoutput)
       dblptr = mxGetPr(mydata[nalloc]);
       for (i = 0; i < IStateDim; i++)
         for (b = 0; b < birthStateNr[p]; b++) memcpy(dblptr++, BirthStatePnt(p, b, i), sizeof(double));
-      sprintf(tmpstr, "Pop%0*d_BirthStates", pmag, p);
+      snprintf(tmpstr, sizeof(tmpstr), "Pop%0*d_BirthStates", pmag, p);
       memcpy((void *)fieldnames[nalloc], tmpstr, strlen(tmpstr)*sizeof(char));
       nalloc++;
 
@@ -741,9 +741,9 @@ void WriteStateToFile(const int fullstateoutput)
             for (i = IStateDim + 1; i < (CohortDim + birthStateNr[p]); i++, dblptr += Cohorts(p, b))
               memcpy(dblptr, &(PopDens(p, b, i, 0)), Cohorts(p, b)*sizeof(double));
           if ((fullstateoutput == 2) && (MaxStatesAtBirth > 1))
-            sprintf(tmpstr, "Pop%0*d_Bstate%0*d", pmag, p, bmag, b);
+            snprintf(tmpstr, sizeof(tmpstr), "Pop%0*d_Bstate%0*d", pmag, p, bmag, b);
           else
-            sprintf(tmpstr, "Pop%0*d", pmag, p);
+            snprintf(tmpstr, sizeof(tmpstr), "Pop%0*d", pmag, p);
           memcpy((void *)fieldnames[nalloc], tmpstr, strlen(tmpstr)*sizeof(char));
           nalloc++;
           if (fullstateoutput == 1) break;
@@ -758,9 +758,9 @@ void WriteStateToFile(const int fullstateoutput)
       if ((Bifparone != -1) || (CurveType == EVODYN))
         {
           if (CurveType == EVODYN)
-            sprintf(tmpstr, "State_%.6E", *timePntr);
+            snprintf(tmpstr, sizeof(tmpstr), "State_%.6E", *timePntr);
           else
-            sprintf(tmpstr, "State_%.6E", parPntr[Bifparone]);
+            snprintf(tmpstr, sizeof(tmpstr), "State_%.6E", parPntr[Bifparone]);
           for (i = 0, j = 0; i < strlen(tmpstr); i++)
             {
               if (tmpstr[i] == '.')
@@ -775,10 +775,10 @@ void WriteStateToFile(const int fullstateoutput)
           tmpstr2[j] = '\0';
         }
       else if (CurveType == IND)
-        sprintf(tmpstr2, "LifeHistory");
+        snprintf(tmpstr2, sizeof(tmpstr2), "LifeHistory");
       else
-        sprintf(tmpstr2, "State");
-      sprintf(matfname, "%s.mat", runname);
+        snprintf(tmpstr2, sizeof(tmpstr2), "State");
+      snprintf(matfname, sizeof(matfname), "%s.mat", runname);
 
 #if defined(MATLAB_MEX_FILE)
       if (pmat == NULL) pmat = matOpen(matfname, "wz");
@@ -1022,49 +1022,49 @@ void WriteStateToFile(const int fullstateoutput)
     {
       cenv->timeval = eVarPntr[0];
       cenv->columns = (CurPopulationNr);
-      sprintf(envlabel, "PGR: Population growth rates");
+      snprintf(envlabel, sizeof(envlabel), "PGR: Population growth rates");
     }
   else if (CurveType == PGR)
     {
       cenv->timeval = parPntr[Bifparone];
       cenv->columns = (CurPopulationNr + 1);
-      sprintf(envlabel, "PGR: Population growth rates for parameter value %G", parPntr[Bifparone]);
+      snprintf(envlabel, sizeof(envlabel), "PGR: Population growth rates for parameter value %G", parPntr[Bifparone]);
     }
   else if (CurveType == IND)
     {
       cenv->timeval = eVarPntr[0];
       cenv->columns = (EnvironDim);
-      sprintf(envlabel, "Individual life history dynamics under given environmental conditions");
+      snprintf(envlabel, sizeof(envlabel), "Individual life history dynamics under given environmental conditions");
     }
   else if (CurveType == EQ)
     {
       cenv->timeval = parPntr[Bifparone];
       cenv->columns = (EnvironDim + 1);
-      sprintf(envlabel, "Environment: Environment variables for parameter value %G", parPntr[Bifparone]);
+      snprintf(envlabel, sizeof(envlabel), "Environment: Environment variables for parameter value %G", parPntr[Bifparone]);
     }
   else if (CurveType == ESS)
     {
       cenv->timeval = parPntr[Bifparone];
       cenv->columns = (EnvironDim + 1 + evoParsDim);
-      sprintf(envlabel, "Environment: Environment variables and evolutionary parameters for parameter value %G", parPntr[Bifparone]);
+      snprintf(envlabel, sizeof(envlabel), "Environment: Environment variables and evolutionary parameters for parameter value %G", parPntr[Bifparone]);
     }
   else if (CurveType == EVODYN)
     {
       cenv->timeval =*timePntr;
       cenv->columns = (EnvironDim + evoParsDim);
-      sprintf(envlabel, "Environment: Environment variables for evolutionary time value %G", *timePntr);
+      snprintf(envlabel, sizeof(envlabel), "Environment: Environment variables for evolutionary time value %G", *timePntr);
     }
   else if (CurveType == PIP)
     {
       cenv->timeval = parPntr[Bifparone];
       cenv->columns = (EnvironDim + 2);
-      sprintf(envlabel, "Environment: Environment variables for parameter values %G and %G", parPntr[Bifparone], MutantParVal);
+      snprintf(envlabel, sizeof(envlabel), "Environment: Environment variables for parameter values %G and %G", parPntr[Bifparone], MutantParVal);
     }
   else
     {
       cenv->timeval = parPntr[Bifparone];
       cenv->columns = (EnvironDim + 2);
-      sprintf(envlabel, "Environment: Environment variables for parameter values %G and %G", parPntr[Bifparone], parPntr[Bifpartwo]);
+      snprintf(envlabel, sizeof(envlabel), "Environment: Environment variables for parameter values %G and %G", parPntr[Bifparone], parPntr[Bifpartwo]);
     }
   cenv->data_offset = hdrdbls + MAX_LBL_LEN;
 
@@ -1147,19 +1147,19 @@ void WriteStateToFile(const int fullstateoutput)
             {
               hdrdbls = (sizeof(Popdim)/sizeof(double)) + 1;
               (void)memset((void *)cpop, 0, hdrdbls*sizeof(double));
-              sprintf(tmpstr, "Pop%0*d_StableBirthDist", pmag, p);
+              snprintf(tmpstr, sizeof(tmpstr), "Pop%0*d_StableBirthDist", pmag, p);
               if ((CurveType == PGR) && (Bifparone == -1))
-                sprintf(statelabels(p), "%s: Stable birth state distribution of population #%d", tmpstr, p);
+                snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: Stable birth state distribution of population #%d", tmpstr, p);
               else if ((CurveType == PGR) || (CurveType == EQ) || (CurveType == ESS))
-                sprintf(statelabels(p), "%s: Stable birth state distribution of population #%d for parameter value %G", tmpstr, p,
+                snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: Stable birth state distribution of population #%d for parameter value %G", tmpstr, p,
                         parPntr[Bifparone]);
               else if (CurveType == EVODYN)
-                sprintf(statelabels(p), "%s: Stable birth state distribution of population #%d for evolutionary time value %G", tmpstr, p, *timePntr);
+                snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: Stable birth state distribution of population #%d for evolutionary time value %G", tmpstr, p, *timePntr);
               else if (CurveType == PIP)
-                sprintf(statelabels(p), "%s: Stable birth state distribution of population #%d for parameter values %G and %G", tmpstr, p,
+                snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: Stable birth state distribution of population #%d for parameter values %G and %G", tmpstr, p,
                         parPntr[Bifparone], MutantParVal);
               else
-                sprintf(statelabels(p), "%s: Stable birth state distribution of population #%d for parameter values %G and %G", tmpstr, p,
+                snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: Stable birth state distribution of population #%d for parameter values %G and %G", tmpstr, p,
                         parPntr[Bifparone], parPntr[Bifpartwo]);
 
               if (Bifparone != -1)
@@ -1183,17 +1183,17 @@ void WriteStateToFile(const int fullstateoutput)
       // Store all birth states as a separate population
       hdrdbls = (sizeof(Popdim)/sizeof(double)) + 1;
       (void)memset((void *)cpop, 0, hdrdbls*sizeof(double));
-      sprintf(tmpstr, "Pop%0*d_BirthStates", pmag, p);
+      snprintf(tmpstr, sizeof(tmpstr), "Pop%0*d_BirthStates", pmag, p);
       if (((CurveType == PGR) && (Bifparone == -1)) || (CurveType == IND))
-        sprintf(statelabels(p), "%s: Birth states of population #%d", tmpstr, p);
+        snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: Birth states of population #%d", tmpstr, p);
       else if ((CurveType == PGR) || (CurveType == EQ) || (CurveType == ESS))
-        sprintf(statelabels(p), "%s: Birth states of population #%d for parameter value %G", tmpstr, p, parPntr[Bifparone]);
+        snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: Birth states of population #%d for parameter value %G", tmpstr, p, parPntr[Bifparone]);
       else if (CurveType == EVODYN)
-        sprintf(statelabels(p), "%s: Birth states of population #%d for evolutionary time value %G", tmpstr, p, *timePntr);
+        snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: Birth states of population #%d for evolutionary time value %G", tmpstr, p, *timePntr);
       else if (CurveType == PIP)
-        sprintf(statelabels(p), "%s: Birth states of population #%d for parameter values %G and %G", tmpstr, p, parPntr[Bifparone], MutantParVal);
+        snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: Birth states of population #%d for parameter values %G and %G", tmpstr, p, parPntr[Bifparone], MutantParVal);
       else
-        sprintf(statelabels(p), "%s: Birth states of population #%d for parameter values %G and %G", tmpstr, p, parPntr[Bifparone],
+        snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: Birth states of population #%d for parameter values %G and %G", tmpstr, p, parPntr[Bifparone],
                 parPntr[Bifpartwo]);
 
       if (Bifparone != -1)
@@ -1227,37 +1227,37 @@ void WriteStateToFile(const int fullstateoutput)
           (void)memset((void *)cpop, 0, hdrdbls*sizeof(double));
           if ((fullstateoutput == 2) && (MaxStatesAtBirth > 1))
             {
-              sprintf(tmpstr, "Pop%0*d_Bstate%0*d", pmag, p, bmag, b);
+              snprintf(tmpstr, sizeof(tmpstr), "Pop%0*d_Bstate%0*d", pmag, p, bmag, b);
               if (CurveType == IND)
-                sprintf(statelabels(p), "%s: Life history dynamics in population #%d with birth state #%0*d", tmpstr, p, bmag, b);
+                snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: Life history dynamics in population #%d with birth state #%0*d", tmpstr, p, bmag, b);
               else if ((CurveType == PGR) && (Bifparone == -1))
-                sprintf(statelabels(p), "%s: State of population #%d with birth state #%0*d", tmpstr, p, bmag, b);
+                snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: State of population #%d with birth state #%0*d", tmpstr, p, bmag, b);
               else if ((CurveType == PGR) || (CurveType == EQ) || (CurveType == ESS))
-                sprintf(statelabels(p), "%s: State of population #%d with birth state #%0*d for parameter value %G", tmpstr, p, bmag, b,
+                snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: State of population #%d with birth state #%0*d for parameter value %G", tmpstr, p, bmag, b,
                         parPntr[Bifparone]);
               else if (CurveType == EVODYN)
-                sprintf(statelabels(p), "%s: State of population #%d with birth state #%0*d for evolutionary time value %G", tmpstr, p, bmag, b,
+                snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: State of population #%d with birth state #%0*d for evolutionary time value %G", tmpstr, p, bmag, b,
                         *timePntr);
               else if (CurveType == PIP)
-                sprintf(statelabels(p), "%s: State of population #%d with birth state #%0*d for parameter values %G and %G", tmpstr, p, bmag, b,
+                snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: State of population #%d with birth state #%0*d for parameter values %G and %G", tmpstr, p, bmag, b,
                         parPntr[Bifparone], MutantParVal);
               else
-                sprintf(statelabels(p), "%s: State of population #%d with birth state #%0*d for parameter values %G and %G", tmpstr, p, bmag, b,
+                snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: State of population #%d with birth state #%0*d for parameter values %G and %G", tmpstr, p, bmag, b,
                         parPntr[Bifparone], parPntr[Bifpartwo]);
             }
           else
             {
-              sprintf(tmpstr, "Pop%0*d", pmag, p);
+              snprintf(tmpstr, sizeof(tmpstr), "Pop%0*d", pmag, p);
               if ((CurveType == PGR) && (Bifparone == -1))
-                sprintf(statelabels(p), "%s: State of population #%d", tmpstr, p);
+                snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: State of population #%d", tmpstr, p);
               else if ((CurveType == PGR) || (CurveType == EQ) || (CurveType == ESS))
-                sprintf(statelabels(p), "%s: State of population #%d for parameter value %G", tmpstr, p, parPntr[Bifparone]);
+                snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: State of population #%d for parameter value %G", tmpstr, p, parPntr[Bifparone]);
               else if (CurveType == EVODYN)
-                sprintf(statelabels(p), "%s: State of population #%d for evolutionary time value %G", tmpstr, p, *timePntr);
+                snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: State of population #%d for evolutionary time value %G", tmpstr, p, *timePntr);
               else if (CurveType == PIP)
-                sprintf(statelabels(p), "%s: State of population #%d for parameter values %G and %G", tmpstr, p, parPntr[Bifparone], MutantParVal);
+                snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: State of population #%d for parameter values %G and %G", tmpstr, p, parPntr[Bifparone], MutantParVal);
               else
-                sprintf(statelabels(p), "%s: State of population #%d for parameter values %G and %G", tmpstr, p, parPntr[Bifparone],
+                snprintf(statelabels(p), MAX_LBL_LEN * sizeof(double), "%s: State of population #%d for parameter values %G and %G", tmpstr, p, parPntr[Bifparone],
                         parPntr[Bifpartwo]);
             }
 

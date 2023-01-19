@@ -7,7 +7,7 @@
      the initial state values of the environment and the populations and to
      read the control variable file. 
      
-   Last modification: AMdR - Sep 06, 2017
+   Last modification: AMdR - Jan 19, 2023
 */
 
 #define EBTINIT_C 				                                                          // Identification of file
@@ -202,7 +202,7 @@ static void ReadInputPop(FILE *infile)
 
   for (i = 0; i < POPULATION_NR; i++)
     {
-      (void)sprintf(input, "Initial population %d is empty! %s", i, "Expecting initialization in UserInit()!");
+      (void)snprintf(input, sizeof(input), "Initial population %d is empty! %s", i, "Expecting initialization in UserInit()!");
       if (!CohortNo[i]) Warning(input);
       cohort_no[i] = CohortNo[i];
     }

@@ -9,7 +9,7 @@
      modules, as it contains the global definitions that are accessible to
      all modules. 
 
-  Last modification: AMdR - Oct 25, 2017
+  Last modification: AMdR - Jan 19, 2023
 */
 
 #ifndef ESCBOX_H
@@ -188,7 +188,7 @@ extern int		                    imin(int, int);
 extern double		                  max(double, double);
 extern double		                  min(double, double);
 
-extern int		                    iszero(double);
+extern int		                    isequal2zero(double);
 extern int		                    isequal(double, double);
 extern void		                    SievePop(void);
 extern void		                    ErrorAbort(const char *);

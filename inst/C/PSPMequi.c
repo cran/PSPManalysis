@@ -26,7 +26,7 @@
     You should have received a copy of the GNU General Public License
     along with PSPManalysis. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Apr 08, 2022
+    Last modification: AMdR - Jan 19, 2023
 ***/
 
 #define PSPMEQUI                  1
@@ -788,9 +788,9 @@ void ComputeCurve(const int argc, char **argv)
 
   if (strlen(runname))
     {
-      sprintf(bifname, "%s.bif", runname);
-      sprintf(errname, "%s.err", runname);
-      sprintf(outname, "%s.out", runname);
+      snprintf(bifname, sizeof(bifname), "%s.bif", runname);
+      snprintf(errname, sizeof(errname), "%s.err", runname);
+      snprintf(outname, sizeof(outname), "%s.out", runname);
     }
   else
     {
@@ -801,18 +801,18 @@ void ComputeCurve(const int argc, char **argv)
       i = 0;
       while (1)
         {
-          sprintf(bifname, "%s-%s-%04d.bif", progname, ContinuationString, i);
+          snprintf(bifname, sizeof(bifname), "%s-%s-%04d.bif", progname, ContinuationString, i);
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
-          sprintf(csbname, "%s-%s-%04d.mat", progname, ContinuationString, i);
+          snprintf(csbname, sizeof(csbname), "%s-%s-%04d.mat", progname, ContinuationString, i);
 #else
-          sprintf(csbname, "%s-%s-%04d.csb", progname, ContinuationString, i);
+          snprintf(csbname, sizeof(csbname), "%s-%s-%04d.csb", progname, ContinuationString, i);
 #endif
-          sprintf(errname, "%s-%s-%04d.err", progname, ContinuationString, i);
-          sprintf(outname, "%s-%s-%04d.out", progname, ContinuationString, i);
+          snprintf(errname, sizeof(errname), "%s-%s-%04d.err", progname, ContinuationString, i);
+          snprintf(outname, sizeof(outname), "%s-%s-%04d.out", progname, ContinuationString, i);
           if (stat(bifname, &buffer) && stat(csbname, &buffer) && stat(errname, &buffer) && stat(outname, &buffer)) break;
           i++;
         }
-      sprintf(runname, "%s-%s-%04d", progname, ContinuationString, i);
+      snprintf(runname, sizeof(runname), "%s-%s-%04d", progname, ContinuationString, i);
     }
 
   if ((CurveType == EQ) || (CurveType == ESS)) biffile = fopen(bifname, "w");
@@ -873,51 +873,51 @@ void ComputeCurve(const int argc, char **argv)
 #else
       colnr = 1;
 #endif
-      sprintf(tmpstr, "%d:%s", colnr++, parameternames[Bifparone]);
+      snprintf(tmpstr, sizeof(tmpstr), "%d:%s", colnr++, parameternames[Bifparone]);
       fprintf(outfile, "#%15s", tmpstr);
       for (i = 0; i < EnvironDim; i++)
         {
-          sprintf(tmpstr, "%d:E[%d]", colnr++, i);
+          snprintf(tmpstr, sizeof(tmpstr), "%d:E[%d]", colnr++, i);
           fprintf(outfile, "%16s", tmpstr);
         }
       for (i = 0; i < PopulationNr; i++)
         {
-          sprintf(tmpstr, "%d:b[%d]", colnr++, i);
+          snprintf(tmpstr, sizeof(tmpstr), "%d:b[%d]", colnr++, i);
           fprintf(outfile, "%16s", tmpstr);
         }
       if (CurveType == ESS)
         {
           for (i = 0; i < essParsDim; i++)
             {
-              sprintf(tmpstr, "%d:%s", colnr++, parameternames[essParsIndex[i]]);
+              snprintf(tmpstr, sizeof(tmpstr), "%d:%s", colnr++, parameternames[essParsIndex[i]]);
               fprintf(outfile, "%16s", tmpstr);
             }
         }
       else if (CurveType == PIP)
         {
-          sprintf(tmpstr, "%d:%s'", colnr++, parameternames[Bifpartwo]);
+          snprintf(tmpstr, sizeof(tmpstr), "%d:%s'", colnr++, parameternames[Bifpartwo]);
           fprintf(outfile, "%16s", tmpstr);
         }
       else if (CurveType != EQ)
         {
-          sprintf(tmpstr, "%d:%s", colnr++, parameternames[Bifpartwo]);
+          snprintf(tmpstr, sizeof(tmpstr), "%d:%s", colnr++, parameternames[Bifpartwo]);
           fprintf(outfile, "%16s", tmpstr);
         }
       for (i = 0; i < PopulationNr; i++)
         for (j = 0; j < InteractDim; j++)
           {
-            sprintf(tmpstr, "%d:I[%d][%d]", colnr++, i, j);
+            snprintf(tmpstr, sizeof(tmpstr), "%d:I[%d][%d]", colnr++, i, j);
             fprintf(outfile, "%16s", tmpstr);
           }
       for (i = 0; i < EnvironDim; i++)
         if (EnvironmentType[i] == PERCAPITARATE)
           {
-            sprintf(tmpstr, "%d:pcgE[%d]", colnr++, i);
+            snprintf(tmpstr, sizeof(tmpstr), "%d:pcgE[%d]", colnr++, i);
             fprintf(outfile, "%16s", tmpstr);
           }
       for (i = 0; i < CurPopulationNr; i++)
         {
-          sprintf(tmpstr, "%d:R0[%d]", colnr++, i);
+          snprintf(tmpstr, sizeof(tmpstr), "%d:R0[%d]", colnr++, i);
           fprintf(outfile, "%16s", tmpstr);
         }
       if ((CurveType == EQ) || (CurveType == ESS))
@@ -925,7 +925,7 @@ void ComputeCurve(const int argc, char **argv)
           for (i = 0; i < ParEVODim; i++)
             {
               if ((PopEVOIndex[i] < 0) || (R0ResIndex[PopEVOIndex[i]] < 0)) continue;
-              sprintf(tmpstr, "%d:R0_x[%d]", colnr++, ParEVOIndex[i]);
+              snprintf(tmpstr, sizeof(tmpstr), "%d:R0_x[%d]", colnr++, ParEVOIndex[i]);
               fprintf(outfile, "%16s", tmpstr);
             }
         }
@@ -933,24 +933,24 @@ void ComputeCurve(const int argc, char **argv)
         {
           if (essParsDim == 1)
             {
-              sprintf(tmpstr, "%d:R0_xx[%d]", colnr++, essParsIndex[0]);
+              snprintf(tmpstr, sizeof(tmpstr), "%d:R0_xx[%d]", colnr++, essParsIndex[0]);
               fprintf(outfile, "%16s", tmpstr);
-              sprintf(tmpstr, "%d:R0_yy[%d]", colnr++, essParsIndex[0]);
+              snprintf(tmpstr, sizeof(tmpstr), "%d:R0_yy[%d]", colnr++, essParsIndex[0]);
               fprintf(outfile, "%16s", tmpstr);
             }
           else
             {
-              sprintf(tmpstr, "%d:eig J", colnr++);
+              snprintf(tmpstr, sizeof(tmpstr), "%d:eig J", colnr++);
               fprintf(outfile, "%16s", tmpstr);
-              sprintf(tmpstr, "%d:eig H", colnr++);
+              snprintf(tmpstr, sizeof(tmpstr), "%d:eig H", colnr++);
               fprintf(outfile, "%16s", tmpstr);
-              sprintf(tmpstr, "%d:eig (J+J')/2", colnr++);
+              snprintf(tmpstr, sizeof(tmpstr), "%d:eig (J+J')/2", colnr++);
               fprintf(outfile, "%16s", tmpstr);
-              sprintf(tmpstr, "%d:Z^T C01 Z", colnr++);
+              snprintf(tmpstr, sizeof(tmpstr), "%d:Z^T C01 Z", colnr++);
               fprintf(outfile, "%16s", tmpstr);
             }
         }
-      sprintf(tmpstr, "%d:RHS norm\n", colnr++);
+      snprintf(tmpstr, sizeof(tmpstr), "%d:RHS norm\n", colnr++);
       fprintf(outfile, "%17s", tmpstr);
       fflush(outfile);
     }
@@ -1434,7 +1434,7 @@ static void Usage(char *progname)
             }
           else if (EnvTrivEqui[i])
             continue;
-          sprintf(tmpstr, " E[%d]", i);
+          snprintf(tmpstr, sizeof(tmpstr), " E[%d]", i);
           strcat(varstr, tmpstr);
         }
       for (i = 0; i < PopulationNr; i++)
@@ -1445,7 +1445,7 @@ static void Usage(char *progname)
             }
           else if (PopTrivEqui[i])
             continue;
-          sprintf(tmpstr, " b[%d]", i);
+          snprintf(tmpstr, sizeof(tmpstr), " b[%d]", i);
           strcat(varstr, tmpstr);
         }
       if (CurveType == ESS)
@@ -2299,7 +2299,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
       if (i) strcat(parstring, " ");
       memcpy(&tmpdouble, mxGetPr(prhs[irhs]) + i, mxGetElementSize(prhs[irhs]));
-      sprintf(tmpstr, "%.6G", tmpdouble);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", tmpdouble);
       strcat(parstring, tmpstr);
     }
   strcat(parstring, "]");
@@ -2395,7 +2395,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   for (i = 0; i < (nrows*ncols); i++)
     {
       if (i) strcat(curvestring, " ");
-      sprintf(tmpstr, "%.6G", curveVals[i]);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", curveVals[i]);
       strcat(curvestring, tmpstr);
     }
   strcat(curvestring, "]");
@@ -2442,7 +2442,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             }
           else if (EnvTrivEqui[i])
             continue;
-          sprintf(tmpstr, " E[%d]", (int)i);
+          snprintf(tmpstr, sizeof(tmpstr), " E[%d]", (int)i);
           strcat(varstr, tmpstr);
         }
       for (i = 0; i < PopulationNr; i++)
@@ -2453,7 +2453,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             }
           else if (PopTrivEqui[i])
             continue;
-          sprintf(tmpstr, " b[%d]", (int)i);
+          snprintf(tmpstr, sizeof(tmpstr), " b[%d]", (int)i);
           strcat(varstr, tmpstr);
         }
       if (!(CurveType == EQ)) strcat(varstr, " Par.2");
@@ -2474,7 +2474,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   for (i = 0; i < (nrows*ncols); i++)
     {
       if (i) strcat(pntstring, " ");
-      sprintf(tmpstr, "%.6G", initpnt[i]);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", initpnt[i]);
       strcat(pntstring, tmpstr);
     }
   strcat(pntstring, "]");
@@ -2766,7 +2766,7 @@ SEXP PSPMequi(SEXP moduleName, SEXP bifType, SEXP initVals, SEXP stepsize, SEXP 
       for (i = 0; i < ncols; i++)
         {
           if (i) strcat(parstring, ", ");
-          sprintf(tmpstr, "%.6G", REAL(parVals)[i]);
+          snprintf(tmpstr, sizeof(tmpstr), "%.6G", REAL(parVals)[i]);
           strcat(parstring, tmpstr);
         }
       strcat(parstring, ")");
@@ -2788,7 +2788,7 @@ SEXP PSPMequi(SEXP moduleName, SEXP bifType, SEXP initVals, SEXP stepsize, SEXP 
       for (i = 0; i < ncols; i++)
         {
           if (i) strcat(minstring, ", ");
-          sprintf(tmpstr, "%.6G", REAL(minVals)[i]);
+          snprintf(tmpstr, sizeof(tmpstr), "%.6G", REAL(minVals)[i]);
           strcat(minstring, tmpstr);
         }
       strcat(minstring, ")");
@@ -2810,7 +2810,7 @@ SEXP PSPMequi(SEXP moduleName, SEXP bifType, SEXP initVals, SEXP stepsize, SEXP 
       for (i = 0; i < ncols; i++)
         {
           if (i) strcat(maxstring, ", ");
-          sprintf(tmpstr, "%.6G", REAL(maxVals)[i]);
+          snprintf(tmpstr, sizeof(tmpstr), "%.6G", REAL(maxVals)[i]);
           strcat(maxstring, tmpstr);
         }
       strcat(maxstring, ")");
@@ -2908,7 +2908,7 @@ SEXP PSPMequi(SEXP moduleName, SEXP bifType, SEXP initVals, SEXP stepsize, SEXP 
       for (i = 0; i < ncols; i++)
         {
           if (i) strcat(curvestring, ", ");
-          sprintf(tmpstr, "%.6G", REAL(curveVals)[i]);
+          snprintf(tmpstr, sizeof(tmpstr), "%.6G", REAL(curveVals)[i]);
           strcat(curvestring, tmpstr);
         }
       strcat(curvestring, ")");
@@ -2956,7 +2956,7 @@ SEXP PSPMequi(SEXP moduleName, SEXP bifType, SEXP initVals, SEXP stepsize, SEXP 
             }
           else if (EnvTrivEqui[i])
             continue;
-          sprintf(tmpstr, " E[%d]", (int)i);
+          snprintf(tmpstr, sizeof(tmpstr), " E[%d]", (int)i);
           strcat(varstr, tmpstr);
         }
       for (i = 0; i < PopulationNr; i++)
@@ -2967,7 +2967,7 @@ SEXP PSPMequi(SEXP moduleName, SEXP bifType, SEXP initVals, SEXP stepsize, SEXP 
             }
           else if (PopTrivEqui[i])
             continue;
-          sprintf(tmpstr, " b[%d]", (int)i);
+          snprintf(tmpstr, sizeof(tmpstr), " b[%d]", (int)i);
           strcat(varstr, tmpstr);
         }
       if (!(CurveType == EQ)) strcat(varstr, " Par.2");
@@ -2988,7 +2988,7 @@ SEXP PSPMequi(SEXP moduleName, SEXP bifType, SEXP initVals, SEXP stepsize, SEXP 
   for (i = 0; i < ncols; i++)
     {
       if (i) strcat(pntstring, ", ");
-      sprintf(tmpstr, "%.6G", initpnt[i]);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", initpnt[i]);
       strcat(pntstring, tmpstr);
     }
   strcat(pntstring, ")");

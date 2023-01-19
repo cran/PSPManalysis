@@ -15,7 +15,7 @@
 	      column OUTPUT_VAR_NR+N+1 : Average number of cohorts during bifurcation period
 	      column OUTPUT_VAR_NR+N+2 : cohort_limit (if adjusted during run)
 
-  Last modification: AMdR - Sep 06, 2017
+  Last modification: AMdR - Jan 19, 2023
 */
 
 // If not explicitly requested, output variances as CV
@@ -843,7 +843,7 @@ static double dofft(double *source, double *dummy, int obs)
   a = -(x[1]*y[0] - x[0]*y[1] - x[2]*y[0] - x[1]*y[2] + x[2]*y[1] + x[0]*y[2]);
   b = ((y[1] - y[0])*x[2]*x[2] + (y[2] - y[1])*x[0]*x[0] + (y[0] - y[2])*x[1]*x[1]);
 
-  if (iszero(b))
+  if (isequal2zero(b))
     period = 0.0;
   else
     period = -timespan*2*a/b;

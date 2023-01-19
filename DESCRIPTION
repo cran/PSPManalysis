@@ -1,7 +1,7 @@
 Package: PSPManalysis
 Type: Package
 Title: Analysis of Physiologically Structured Population Models
-Version: 0.3.8
+Version: 0.3.9
 Authors@R: c(person("Andre M.", "de Roos", email = "A.M.deRoos@uva.nl", role = c("aut", "cre")),
              person("Ernst", "Hairer", email = "Ernst.Hairer@unige.ch", role = "ctb"),
              person("Gerhard", "Wanner", email = "Gerhard.Wanner@unige.ch", role = "ctb"))
@@ -15,13 +15,13 @@ Encoding: UTF-8
 NeedsCompilation: yes
 Imports: rstudioapi (>= 0.11), pkgbuild (>= 1.1)
 Suggests: testthat, R.rsp
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 VignetteBuilder: R.rsp
 Depends: R (>= 3.1)
-Packaged: 2022-04-08 10:52:34 UTC; andre
+Packaged: 2023-01-19 14:52:32 UTC; andre
 Author: Andre M. de Roos [aut, cre],
   Ernst Hairer [ctb],
   Gerhard Wanner [ctb]
 Maintainer: Andre M. de Roos <A.M.deRoos@uva.nl>
 Repository: CRAN
-Date/Publication: 2022-04-08 11:52:32 UTC
+Date/Publication: 2023-01-19 15:50:06 UTC

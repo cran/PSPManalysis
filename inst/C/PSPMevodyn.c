@@ -26,7 +26,7 @@
     You should have received a copy of the GNU General Public License
     along with PSPManalysis. If not, see <http://www.gnu.org/licenses/>.
 
-    Last modification: AMdR - Apr 08, 2022
+    Last modification: AMdR - Jan 19, 2023
 ***/
 
 #define PSPMEVODYN                1
@@ -588,8 +588,8 @@ void ComputeCurve(const int argc, char **argv)
 
   if (strlen(runname))
     {
-      sprintf(errname, "%s.err", runname);
-      sprintf(outname, "%s.out", runname);
+      snprintf(errname, sizeof(errname), "%s.err", runname);
+      snprintf(outname, sizeof(outname), "%s.out", runname);
     }
   else
     {
@@ -601,16 +601,16 @@ void ComputeCurve(const int argc, char **argv)
       while (1)
         {
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
-          sprintf(csbname, "%s-%s-%04d.mat", progname, "EVODYN", i);
+          snprintf(csbname, sizeof(csbname), "%s-%s-%04d.mat", progname, "EVODYN", i);
 #else
-          sprintf(csbname, "%s-%s-%04d.csb", progname, "EVODYN", i);
+          snprintf(csbname, sizeof(csbname), "%s-%s-%04d.csb", progname, "EVODYN", i);
 #endif
-          sprintf(errname, "%s-%s-%04d.err", progname, "EVODYN", i);
-          sprintf(outname, "%s-%s-%04d.out", progname, "EVODYN", i);
+          snprintf(errname, sizeof(errname), "%s-%s-%04d.err", progname, "EVODYN", i);
+          snprintf(outname, sizeof(outname), "%s-%s-%04d.out", progname, "EVODYN", i);
           if (stat(csbname, &buffer) && stat(errname, &buffer) && stat(outname, &buffer)) break;
           i++;
         }
-      sprintf(runname, "%s-%s-%04d", progname, "EVODYN", i);
+      snprintf(runname, sizeof(runname), "%s-%s-%04d", progname, "EVODYN", i);
     }
 
   errfile = fopen(errname, "w");
@@ -652,41 +652,41 @@ void ComputeCurve(const int argc, char **argv)
 #else
       colnr = 1;
 #endif
-      sprintf(tmpstr, "%d:Evol.time", colnr++);
+      snprintf(tmpstr, sizeof(tmpstr), "%d:Evol.time", colnr++);
       fprintf(outfile, "#%13s", tmpstr);
       for (i = 0; i < EnvironDim; i++)
         {
-          sprintf(tmpstr, "%d:E[%d]", colnr++, i);
+          snprintf(tmpstr, sizeof(tmpstr), "%d:E[%d]", colnr++, i);
           fprintf(outfile, "%16s", tmpstr);
         }
       for (i = 0; i < PopulationNr; i++)
         {
-          sprintf(tmpstr, "%d:b[%d]", colnr++, i);
+          snprintf(tmpstr, sizeof(tmpstr), "%d:b[%d]", colnr++, i);
           fprintf(outfile, "%16s", tmpstr);
         }
       for (i = 0; i < evoParsDim; i++)
         {
-          sprintf(tmpstr, "%d:%s", colnr++, parameternames[evoParsIndex[i]]);
+          snprintf(tmpstr, sizeof(tmpstr), "%d:%s", colnr++, parameternames[evoParsIndex[i]]);
           fprintf(outfile, "%16s", tmpstr);
         }
       for (i = 0; i < PopulationNr; i++)
         for (j = 0; j < InteractDim; j++)
           {
-            sprintf(tmpstr, "%d:I[%d][%d]", colnr++, i, j);
+            snprintf(tmpstr, sizeof(tmpstr), "%d:I[%d][%d]", colnr++, i, j);
             fprintf(outfile, "%16s", tmpstr);
           }
       for (i = 0; i < EnvironDim; i++)
         if (EnvironmentType[i] == PERCAPITARATE)
           {
-            sprintf(tmpstr, "%d:pcgE[%d]", colnr++, i);
+            snprintf(tmpstr, sizeof(tmpstr), "%d:pcgE[%d]", colnr++, i);
             fprintf(outfile, "%16s", tmpstr);
           }
       for (i = 0; i < CurPopulationNr; i++)
         {
-          sprintf(tmpstr, "%d:R0[%d]", colnr++, i);
+          snprintf(tmpstr, sizeof(tmpstr), "%d:R0[%d]", colnr++, i);
           fprintf(outfile, "%16s", tmpstr);
         }
-      sprintf(tmpstr, "%d:RHS norm\n", colnr++);
+      snprintf(tmpstr, sizeof(tmpstr), "%d:RHS norm\n", colnr++);
       fprintf(outfile, "%17s", tmpstr);
       fflush(outfile);
     }
@@ -1044,13 +1044,13 @@ static void Usage(char *progname)
   for (i = 0; i < EnvironDim; i++)
     {
       if (EnvTrivEqui[i]) continue;
-      sprintf(tmpstr, " E[%d]", i);
+      snprintf(tmpstr, sizeof(tmpstr), " E[%d]", i);
       strcat(varstr, tmpstr);
     }
   for (i = 0; i < PopulationNr; i++)
     {
       if (PopTrivEqui[i]) continue;
-      sprintf(tmpstr, " b[%d]", i);
+      snprintf(tmpstr, sizeof(tmpstr), " b[%d]", i);
       strcat(varstr, tmpstr);
     }
   strcat(varstr, " Par.1 ... Par.n");
@@ -1556,7 +1556,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
       if (i) strcat(parstring, " ");
       memcpy(&tmpdouble, mxGetPr(prhs[irhs]) + i, mxGetElementSize(prhs[irhs]));
-      sprintf(tmpstr, "%.6G", tmpdouble);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", tmpdouble);
       strcat(parstring, tmpstr);
     }
   strcat(parstring, "]");
@@ -1604,7 +1604,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   for (i = 0; i < (nrows*ncols); i++)
     {
       if (i) strcat(evoparstring, " ");
-      sprintf(tmpstr, "%.6G", inputVals[i]);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", inputVals[i]);
       strcat(evoparstring, tmpstr);
     }
   strcat(evoparstring, "]");
@@ -1634,7 +1634,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   for (i = 0; i < (nrows*ncols); i++)
     {
       if (i) strcat(covmatstring, " ");
-      sprintf(tmpstr, "%.6G", inputVals[i]);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", inputVals[i]);
       strcat(covmatstring, tmpstr);
     }
   strcat(covmatstring, "]");
@@ -1660,7 +1660,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   for (i = 0; i < (nrows*ncols); i++)
     {
       if (i) strcat(evotimestring, " ");
-      sprintf(tmpstr, "%.6G", inputVals[i]);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", inputVals[i]);
       strcat(evotimestring, tmpstr);
     }
   strcat(evotimestring, "]");
@@ -1677,18 +1677,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       for (i = 0; i < EnvironDim; i++)
         {
           if (EnvTrivEqui[i]) continue;
-          sprintf(tmpstr, " E[%d]", (int)i);
+          snprintf(tmpstr, sizeof(tmpstr), " E[%d]", (int)i);
           strcat(varstr, tmpstr);
         }
       for (i = 0; i < PopulationNr; i++)
         {
           if (PopTrivEqui[i]) continue;
-          sprintf(tmpstr, " b[%d]", (int)i);
+          snprintf(tmpstr, sizeof(tmpstr), " b[%d]", (int)i);
           strcat(varstr, tmpstr);
         }
       for (i = 0; i < evoParsDim; i++)
         {
-          sprintf(tmpstr, " Par[%d]", (int)evoParsIndex[i]);
+          snprintf(tmpstr, sizeof(tmpstr), " Par[%d]", (int)evoParsIndex[i]);
           strcat(varstr, tmpstr);
         }
       strcat(varstr, " ]");
@@ -1710,7 +1710,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   for (i = 0; i < (nrows*ncols); i++)
     {
       if (i) strcat(pntstring, " ");
-      sprintf(tmpstr, "%.6G", inputVals[i]);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", inputVals[i]);
       strcat(pntstring, tmpstr);
     }
   strcat(pntstring, "]");
@@ -1883,7 +1883,7 @@ SEXP PSPMevodyn(SEXP moduleName, SEXP initVals, SEXP evotimeVals, SEXP evoparsVa
       for (i = 0; i < ncols; i++)
         {
           if (i) strcat(parstring, ", ");
-          sprintf(tmpstr, "%.6G", REAL(parVals)[i]);
+          snprintf(tmpstr, sizeof(tmpstr), "%.6G", REAL(parVals)[i]);
           strcat(parstring, tmpstr);
         }
       strcat(parstring, ")");
@@ -1925,7 +1925,7 @@ SEXP PSPMevodyn(SEXP moduleName, SEXP initVals, SEXP evotimeVals, SEXP evoparsVa
   for (i = 0; i < ncols; i++)
     {
       if (i) strcat(evoparstring, ", ");
-      sprintf(tmpstr, "%.6G", REAL(evoparsVals)[i]);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", REAL(evoparsVals)[i]);
       strcat(evoparstring, tmpstr);
     }
   strcat(evoparstring, ")");
@@ -1954,7 +1954,7 @@ SEXP PSPMevodyn(SEXP moduleName, SEXP initVals, SEXP evotimeVals, SEXP evoparsVa
   for (i = 0; i < ncols; i++)
     {
       if (i) strcat(covmatstring, ", ");
-      sprintf(tmpstr, "%.6G", REAL(covmatVals)[i]);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", REAL(covmatVals)[i]);
       strcat(covmatstring, tmpstr);
     }
   if (ncols) strcat(covmatstring, ")");
@@ -1973,7 +1973,7 @@ SEXP PSPMevodyn(SEXP moduleName, SEXP initVals, SEXP evotimeVals, SEXP evoparsVa
   for (i = 0; i < ncols; i++)
     {
       if (i) strcat(evotimestring, ", ");
-      sprintf(tmpstr, "%.6G", REAL(evotimeVals)[i]);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", REAL(evotimeVals)[i]);
       strcat(evotimestring, tmpstr);
     }
   strcat(evotimestring, ")");
@@ -1989,18 +1989,18 @@ SEXP PSPMevodyn(SEXP moduleName, SEXP initVals, SEXP evotimeVals, SEXP evoparsVa
       for (i = 0; i < EnvironDim; i++)
         {
           if (EnvTrivEqui[i]) continue;
-          sprintf(tmpstr, " E[%d]", (int)i);
+          snprintf(tmpstr, sizeof(tmpstr), " E[%d]", (int)i);
           strcat(varstr, tmpstr);
         }
       for (i = 0; i < PopulationNr; i++)
         {
           if (PopTrivEqui[i]) continue;
-          sprintf(tmpstr, " b[%d]", (int)i);
+          snprintf(tmpstr, sizeof(tmpstr), " b[%d]", (int)i);
           strcat(varstr, tmpstr);
         }
       for (i = 0; i < evoParsDim; i++)
         {
-          sprintf(tmpstr, " Par[%d]", (int)evoParsIndex[i]);
+          snprintf(tmpstr, sizeof(tmpstr), " Par[%d]", (int)evoParsIndex[i]);
           strcat(varstr, tmpstr);
         }
       strcat(varstr, " )");
@@ -2020,7 +2020,7 @@ SEXP PSPMevodyn(SEXP moduleName, SEXP initVals, SEXP evotimeVals, SEXP evoparsVa
   for (i = 0; i < ncols; i++)
     {
       if (i) strcat(pntstring, ", ");
-      sprintf(tmpstr, "%.6G", REAL(initVals)[i]);
+      snprintf(tmpstr, sizeof(tmpstr), "%.6G", REAL(initVals)[i]);
       strcat(pntstring, tmpstr);
     }
   strcat(pntstring, ")");
